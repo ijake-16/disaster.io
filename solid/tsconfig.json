@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "solid-js",
+        "types": [
+            "vite/client"
+        ],
+        "noEmit": true,
+        "isolatedModules": true,
+        "allowImportingTsExtensions": true,
+    },
+}

@@ -3,11 +3,11 @@
 import logging
 from contextlib import asynccontextmanager
 
-import dotenv
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from .database import Database
-from . import user, main
+from . import main
 
 engine = None
 
@@ -20,10 +20,10 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(user.router)
+
 app.include_router(main.router)
 
-dotenv.load_dotenv()
+load_dotenv()
 
 
 class EndpointFilter(logging.Filter):

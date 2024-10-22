@@ -1,8 +1,8 @@
 services:
   fast:
     build: ./fast
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     environment:
       SQL_USER: admin1
       SQL_PASSWORD: 12341
@@ -22,16 +22,16 @@ services:
     expose:
       - "5432"
 
-#  web:
-#    build: ./solid
-#    expose:
-#      - "3000"
+  web:
+    build: ./solid
+    expose:
+      - "3000"
   
   nginx:
     image: nginx:1.23-alpine
     restart: always
     depends_on:
-#      - web
+      - web
       - fast
     ports:
       - 8080:80
