@@ -14,6 +14,7 @@ class Team(BaseModel):
 class Room(BaseModel):
     code: str
     teams: Dict[str, Team] = {}
+    game_info: Dict = None  # 게임 사전 정보를 저장할 필드
 
 class Participant(BaseModel):
     team_name: str
@@ -66,3 +67,12 @@ async def get_all_rooms():
             } for room in game_rooms.values()
         ]
     }
+
+@router.post("/room/{room_code}/game_info")
+async def set_game_info(room_code: str, game_info: Dict):
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    room.game_info = game_info
+    return {"message": "게임 정보가 성공적으로 업로드되었습니다", "game_info": game_info}
