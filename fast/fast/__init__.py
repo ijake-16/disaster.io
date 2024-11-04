@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from .database import Database
-from . import main
+from . import host, player
 
 engine = None
 
@@ -21,7 +21,8 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(main.router)
+app.include_router(host.router)
+app.include_router(player.router)
 
 load_dotenv()
 
