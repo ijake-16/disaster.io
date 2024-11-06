@@ -31,3 +31,17 @@ async def set_game_info(room_code: str, game_info: Dict):
     room = game_rooms[room_code]
     room.game_info = game_info
     return {"message": "게임 정보가 성공적으로 업로드되었습니다", "game_info": game_info} 
+
+@router.get("/room/{room_code}/bag_contents")
+async def get_bag_contents(room_code: str):
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    team_bags = {}
+    
+    for team_name, team in room.teams.items():
+        team_bags[team_name] = team.bag_contents
+    
+    return team_bags
+

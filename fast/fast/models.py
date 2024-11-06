@@ -6,6 +6,7 @@ from typing import Dict
 class Team(BaseModel):
     name: str
     selected_bag: int = None
+    bag_contents: Dict[str, int] = None
 
 class Room(BaseModel):
     code: str
