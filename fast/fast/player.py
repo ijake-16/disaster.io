@@ -4,18 +4,33 @@ from typing import Dict
 
 router = APIRouter(prefix="/player")
 
-@router.post("/join_room/{room_code}")
-async def join_room(room_code: str, participant: Participant):
+@router.get("/room/{room_code}/host")
+async def get_host_nickname(room_code: str):
     if room_code not in game_rooms:
         raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
     room = game_rooms[room_code]
+    return {
+        "room_code": room_code,
+        "host_nickname": room.host_nickname
+    }
+
+@router.post("/room/{room_code}/join")
+async def join_room(room_code: str, player: Participant):
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
     
-    if participant.team_name in room.teams:
-        raise HTTPException(status_code=400, detail="이미 존재하는 팀 이름입니다")
+    room = game_rooms[room_code]
+    if player.team_name in room.teams:
+        raise HTTPException(status_code=400, detail="이미 존재하는 플레이어 이름입니다")
     
-    room.teams[participant.team_name] = Team(name=participant.team_name)
-    return {"message": f"{participant.team_name} 팀이 방에 참가했습니다", 
-            "team": participant.team_name}
+    room.teams[player.team_name] = Team(name=player.team_name)
+    return {
+        "message": f"{player.team_name}님이 방에 참가했습니다",
+        "room_code": room_code,
+        "host_nickname": room.host_nickname,
+        "player_name": player.team_name
+    }
 
 @router.get("/room/{room_code}/teams")
 async def get_room_teams(room_code: str):
