@@ -7,8 +7,12 @@ class Team(BaseModel):
     name: str
     selected_bag: int = None
 
+class CreateRoomRequest(BaseModel):
+    host_nickname: str
+
 class Room(BaseModel):
     code: str
+    host_nickname: str
     teams: Dict[str, Team] = {}
     game_info: Dict = None
 
