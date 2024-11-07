@@ -16,6 +16,7 @@ class Room(BaseModel):
     host_nickname: str
     teams: Dict[str, Team] = {}
     game_info: Dict = None
+    current_phase: str = "waiting" # waiting, bag_selection, game_info, bag_packing, scenario
 
 class Participant(BaseModel):
     team_name: str

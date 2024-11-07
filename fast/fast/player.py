@@ -4,6 +4,7 @@ from typing import Dict
 
 router = APIRouter(prefix="/player")
 
+#p1
 @router.get("/room/{room_code}/host")
 async def get_host_nickname(room_code: str):
     if room_code not in game_rooms:
@@ -15,6 +16,7 @@ async def get_host_nickname(room_code: str):
         "host_nickname": room.host_nickname
     }
 
+#p2
 @router.post("/room/{room_code}/join")
 async def join_room(room_code: str, player: Participant):
     if room_code not in game_rooms:
@@ -32,6 +34,7 @@ async def join_room(room_code: str, player: Participant):
         "player_name": player.team_name
     }
 
+#p3
 @router.get("/room/{room_code}/teams")
 async def get_room_teams(room_code: str):
     if room_code not in game_rooms:
@@ -41,6 +44,25 @@ async def get_room_teams(room_code: str):
     teams = list(room.teams.keys())
     return {"teams": teams}
 
+#p4
+@router.get("/room/{room_code}/join_confirmed")
+async def confirmed_to_start_game_info(room_code: str):
+    """
+    게임 참여가 완료되어 사전정보 안내가 시작됩니다.
+    """
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    if room.current_phase != "game_info":
+        raise HTTPException(status_code=400, detail="다른 팀이 게임 참여 중입니다")
+        
+    return {
+        "message": "사전정보 안내가 시작되었습니다",
+        "current_phase": room.current_phase
+    }
+
+#p6
 @router.post("/room/{room_code}/team/{team_name}/select_bag")
 async def select_bag(room_code: str, team_name: str, bag_number: int):
     if room_code not in game_rooms:
@@ -56,6 +78,7 @@ async def select_bag(room_code: str, team_name: str, bag_number: int):
     room.teams[team_name].selected_bag = bag_number
     return {"message": f"{team_name} 팀이 {bag_number}번 가방을 선택했습니다"}
 
+#이건 삭제해야 할 것 같습니다?
 @router.get("/room/{room_code}/team_selections")
 async def get_team_selections(room_code: str):
     if room_code not in game_rooms:
@@ -68,6 +91,7 @@ async def get_team_selections(room_code: str):
     }
     return {"team_selections": team_selections}
 
+#p7
 @router.post("/room/{room_code}/team/{team_name}/submit_bag")
 async def submit_bag_contents(room_code: str, team_name: str, bag_contents: Dict[str, int]):
     """
