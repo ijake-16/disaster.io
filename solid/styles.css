@@ -1,0 +1,408 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 헤더 스타일 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.team-name {
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.timer-circle {
+    width: 50px;
+    height: 50px;
+    background-color: #2ecc71;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 메인 레이아웃 */
+main {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+}
+
+/* 검색바 스타일 */
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+}
+
+/* 카테고리 및 아이템 스타일 */
+.categories {
+    background-color: #2d2d2d;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.category {
+    margin-bottom: 20px;
+}
+
+.category h3 {
+    margin-bottom: 10px;
+    color: #2ecc71;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.item {
+    background-color: #333;
+    border: 2px solid #444;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: move;
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item img {
+    max-width: 100%;
+    height: auto;
+}
+
+.item-info {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-size: 12px;
+}
+
+/* 가방 섹션 스타일 */
+.bag-section {
+    background-color: #2d2d2d;
+    border-radius: 8px;
+    padding: 15px;
+    height: fit-content;
+    min-width: 800px;        
+}
+
+.capacity-bars {
+    margin-bottom: 20px;
+}
+
+.capacity-bar {
+    margin-bottom: 10px;
+}
+
+.capacity-bar label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.bar-container {
+    height: 20px;
+    background-color: #444;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background-color: #2ecc71;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.bag-grid {
+    background-color: #404040;
+    border-radius: 4px;
+    width: 100%;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(8, 100px);  /* 고정된 크기로 설정 */
+    gap: calc(100% / 80);
+    padding: calc(100% / 40);
+    overflow-y: auto;
+    overflow-x: auto;       /* 가로 스크롤 추가 */
+    box-sizing: border-box;
+    justify-content: start; /* 왼쪽 정렬 */
+    align-content: start;   /* 위쪽 정렬 */
+}
+
+.bag-grid .item {
+    background-color: #333;
+    border: 1px solid #555;
+    width: 100px;          /* 고정된 너비 */
+    height: 100px;         /* 고정된 높이 */
+    min-width: 50px;      /* 최소 너비 */
+    min-height: 50px;     /* 최소 높이 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.bag-grid .item img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+/* 스크롤바 스타일 */
+.bag-grid::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;  /* 가로 스크롤바 높이 */
+}
+
+.bag-grid::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-radius: 4px;
+}
+
+.bag-grid::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.bag-grid::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+.bag-grid .item-placeholder {
+    background-color: rgba(46, 204, 113, 0.2);
+    border: 2px dashed #2ecc71;
+}
+
+.item-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.item-preview {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.item-preview img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+.item-preview h3 {
+    margin: 10px 0;
+    color: #2ecc71;
+}
+
+.item-preview p {
+    color: #ccc;
+    font-size: 14px;
+}
+
+.item-stats {
+    margin-bottom: 20px;
+}
+
+.item-stats .stat td:first-child {
+    min-width: 80px; /* Adjust this value as needed */
+    white-space: nowrap; /* Prevent wrapping to keep text in a single line */
+    padding-right: 10px; /* Add padding to create space between columns */
+}
+
+.item-stats .stat td {
+    padding: 5px;
+    vertical-align: top; /* Align text to the top for a more uniform look */
+}
+
+.item-stats .stat td:last-child {
+    word-wrap: break-word; /* Enable word wrapping for lengthy text in the second column */
+}
+/* .stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+} */
+
+.quantity-selector {
+    margin-bottom: 20px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+#quantity-slider {
+    flex-grow: 1;
+    height: 4px;
+    background: #444;
+    border-radius: 2px;
+    appearance: none;
+}
+
+#quantity-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2ecc71;
+    cursor: pointer;
+}
+
+#quantity-value {
+    min-width: 30px;
+    text-align: center;
+}
+
+.add-to-bag-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #2ecc71;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-to-bag-btn:hover {
+    background-color: #27ae60;
+}
+
+/* 아이템 호버 효과 */
+.item {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.item:hover {
+    transform: scale(1.05);
+}
+
+.delete-item {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.delete-item:hover {
+    background: rgba(255, 0, 0, 1);
+}
+
+.item {
+    position: relative;
+}
+
+.s5-bags-option {
+    width: 200px;
+    background-color: #f2f2f2;
+    border: 2px solid transparent;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: black;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+.s5-bags-option.selected {
+    border-color: #ff9900;
+}
+.s5-bags-option img {
+    width: 100px;
+    height: auto;
+}
+.s5-bag-detail {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.button-container {
+    margin-top: 20px;
+}
+.select-button {
+    background-color: #ff9900;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
