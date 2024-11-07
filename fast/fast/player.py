@@ -62,7 +62,26 @@ async def confirmed_to_start_game_info(room_code: str):
         "current_phase": room.current_phase
     }
 
+
 #p6
+@router.get("/room/{room_code}/game_info_confirmed")
+async def confirmed_to_start_bag_selection(room_code: str):
+    """
+    사전정보 안내가 완료되어 가방 선택을 시작합니다.
+    """
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    if room.current_phase != "bag_selection":
+        raise HTTPException(status_code=400, detail="사전 정보 안내 중입니다")
+        
+    return {
+        "message": "가방 선택이 시작되었습니다",
+        "current_phase": room.current_phase
+    }
+
+#p6.1
 @router.post("/room/{room_code}/team/{team_name}/select_bag")
 async def select_bag(room_code: str, team_name: str, bag_number: int):
     if room_code not in game_rooms:
