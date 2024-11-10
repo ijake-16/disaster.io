@@ -1,0 +1,30 @@
+{
+    "name": "@types/exceljs",
+    "version": "0.5.3",
+    "description": "TypeScript definitions for exceljs",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Rogier Schouten",
+            "url": "https://github.com/rogierschouten",
+            "githubUsername": "rogierschouten"
+        },
+        {
+            "name": "Ali Taheri Moghaddar",
+            "url": "https://github.com/alitaheri",
+            "githubUsername": "alitaheri"
+        }
+    ],
+    "main": "",
+    "types": "index",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/node": "*"
+    },
+    "typesPublisherContentHash": "048ca84540de3c149e2aca6a594ec48fece45a29397cb28c778cefb5f29aa57d",
+    "typeScriptVersion": "2.3"
+}

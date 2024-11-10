@@ -1,18 +1,15 @@
-import Header from './components/Header.tsx';
-import MainContent from './components/MainContent.tsx';
-import Footer from './components/Footer.tsx';
-import Sidebar from './components/Sidebar.tsx';
+import { Router, Routes, Route } from 'solid-app-router';
+import S1 from './components/S1.tsx';
+import S6 from './components/S6.tsx';
 
 function App() {
   return (
-    <div class="flex flex-col w-screen h-screen">
-      <Header />
-      <div class="flex flex-row w-full grow">
-        <Sidebar />
-        <MainContent />
-      </div>
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" component={S1} />
+        <Route path="/bagmake" component={S6} />
+      </Routes>
+    </Router>
   );
 };
 
