@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster.io - Inventory System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="team-info">
+                <h1 id="team-name" class="team-name">Team Name</h1>
+            </div>
+    
+            <div class="timer">
+                <div class="timer-circle">
+                    <span id="timer-count">150</span>
+                </div>
+            </div>
+        </header>
+    
+        <main>
+            <section class="inventory-section">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="아이템 검색...">
+                </div>
+    
+                <div class="categories">
+                    <div class="category">
+                        <div class="items-grid">
+                            <!-- Items will be dynamically populated here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+    
+            <section class="bag-section">
+                <div class="bag-info">
+                    <div class="capacity-bars">
+                        <div class="capacity-bar">
+                            무게
+                            <div class="bar-container">
+                                <div id="weight-bar" class="bar-fill"></div>
+                            </div>
+                            <span id="weight-info">0/100</span>
+                        </div>
+    
+                        <div class="capacity-bar">
+                            부피
+                            <div class="bar-container">
+                                <div id="volume-bar" class="bar-fill"></div>
+                            </div>
+                            <span id="volume-info">0/100</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <div id="bag-container" class="bag-grid">
+                    <!-- Bag items will be added here -->
+                </div>
+            </section>
+        </main>
+    
+        <div id="item-modal" class="item-modal">
+            <div class="modal-content">
+                <div>×</div>
+    
+                <div class="item-preview">
+                    <img id="modal-item-img" src="" alt="item">
+                    <h3 id="modal-item-name"></h3>
+                </div>
+    
+                <table class="item-stats">
+                    <tr class="stat">
+                        <td>무게:</td> <td><span id="modal-item-weight"></span></td>
+                    </tr>
+                    <tr class="stat">
+                        <td>부피:</td> <td><span id="modal-item-volume"></span></td>
+                    </tr>
+                    <tr class="stat">
+                        <td>상세정보:</td> <td><span id="modal-item-description"></span></td>
+                    </tr>
+                </table>
+    
+                <div class="quantity-selector">
+                    수량:
+                    <div class="slider-container">
+                        <input type="range" id="quantity-slider" min="1" max="10" value="1">
+                        <span id="quantity-value">1</span>
+                    </div>
+                </div>
+    
+                <button class="add-to-bag-btn">가방에 넣기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
