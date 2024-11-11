@@ -3,74 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disaster.io - Team Selection</title>
+    <title>Disaster.io - Room Creation</title>
     <style>
-        body {
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             font-family: Arial, sans-serif;
             background-color: #222;
             color: white;
-            text-align: center;
             display: flex;
+            gap: 20px;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
-        .container {
+        /* Left side settings panel */
+        .settings-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 350px; /* Adjusts width to fit smaller screens */
+            height: 90%;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            flex-shrink: 0; /* Prevents shrinking */
+        }
+
+        .settings-panel h1 {
             text-align: center;
-        }
-        h1 {
-            font-size: 48px;
+            background-color: #ff9900;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 24px;
+            color: black;
             margin: 0;
         }
-        .subtitle {
-            font-size: 16px;
-            color: #ccc;
-            margin: 10px 0 30px;
-        }
-        .prompt {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        .team-name {
-            background-color: #f2f2f2;
-            color: black;
-            width: 200px;
-            padding: 10px;
-            margin: 0 auto;
+
+        .settings-item, .input-box, .button {
+            background-color: #555;
+            padding: 15px;
+            text-align: center;
             border-radius: 5px;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            margin-bottom: 10px;
         }
-        .connect-button {
+
+        .input-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button {
             background-color: #ff9900;
             color: black;
-            padding: 15px 40px;
-            margin-top: 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 20px;
             cursor: pointer;
             font-weight: bold;
+            transition: background-color 0.3s;
         }
-        .connect-button:hover {
+
+        .button:hover {
             background-color: #e68a00;
+        }
+
+        /* Right side image settings panel */
+        .image-settings-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 1000px; /* Adjusts width to fit smaller screens */
+            height: 90%;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            flex-shrink: 0; /* Prevents shrinking */
+            flex-grow: 1; /* Allows growth */
+        }
+
+        .section-title {
+            background-color: #ff9900;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 18px;
+            color: black;
+        }
+        .image-grids {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            margin: 5px;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two columns */
+            gap: 0;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            border-color: #004466;
+            padding: 5px;
+        }
+        .image-grid img {
+            width: 100%;
+            height: 100px;
+            object-fit: scale-down;
+            cursor: pointer;
+            border: 2px solid transparent; /* Default border */
+        }
+
+        /* Selected image border style */
+        .image-grid img.selected {
+            border: 2px solid #e68a00;
+        }
+        .image-box {
+            background-color: #336688;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            height: 50px;
+            border: 1px solid #004466;
         }
     </style>
 </head>
 <body>
-
-    <div class="container">
+    <!-- Left Panel -->
+    <div class="settings-panel">
         <h1>Disaster.io</h1>
-        <div class="subtitle">한국형 생존 대비 시뮬레이션</div>
-        
-        <div class="prompt">방 제목을 정해주세요</div>
-        <input class="team-name" placeholder="두근두근자영핑의신나는모험">
-        <div></div>
-        
-        <button class="connect-button" onclick="window.location.href='h3_waiting.html'">방 만들기</button>
+        <div class="settings-item">게임 설정</div>
+        <input class="settings-item" placeholder="방 제목을 입력하세요">
+        <div class="input-box">
+            <span>최대 팀 수</span>
+            <span>4</span>
+        </div>
+        <div class="input-box">
+            <span>가방 싸기 시간</span>
+            <span>150</span>
+        </div>
+        <button class="button" onclick="window.location.href='h3_waiting.html'">방 만들기</button>
     </div>
 
+    <!-- Right Panel -->
+    <div class="image-settings-panel">
+        <!-- Image Settings Sections -->
+        <div class="section-title">사전 정보 설정</div>
+        <div class="image-grids">
+            <div class="image-grid">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+            </div>
+            <div class="image-grid">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+                <img src="resource/water.png"  onclick="toggleBorder(this)">
+            </div>
+        </div>
+
+        <div class="section-title">재난 정보 설정</div>
+        <div class="image-grids">
+            <div class="image-grid">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+            </div>
+            <div class="image-grid">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+                <img src="resource/water.png" onclick="toggleBorder(this)">
+            </div>
+        </div> 
+    </div>
+
+    <script>
+        function toggleBorder(imgElement) {
+            const grid = imgElement.parentElement;
+            grid.querySelectorAll('img').forEach(img => img.classList.remove('selected'));
+            imgElement.classList.add('selected');
+        }
+    </script>
 </body>
 </html>
-
