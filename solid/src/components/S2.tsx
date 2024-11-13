@@ -4,7 +4,7 @@ function S2() {
     const [teamName, setTeamName] = createSignal('');
 
     const handleConnect = () => {
-        window.location.href = '/NEXTPAGE';
+        window.location.href = '/waiting';
     };
 
     return (
