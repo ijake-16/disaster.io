@@ -20,8 +20,13 @@
         .header p {
             margin: 0;
         }
-        h1, h2 {
+        h1 {
+            padding: 20px;
             margin: 10px 0;
+            font-weight: normal;
+        }
+        h2 {
+            margin: 3px 0;
             font-weight: normal;
         }
         .container {
@@ -29,35 +34,6 @@
             justify-content: center;
             gap: 20px;
             margin: 20px;
-        }
-        .info-box {
-            background-color: #ccc;
-            width: 250px;
-            padding: 20px;
-            border-radius: 10px;
-            color: black;
-            text-align: left;
-        }
-        .info-box img {
-            width: 100%;
-            border-radius: 10px;
-        }
-        .info-text {
-            font-size: 14px;
-            line-height: 1.5;
-            margin-top: 10px;
-        }
-        .change-button {
-            display: block;
-            width: 100%;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
         }
         .main-button {
             background-color: #ff9900;
@@ -76,35 +52,18 @@
     <div class="header">
         <p>Room : 882910</p>
         <h1>Disaster.io</h1>
-        <h2>가족 정보와 지역 정보를 확인하세요. 재난에 대비하세요.</h2>
-        <p>YOU : 꿈들이와님죽이</p>
+        <h2>호스트의 가족 정보와 지역 정보 안내를 듣고,</h2>
+        <h2>재난에 대비하세요.</h2>
+        <p><br>YOU : 꿈들이와님죽이</p>
     </div>
 
     <div class="container">
-        <div class="info-box">
-            <img src="resource/cigs.png" alt="Family Icon">
-            <div class="info-text">
-                <p>당신의 가족 구성원은 다음과 같습니다.</p>
-                <p>아버지 ... 50세, 남성<br>
-                   어머니 ... 45세, 여성<br>
-                   나 ... 15세, 남성<br>
-                   동생 ... 7세, 여성</p>
-            </div>
-        </div>
 
-        <div class="info-box">
-            <img src="resource/map.png" alt="Region Icon">
-            <div class="info-text">
-                <p>당신의 거주 지역은 다음과 같습니다.</p>
-                <p>도시<br>
-                   해안가<br>
-                   기후 변동 적용<br>
-                   남부 지방</p>
-            </div>
-        </div>
+
+
     </div>
 
-    <button class="main-button" onclick="window.location.href='s5_bagselect.html'">네, 생존할 준비가 되었습니다.</button>
+    <button class="main-button" onclick="window.location.href='s5_bagselect.html'">생존할 준비가 되었습니다.</button>
 
 
 </body>
