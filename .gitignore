@@ -6,3 +6,5 @@ fast/venv/
 .idea/
 .vscode/
 **/.DS_Store
+node_modules
+x

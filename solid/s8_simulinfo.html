@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster.io - Simulation Explanation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding-top: 20px;
+        }
+        h1 {
+            font-size: 48px;
+            margin: 10px 0;
+        }
+        .subtitle {
+            font-size: 24px;
+            margin: 10px 0 30px;
+        }
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            background-color: #ddd;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            width: 90%;
+        }
+        .situation, .goal {
+            text-align: center;
+        }
+        .situation img, .goal img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .description {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .button-container {
+            margin-top: 30px;
+        }
+        .main-button {
+            background-color: #ff9900;
+            color: black;
+            padding: 10px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Disaster.io</h1>
+        <div class="subtitle">시뮬레이션 설명</div>
+    </div>
+
+    <div class="content">
+        <!-- Situation Section -->
+        <div class="situation">
+            <img src="resource/map.png" alt="Earthquake Icon">
+            <p class="description">Situation: 진도 7.0의 대지진</p>
+        </div>
+        
+        <!-- Goal Section -->
+        <div class="goal">
+            <img src="resource/map.png" alt="Map Icon">
+            <p class="description">Goal: 무사히 대피소로 이동하기</p>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button class="main-button" onclick="window.location.href='s9_simulresult.html'">시뮬레이션 시작!</button>
+    </div>
+
+</body>
+</html>
