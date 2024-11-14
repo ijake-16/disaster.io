@@ -93,6 +93,19 @@ const S6: Component = () => {
     setShowModal(false);
   };
 
+  // 아이템 클릭 시 모달 열기
+  const openItemModal = (item: Item) => {
+    setSelectedItem(item);
+    setQuantity(1);
+    setShowModal(true);
+  };
+
+  // 검색 기능
+  const handleSearch = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    setSearchTerm(target.value.toLowerCase());
+  };
+
   // 컴포넌트 마운트 시 초기화
   onMount(() => {
     readItemsFromExcel();
@@ -123,13 +136,22 @@ const S6: Component = () => {
               type="text" 
               placeholder="아이템 검색..." 
               class="w-full p-2 border-none rounded bg-neutral-700 text-white"
+              onInput={handleSearch}
             />
           </div>
 
           <div class="bg-neutral-800 rounded-lg p-4">
             <div class="category">
               <div class="grid grid-cols-3 gap-2.5">
-                {/* Items will be dynamically populated here */}
+                {items().filter(item => item.korName.toLowerCase().includes(searchTerm())).map(item => (
+                  <div 
+                    class="item cursor-pointer" 
+                    onClick={() => openItemModal(item)}
+                  >
+                    <img src={item.imgsource} alt={item.korName} class="w-full h-auto" />
+                    <span class="item-info">{item.weight}kg</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -143,18 +165,18 @@ const S6: Component = () => {
               <div>
                 <div>무게</div>
                 <div class="h-5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500 w-0 transition-width duration-300"></div>
+                  <div class="h-full bg-green-500" style={{ width: `${(currentWeight() / maxWeight) * 100}%` }}></div>
                 </div>
-                <span>0/100</span>
+                <span>{currentWeight()}/{maxWeight}</span>
               </div>
 
               {/* Volume Bar */}
               <div>
                 <div>부피</div>
                 <div class="h-5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500 w-0 transition-width duration-300"></div>
+                  <div class="h-full bg-green-500" style={{ width: `${(currentVolume() / maxVolume) * 100}%` }}></div>
                 </div>
-                <span>0/100</span>
+                <span>{currentVolume()}/{maxVolume}</span>
               </div>
             </div>
           </div>
@@ -167,53 +189,59 @@ const S6: Component = () => {
       </main>
 
       {/* Modal */}
-      <div class="hidden fixed inset-0 bg-black/70 z-50">
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-neutral-800 p-5 rounded-lg w-[90%] max-w-[400px]">
-          <div class="text-right">×</div>
+      {showModal() && (
+        <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
+          <div class="bg-neutral-800 p-5 rounded-lg w-[90%] max-w-[400px]">
+            <div class="text-right cursor-pointer" onClick={() => setShowModal(false)}>×</div>
 
-          <div class="text-center mb-5">
-            <img src="" alt="item" class="w-20 h-20 mx-auto mb-2.5" />
-            <h3 class="text-green-500"></h3>
-          </div>
-
-          <table class="mb-5 w-full">
-            <tbody>
-            <tr>
-              <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">무게:</td>
-              <td class="p-1.5"></td>
-            </tr>
-            <tr>
-              <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">부피:</td>
-              <td class="p-1.5"></td>
-            </tr>
-            <tr>
-              <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">상세정보:</td>
-              <td class="p-1.5 break-words"></td>
-            </tr>
-            </tbody>
-          </table>
-
-          <div class="mb-5">
-            수량:
-            <div class="flex items-center gap-2.5 mt-1.5">
-              <input 
-                type="range" 
-                min="1" 
-                max="10" 
-                value="1"
-                class="flex-grow h-1 bg-neutral-700 rounded appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:cursor-pointer"
-              />
-              <span class="min-w-[30px] text-center">1</span>
+            <div class="text-center mb-5">
+              <img src={selectedItem()?.imgsource} alt="item" class="w-20 h-20 mx-auto mb-2.5" />
+              <h3 class="text-green-500">{selectedItem()?.korName}</h3>
             </div>
-          </div>
 
-          <button class="w-full py-3 bg-green-500 rounded text-white font-bold hover:bg-green-600 transition-colors">
-            가방에 넣기
-          </button>
+            <table class="mb-5 w-full">
+              <tbody>
+                <tr>
+                  <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">무게:</td>
+                  <td class="p-1.5">{selectedItem()?.weight}kg</td>
+                </tr>
+                <tr>
+                  <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">부피:</td>
+                  <td class="p-1.5">{selectedItem()?.volume}㎥</td>
+                </tr>
+                <tr>
+                  <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">상세정보:</td>
+                  <td class="p-1.5 break-words">{selectedItem()?.description}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="mb-5">
+              수량:
+              <div class="flex items-center gap-2.5 mt-1.5">
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="10" 
+                  value={quantity()}
+                  class="flex-grow h-1 bg-neutral-700 rounded appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:cursor-pointer"
+                  onInput={(e) => setQuantity(parseInt((e.target as HTMLInputElement).value))}
+                />
+                <span class="min-w-[30px] text-center">{quantity()}</span>
+              </div>
+            </div>
+
+            <button 
+              class="w-full py-3 bg-green-500 rounded text-white font-bold hover:bg-green-600 transition-colors"
+              onClick={addItemToBag}
+            >
+              가방에 넣기
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-export default S6; 
+export default S6;
