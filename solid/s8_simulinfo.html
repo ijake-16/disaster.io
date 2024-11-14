@@ -30,27 +30,15 @@
             justify-content: center;
             align-items: center;
             gap: 30px;
-            background-color: #ddd;
-            color: black;
+            background-color: black;
+            color: white;
             padding: 20px;
             border-radius: 10px;
             max-width: 800px;
             width: 90%;
         }
-        .situation, .goal {
+        .disaster-message {
             text-align: center;
-        }
-        .situation img, .goal img {
-            width: 150px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-        .description {
-            font-size: 18px;
-            margin-top: 10px;
-        }
-        .button-container {
-            margin-top: 30px;
         }
         .main-button {
             background-color: #ff9900;
@@ -65,28 +53,15 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <h1>Disaster.io</h1>
-        <div class="subtitle">시뮬레이션 설명</div>
+        <div class="subtitle">재난 발생</div>
     </div>
 
     <div class="content">
-        <!-- Situation Section -->
-        <div class="situation">
-            <img src="resource/map.png" alt="Earthquake Icon">
-            <p class="description">Situation: 진도 7.0의 대지진</p>
+        <div class="disaster-message">
+            <img src="resource/disaster-message.png" alt="Map Icon" width="650">
         </div>
-        
-        <!-- Goal Section -->
-        <div class="goal">
-            <img src="resource/map.png" alt="Map Icon">
-            <p class="description">Goal: 무사히 대피소로 이동하기</p>
-        </div>
-    </div>
-
-    <div class="button-container">
-        <button class="main-button" onclick="window.location.href='s9_simulresult.html'">시뮬레이션 시작!</button>
     </div>
 
 </body>

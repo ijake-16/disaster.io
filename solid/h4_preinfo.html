@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Preparedness</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            padding: 20px;
+        }
+        h1, h2 {
+            margin: 10px 0;
+            font-weight: normal;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 20px;
+            margin: 20px;
+        }
+        .info-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+            margin: 20px;
+        }
+        .info-box {
+            flex-grow: 1;
+            background-color: #ccc;
+            width: 250px;
+            padding: 20px;
+            border-radius: 10px;
+            color: black;
+            text-align: left;
+            position: relative;
+        }
+        .info-box img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .info-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+        .modify-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .main-button {
+            background-color: #ff9900;
+            color: black;
+            padding: 10px 40px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Dropdown styling for modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            color: black;
+            padding: 20px;
+            width: 300px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .modal-body {
+            margin-top: 20px;
+        }
+        .modal-body select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .save-button {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <p>Room : 882910</p>
+        <h1>Disaster.io</h1>
+        <h2>가족 정보와 지역 정보를 확인하세요. 재난에 대비하세요.</h2>
+        <p>YOU : 꿈들이와님죽이</p>
+    </div>
+
+    <!-- Information Boxes -->
+    <div class="container">
+        <div class="info-container">
+            <div class="info-box" id="family-info">
+                <img src="resource/cigs.png" alt="Family Icon">
+                <div class="info-text">
+                    <p>당신의 가족 구성원은 다음과 같습니다.</p>
+                    <p id="family-details">아버지 ... 50세, 남성<br>
+                    어머니 ... 45세, 여성<br>
+                    나 ... 15세, 남성<br>
+                    동생 ... 7세, 여성</p>
+                </div>
+            </div>
+            <button class="modify-button" onclick="openModal('family')">가족 설정 변경하기</button>
+        </div>
+        <div class="info-container">
+            <div class="info-box" id="region-info">
+                <img src="resource/map.png" alt="Region Icon">
+                <div class="info-text">
+                    <p>당신의 거주 지역은 다음과 같습니다.</p>
+                    <p id="region-details">도시<br>
+                    해안가<br>
+                    기후 변동 적용<br>
+                    남부 지방</p>
+                </div>
+            </div>
+            <button class="modify-button" onclick="openModal('region')">지역 설정 변경하기</button>
+        </div>
+    </div>
+
+    <!-- Main Button -->
+    <button class="main-button" onclick="window.location.href='h5_sceneinfo.html'">네, 생존할 준비가 되었습니다.</button>
+
+    <!-- Modal for Selection -->
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">정보 설정 변경</h3>
+                <button class="close-button" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <select id="modal-select">
+                    <!-- Options will be dynamically added based on the current selection (family or region) -->
+                </select>
+                <button class="save-button" onclick="saveChanges()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEdit = '';
+
+        const familyOptions = [
+            "아버지 ... 50세, 남성\n어머니 ... 45세, 여성\n나 ... 15세, 남성\n동생 ... 7세, 여성",
+            "아버지 ... 55세, 남성\n어머니 ... 50세, 여성\n나 ... 20세, 남성\n동생 ... 10세, 여성",
+            "조부 ... 70세, 남성\n조모 ... 68세, 여성\n어머니 ... 45세, 여성\n나 ... 15세, 남성"
+        ];
+
+        const regionOptions = [
+            "도시\n해안가\n기후 변동 적용\n남부 지방",
+            "도시\n산악 지대\n기후 변동 미적용\n북부 지방",
+            "농촌\n해안가\n기후 변동 적용\n동부 지방"
+        ];
+
+        // Function to open the modal with dropdown options
+        function openModal(type) {
+            const modal = document.getElementById("edit-modal");
+            const modalSelect = document.getElementById("modal-select");
+            const modalTitle = document.getElementById("modal-title");
+
+            currentEdit = type; // Set the current editing type (family or region)
+            modalSelect.innerHTML = ""; // Clear previous options
+
+            if (type === 'family') {
+                modalTitle.textContent = "가족 구성 선택";
+                familyOptions.forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.value = option;
+                    opt.textContent = option.replace(/\n/g, " | ");
+                    modalSelect.appendChild(opt);
+                });
+            } else if (type === 'region') {
+                modalTitle.textContent = "지역 정보 선택";
+                regionOptions.forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.value = option;
+                    opt.textContent = option.replace(/\n/g, " | ");
+                    modalSelect.appendChild(opt);
+                });
+            }
+            
+            modal.style.display = "flex";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById("edit-modal").style.display = "none";
+        }
+
+        // Function to save changes and update the content in the info box
+        function saveChanges() {
+            const selectedOption = document.getElementById("modal-select").value;
+            
+            if (currentEdit === 'family') {
+                document.getElementById("family-details").innerHTML = selectedOption.replace(/\n/g, "<br>");
+            } else if (currentEdit === 'region') {
+                document.getElementById("region-details").innerHTML = selectedOption.replace(/\n/g, "<br>");
+            }
+            
+            closeModal(); // Close the modal after saving
+        }
+
+        // Close modal if clicked outside of modal content
+        window.onclick = function(event) {
+            const modal = document.getElementById("edit-modal");
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+
+</body>
+</html>
