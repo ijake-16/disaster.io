@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster.io - Room Code</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #ff9900;
+            margin: 0 0 10px;
+        }
+
+        .instruction {
+            font-size: 18px;
+            color: #ccc;
+            margin-bottom: 30px;
+            max-width: 80%;
+            line-height: 1.6;
+        }
+
+        .room-code {
+            font-size: 64px;
+            color: #ff9900;
+            font-weight: bold;
+            padding: 20px 40px;
+            background-color: #222;
+            border: 3px solid #ff9900;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .main-button {
+            background-color: #ff9900;
+            color: black;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .main-button:hover {
+            background-color: #e68a00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Disaster.io</h1>
+        <p class="instruction">
+            화면 공유를 통해 다른 참가자들이 이 화면을 볼 수 있도록 설정하세요.
+            아래의 방 코드로 참가자들이 입장할 수 있습니다.
+        </p>
+        <div class="room-code">882910</div>
+        <div class="button-container">
+            <button class="main-button" onclick="window.location.href='h3_waiting.html'">다음으로</button>
+        </div>
+    </div>
+
+</body>
+</html>
