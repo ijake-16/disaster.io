@@ -1,4 +1,5 @@
 import { Router, Route } from '@solidjs/router';
+import S0 from './components/S0.tsx';
 import S1 from './components/S1.tsx';
 import S2 from './components/S2.tsx';
 import S3 from './components/S3.tsx';
@@ -9,7 +10,8 @@ import S7 from './components/S7.tsx';
 function App() {
   return (
     <Router>
-      <Route path="/" component={S1} />
+      <Route path="/" component={S0} />
+      <Route path="/player" component={S1} />
       <Route path="/teamselection" component={S2} />
       <Route path="/waiting" component={S3} />
       <Route path="/bagselect" component={S5} />
