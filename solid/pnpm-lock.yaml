@@ -52,7 +52,7 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.9.0)(typescript@5.5.4)
       vite:
-        specifier: ^5.4.2
+        specifier: ^5.4.11
         version: 5.4.11(@types/node@22.9.0)
       vite-plugin-solid:
         specifier: ^2.10.2
