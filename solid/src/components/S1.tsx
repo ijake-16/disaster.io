@@ -14,7 +14,7 @@ const S1: Component = () => {
         />
         <button
           class="main-button bg-yellow-500 text-black py-2 px-8 mt-5 rounded"
-          onclick={() => window.location.href = '/teamselection'
+          onclick={() => window.location.href = '/teambuild'
           }
         >
           {'>'}

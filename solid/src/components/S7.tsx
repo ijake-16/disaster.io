@@ -39,7 +39,7 @@ const S7: Component = () => {
   ];
 
   const handleContinue = () => {
-    navigate('/s8_simulinfo');
+    navigate('/simulinfo');
   };
 
   return (

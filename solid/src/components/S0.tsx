@@ -11,9 +11,9 @@ const DisasterIO = () => {
 
   const handleNavigate = () => {
     if (destination() === 'h1') {
-      window.location.href = '/player';
+      window.location.href = '/host/start';
     } else if (destination() === 's1') {
-      window.location.href = '/player';
+      window.location.href = '/start';
     } else {
       alert("먼저 '호스트' 또는 '플레이어'를 선택하세요.");
     }
