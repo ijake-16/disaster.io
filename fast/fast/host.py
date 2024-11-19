@@ -1,12 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from .models import game_rooms, Room, generate_room_code, CreateRoomRequest
 from typing import Dict
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/host")
 
 #h1
 @router.post("/create_room")
 async def create_room(request: CreateRoomRequest):
+    logger.info(f"Received POST /create_room with payload: {request.model_dump()}")
     room_code = generate_room_code()
     while room_code in game_rooms:
         room_code = generate_room_code()

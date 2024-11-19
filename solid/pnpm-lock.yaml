@@ -18,7 +18,7 @@ importers:
         specifier: ^7.9.0
         version: 7.9.0
       ky:
-        specifier: ^1.7.1
+        specifier: ^1.7.2
         version: 1.7.2
       solid-app-router:
         specifier: ^0.4.2
