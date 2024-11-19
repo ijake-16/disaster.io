@@ -7,6 +7,7 @@ const RoomBuild: Component = () => {
   const [roomTitle, setRoomTitle] = createSignal(""); // To capture the room title
   const [selectedPreInfo, setSelectedPreInfo] = createSignal<number | null>(null);
   const [selectedDisaster, setSelectedDisaster] = createSignal<number | null>(null);
+  const [roomCode, setRoomCode] = createSignal<string | null>(null);
 
   const createRoom = async () => {
     try {
@@ -20,10 +21,11 @@ const RoomBuild: Component = () => {
         .post("http://localhost:8000/host/create_room", {
           json: payload,
         })
-        .json();
+        .json<{ room_code: string; host_nickname: string }>();
 
       console.log("Room created successfully:", response);
-      navigate("/host/notice", { replace: true }); // Navigate after successful room creation
+      setRoomCode(response.room_code);
+      navigate("/host/notice", { state: { roomCode: response.room_code } }); // Navigate after successful room creation
     } catch (error) {
       console.error("Failed to create room:", error);
     }

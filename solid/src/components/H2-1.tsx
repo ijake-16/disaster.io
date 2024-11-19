@@ -1,9 +1,11 @@
 import { Component } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { useNavigate, useLocation } from '@solidjs/router';
+
 
 const NoticeRoom: Component = () => {
   const navigate = useNavigate();
-  const roomCode = '882910'; // This could be dynamic via props or signals
+  const location = useLocation<{ roomCode?: string }>();
+  const roomCode = location.state?.roomCode || '882910'; // This could be dynamic via props or signals
 
   const handleNext = () => {
     navigate('/host/waiting');
