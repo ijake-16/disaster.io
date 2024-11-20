@@ -1,4 +1,5 @@
 import { Component } from 'solid-js';
+import { roomCode, setRoomCode } from "../store";
 
 const H3Waiting: Component = () => {
   const teams = [
@@ -6,6 +7,8 @@ const H3Waiting: Component = () => {
     "카이스트에서 살아남기",
     "전기양"
   ];
+
+  const currentRoomCode = roomCode();
 
   const handleGameStart = () => {
     // Using router would be better in a real application
@@ -18,7 +21,7 @@ const H3Waiting: Component = () => {
         <h1 class="text-2xl m-0">Disaster.io</h1>
         
         <div class="text-base text-orange-400 mb-2.5">
-          882910
+          {currentRoomCode}
         </div>
         
         <div class="text-sm text-gray-300 mb-5">

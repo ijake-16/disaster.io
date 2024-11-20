@@ -1,5 +1,6 @@
 import { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
+import { roomCode } from '../store';
 
 interface FamilyMember {
   role: string;
@@ -14,7 +15,7 @@ interface RegionInfo {
 
 const H4PreInfo: Component = () => {
   const navigate = useNavigate();
-  
+  const currentRoomCode = roomCode();
   const familyMembers: FamilyMember[] = [
     { role: '아버지', age: 50, gender: '남성' },
     { role: '어머니', age: 45, gender: '여성' },
@@ -35,7 +36,7 @@ const H4PreInfo: Component = () => {
     <div class="min-h-screen bg-gray-900 text-white">
       {/* Header Section */}
       <header class="p-5 text-center">
-        <p class="text-gray-300">Room : 882910</p>
+        <p class="text-gray-300">Room : {currentRoomCode}</p>
         <h1 class="text-3xl my-2">Disaster.io</h1>
         <h2 class="text-xl font-normal text-gray-300">
           가족 정보와 지역 정보를 확인하세요. 재난에 대비하세요.

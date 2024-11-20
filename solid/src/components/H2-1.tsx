@@ -1,15 +1,10 @@
 import { Component } from 'solid-js';
-import { useNavigate, useLocation } from '@solidjs/router';
-
+import { useNavigate } from '@solidjs/router';
+import { roomCode } from '../store'; // 글로벌 상태 임포트
 
 const NoticeRoom: Component = () => {
   const navigate = useNavigate();
-  const location = useLocation<{ roomCode?: string }>();
-  const roomCode = location.state?.roomCode || '882910'; // This could be dynamic via props or signals
-
-  const handleNext = () => {
-    navigate('/host/waiting');
-  };
+  const currentRoomCode = roomCode(); // 배열 구조 분해 할당으로 방 코드 가져오기
 
   return (
     <div class="min-h-screen bg-gray-800 text-white flex justify-center items-center">
@@ -22,12 +17,12 @@ const NoticeRoom: Component = () => {
         </p>
 
         <div class="text-6xl text-amber-500 font-bold py-5 px-10 bg-gray-800 border-3 border-amber-500 rounded-lg mb-5 tracking-widest">
-          {roomCode}
+          {currentRoomCode || '882910'} {/* 방 코드가 없으면 기본값 사용 */}
         </div>
 
         <div class="mt-5">
           <button
-            onClick={handleNext}
+            onClick={() => navigate('/host/waiting')}
             class="bg-amber-500 text-black px-10 py-4 rounded font-bold text-xl hover:bg-amber-600 transition-colors"
           >
             다음으로

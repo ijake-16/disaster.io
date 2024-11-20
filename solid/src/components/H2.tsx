@@ -1,31 +1,30 @@
 import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import ky from "ky";
+import { setRoomCode } from "../store";
 
 const RoomBuild: Component = () => {
   const navigate = useNavigate();
-  const [roomTitle, setRoomTitle] = createSignal(""); // To capture the room title
+  const [roomTitle, setRoomTitle] = createSignal("");
   const [selectedPreInfo, setSelectedPreInfo] = createSignal<number | null>(null);
   const [selectedDisaster, setSelectedDisaster] = createSignal<number | null>(null);
-  const [roomCode, setRoomCode] = createSignal<string | null>(null);
 
   const createRoom = async () => {
     try {
       const payload = {
-        host_nickname: roomTitle(), // Assuming "roomTitle" acts as the host nickname
-        selected_pre_info: selectedPreInfo(), // Send selected pre info
-        selected_disaster: selectedDisaster(), // Send selected disaster info
+        host_nickname: roomTitle(),
+        selected_pre_info: selectedPreInfo(),
+        selected_disaster: selectedDisaster(),
       };
 
-      const response = await ky
-        .post("http://localhost:8000/host/create_room", {
+      const response = await ky.post("http://localhost:8000/host/create_room", {
           json: payload,
         })
         .json<{ room_code: string; host_nickname: string }>();
 
       console.log("Room created successfully:", response);
       setRoomCode(response.room_code);
-      navigate("/host/notice", { state: { roomCode: response.room_code } }); // Navigate after successful room creation
+      navigate("/host/notice");
     } catch (error) {
       console.error("Failed to create room:", error);
     }
@@ -68,7 +67,7 @@ const RoomBuild: Component = () => {
 
         <button
           class="bg-orange-500 p-4 rounded font-bold text-black hover:bg-orange-600 transition-colors"
-          onClick={createRoom} // Trigger POST request
+          onClick={createRoom}
         >
           방 만들기
         </button>
