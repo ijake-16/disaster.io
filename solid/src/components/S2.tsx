@@ -1,9 +1,10 @@
 import { createSignal } from "solid-js";
-import { useLocation } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import ky from "ky";
 
 const S2 = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const roomCode = location.state?.roomCode; // roomCode 전달받기
   const [teamName, setTeamName] = createSignal("");
   const [errorMessage, setErrorMessage] = createSignal("");
@@ -29,7 +30,7 @@ const S2 = () => {
 
       console.log("Join response:", response);
       setErrorMessage("");
-      window.location.href = "/waiting"; // 성공 시 대기 화면으로 이동
+      navigate("/waiting", { state: { roomCode, teamName: trimmedTeamName } });
     } catch (error) {
       console.error("Failed to join room:", error);
       setErrorMessage("팀 이름이 이미 존재하거나 잘못된 요청입니다.");
