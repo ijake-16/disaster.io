@@ -61,9 +61,9 @@ const S3: Component = () => {
         )}
 
         <button
-          class="bg-amber-500 text-black py-2.5 px-5 mt-5 rounded text-lg hover:bg-amber-600 transition-colors"
+          class="bg-amber-300 text-black py-2.5 px-5 mt-5 rounded text-lg"
         >
-          네, 생존할 준비가 되었습니다.
+          호스트가 게임을 시작할 때까지 기다려주세요.
         </button>
       </div>
     </div>
