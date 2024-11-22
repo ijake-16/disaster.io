@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount, For } from "solid-js";
+import { Component, createSignal, onMount, onCleanup, For } from "solid-js";
 import { useLocation } from "@solidjs/router";
 import ky from "ky";
 
@@ -25,6 +25,7 @@ const S3: Component = () => {
         (team) => team !== currentTeamName
       );
       setTeamNames(filteredTeams);
+      setErrorMessage("");
     } catch (error) {
       console.error("Failed to fetch team names:", error);
       setErrorMessage("팀 목록을 불러오는 데 실패했습니다.");
@@ -33,6 +34,8 @@ const S3: Component = () => {
 
   onMount(() => {
     fetchTeamNames();
+    const interval = setInterval(fetchTeamNames, 3000);
+    onCleanup(() => clearInterval(interval));
   });
 
   return (
@@ -42,7 +45,7 @@ const S3: Component = () => {
 
         <div class="text-base text-amber-500 mb-2.5">{roomCode}</div>
 
-        <div class="text-sm text-gray-400 mb-5">(3/4) 입장 대기 중 ...</div>
+        <div class="text-sm text-gray-400 mb-5">입장 대기 중 ...</div>
 
         <div class="bg-amber-500 text-black p-2.5 rounded font-bold mb-4">
           YOU : {currentTeamName}
