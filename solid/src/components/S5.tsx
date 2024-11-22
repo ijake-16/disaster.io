@@ -1,5 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
+import ky from "ky";
 
 interface BagOption {
   id: number;
@@ -52,15 +53,36 @@ const BagSelect: Component = () => {
     setSelectedBagId(bagId);
   };
 
-  const handleContinue = () => {
-    navigate("/bagmake", {
-      state: {
-        roomCode,
-        teamName: currentTeamName,
-        selectedBagId: selectedBagId(),
-      },
-    });
+  const handleContinue = async () => {
+    const selectedBag = bagOptions[selectedBagId() - 1];
+    if (!selectedBag) {
+      alert("Please select a valid bag.");
+      return;
+    }
+  
+    try {
+      // Make API call to select the bag
+      console.log(selectedBagId())
+      const response = await ky
+        .post(`http://localhost:8000/player/room/${roomCode}/team/${currentTeamName}/select_bag?bag_number=${selectedBagId()}`).json<{message: string}>();
+  
+      console.log("API Response:", response);
+      alert("Bag selected successfully!");
+  
+      // Navigate to the bag creation screen
+      navigate("/bagmake", {
+        state: {
+          roomCode,
+          teamName: currentTeamName,
+          selectedBag, // Pass the selected bag object
+        },
+      });
+    } catch (error) {
+      console.error("Error selecting bag:", error);
+      alert("Failed to select bag. Please try again.");
+    }
   };
+  
 
   return (
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white font-sans">
