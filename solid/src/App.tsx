@@ -7,6 +7,7 @@ import H4 from './components/H4.tsx';
 import H5 from './components/H5.tsx';
 import H6 from './components/H6.tsx';
 import H7 from './components/H7.tsx';
+import H8 from './components/H8.tsx';
 import S0 from './components/S0.tsx';
 import S1 from './components/S1.tsx';
 import S2 from './components/S2.tsx';
@@ -26,6 +27,7 @@ function App() {
       <Route path="/host/sceneinfo" component={H5} />
       <Route path="/host/simulinfo" component={H6} />
       <Route path="/host/simulresult" component={H7} />
+      <Route path="/host/finalresult" component={H8} />
       <Route path="/" component={S0} />
       <Route path="/start" component={S1} />
       <Route path="/teambuild" component={S2} />
