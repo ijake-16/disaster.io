@@ -41,7 +41,7 @@ const S3: Component = () => {
         .json<{ message: string; current_phase: string }>();
 
       if (response.current_phase === "game_info") {
-        navigate("/bagselect", {
+        navigate("/preinfo", {
           state: { roomCode, teamName: currentTeamName },
         });
       }
