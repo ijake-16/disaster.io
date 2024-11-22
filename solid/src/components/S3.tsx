@@ -1,9 +1,10 @@
 import { Component, createSignal, onMount, onCleanup, For } from "solid-js";
-import { useLocation } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import ky from "ky";
 
 const S3: Component = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const roomCode = location.state?.roomCode;
   const currentTeamName = location.state?.teamName;
   const [teamNames, setTeamNames] = createSignal<string[]>([]);
@@ -31,11 +32,33 @@ const S3: Component = () => {
       setErrorMessage("팀 목록을 불러오는 데 실패했습니다.");
     }
   };
+  const checkJoinConfirmed = async () => {
+    try {
+      if (!roomCode) return;
 
+      const response = await ky
+        .get(`http://localhost:8000/player/room/${roomCode}/join_confirmed`)
+        .json<{ message: string; current_phase: string }>();
+
+      if (response.current_phase === "game_info") {
+        navigate("/bagselect", {
+          state: { roomCode, teamName: currentTeamName },
+        });
+      }
+    } catch (error) {
+      console.error("Error checking join confirmed:", error);
+      // 에러는 무시, 신호가 없거나 서버가 준비되지 않은 상태일 수 있음.
+    }
+  };
   onMount(() => {
     fetchTeamNames();
-    const interval = setInterval(fetchTeamNames, 3000);
-    onCleanup(() => clearInterval(interval));
+    const teamNamesInterval = setInterval(fetchTeamNames, 3000);
+    const joinConfirmedInterval = setInterval(checkJoinConfirmed, 3000);
+
+    onCleanup(() => {
+      clearInterval(teamNamesInterval);
+      clearInterval(joinConfirmedInterval);
+    });
   });
 
   return (
