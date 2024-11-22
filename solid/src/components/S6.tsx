@@ -1,5 +1,7 @@
 import { Component, createSignal, onMount } from "solid-js";
+import { useLocation, useNavigate } from "@solidjs/router";
 import * as XLSX from "xlsx";
+import ky from "ky";
 
 interface Item {
   id: number;
@@ -13,7 +15,7 @@ interface Item {
 
 const S6: Component = () => {
   const [items, setItems] = createSignal<Item[]>([]);
-  const [teamName] = createSignal("Team Name");
+
   const [timer, setTimer] = createSignal(150);
   const [currentWeight, setCurrentWeight] = createSignal(0);
   const [currentVolume, setCurrentVolume] = createSignal(0);
@@ -23,8 +25,18 @@ const S6: Component = () => {
   const [showModal, setShowModal] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal("");
 
-  const maxWeight = 100;
-  const maxVolume = 100;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
+  const teamName = location.state?.teamName || "UNKNOWN_TEAM";
+  const selectedBag = location.state?.selectedBag || {
+    weightLimit: 10,
+    volumeLimit: 10,
+    bagWeight: 0,
+    description: "기본 가방 설명",
+  };
+  const maxWeight = 10 * selectedBag.weightLimit;
+  const maxVolume = 10 * selectedBag.volumeLimit;
 
   // Load items from Excel file
   const readItemsFromExcel = async () => {
@@ -103,9 +115,9 @@ const S6: Component = () => {
   };
 
   // Generate bag contents summary
-  const getBagContents = () => {
+  const getBagContents = async () => {
     const bagContents = { items: {}, totalWeight: currentWeight(), totalVolume: currentVolume() };
-
+  
     q().forEach((item) => {
       const name = item.korName;
       if (!bagContents.items[name]) {
@@ -113,9 +125,34 @@ const S6: Component = () => {
       }
       bagContents.items[name] += 1;
     });
-
+  
+    try {
+      // Make API call to submit bag contents
+      console.log(bagContents.items)
+      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
+        json: bagContents.items,
+      }).json();
+  
+      console.log("API Response:", response);
+      alert(response.message || "Bag contents submitted successfully!");
+  
+      // Navigate to the next scene
+      navigate("/sceneinfo", {
+        state: {
+          roomCode,
+          teamName: teamName,
+          selectedBag, // Pass the selected bag object
+          bagContents: bagContents,
+        },
+      });
+    } catch (error) {
+      console.error("Error submitting bag contents:", error);
+      alert("Failed to submit bag contents. Please try again.");
+    }
+  
     console.log("Bag Contents:", bagContents);
   };
+  
 
   // Filtered items based on search
   const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
