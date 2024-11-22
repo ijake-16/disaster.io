@@ -35,6 +35,33 @@ async function readItemsFromExcel() {
     }
 }
 
+function getBagContents() {
+
+    const bagContainer = document.getElementById("bag-container");
+    const itemsInBag = bagContainer.querySelectorAll(".item.in-bag");
+
+    const bagContents = {"items" : {}, "totalWeight": 0, "totalVolume": 0};
+    itemsInBag.forEach((item) => {
+        console.log(item.dataset);
+        const iteminfo = item.dataset.id;
+        const weight = parseFloat(item.dataset.weight);
+        const volume = parseFloat(item.dataset.volume);
+
+        if (!bagContents["items"][iteminfo]) {
+            bagContents["items"][iteminfo] = 0;
+        }
+
+        bagContents["items"][iteminfo] += 1;
+        bagContents.totalWeight += weight;
+        bagContents.totalVolume += volume;
+    });
+
+    return bagContents;
+}
+    
+
+
+
 class InventorySystem {
     constructor() {
         this.maxWeight = 100;
@@ -43,7 +70,7 @@ class InventorySystem {
         this.currentVolume = 0;
         this.timeLeft = 150;
         this.items = [];
-        
+
         this.initializeSystem();
     }
 
@@ -207,6 +234,8 @@ class InventorySystem {
         for (let i = 0; i < quantity; i++) {
             const newItem = document.createElement('div');
             newItem.className = 'item in-bag';
+            newItem.dataset.id = this.selectedItem.id;
+            newItem.dataset.korName = this.selectedItem.korName;
             newItem.dataset.weight = this.selectedItem.weight;
             newItem.dataset.volume = this.selectedItem.volume;
             const itemWeight = this.selectedItem.weight;
@@ -262,12 +291,19 @@ class InventorySystem {
                 this.endGame();
             }
         }, 1000);
-        this.timerElement.addEventListener('click', () => this.endGame());
+        this.timerElement.addEventListener("click", () => {
+            const bagContents = getBagContents();
+            console.log("Current Bag Contents:", bagContents);
+        
+            // 추가적으로 데이터를 서버로 전송하거나 다른 로직을 수행할 수 있습니다.
+            this.endGame(); // 기존 종료 로직 호출
+        });
+        
     }
 
     endGame() {
         alert('시간이 종료되었습니다!');
-        window.location.href = 's7_sceneinfo.html';
+        //window.location.href = 's7_sceneinfo.html';
     }
 }
 
