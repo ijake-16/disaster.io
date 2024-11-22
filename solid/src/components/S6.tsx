@@ -1,5 +1,5 @@
-import { Component, createSignal, createEffect, onMount } from "solid-js";
-import * as XLSX from 'xlsx';
+import { Component, createSignal, onMount } from "solid-js";
+import * as XLSX from "xlsx";
 
 interface Item {
   id: number;
@@ -12,52 +12,51 @@ interface Item {
 }
 
 const S6: Component = () => {
-  // 상태 관리
   const [items, setItems] = createSignal<Item[]>([]);
-  const [teamName, setTeamName] = createSignal("Team Name");
+  const [teamName] = createSignal("Team Name");
   const [timer, setTimer] = createSignal(150);
   const [currentWeight, setCurrentWeight] = createSignal(0);
   const [currentVolume, setCurrentVolume] = createSignal(0);
+  const [q, setQ] = createSignal<Item[]>([]); // Queue for bag items
   const [selectedItem, setSelectedItem] = createSignal<Item | null>(null);
-  const [quantity, setQuantity] = createSignal(1);
+  const [quantity, setQuantity] = createSignal(1); // Number of items to add
   const [showModal, setShowModal] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal("");
 
   const maxWeight = 100;
   const maxVolume = 100;
 
-  // Excel 파일에서 아이템 데이터 읽기
-  async function readItemsFromExcel() {
+  // Load items from Excel file
+  const readItemsFromExcel = async () => {
     try {
       const response = await fetch("Items.xlsx");
       const arrayBuffer = await response.arrayBuffer();
       const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: "array" });
-      
+
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
-      
-      const mappedItems = data.map((row: any, index) => ({
+      const data = XLSX.utils.sheet_to_json<Item>(worksheet);
+
+      const mappedItems = data.map((row, index) => ({
         id: index + 1,
-        korName: row['korName'] || '',
-        name: row['name'] || '',
-        weight: parseFloat(row['weight']) || 0,
-        volume: parseFloat(row['volume']) || 0,
-        description: row['description'] || '',
-        imgsource: `resource/${row['name']}.png`
+        korName: row.korName || "",
+        name: row.name || "",
+        weight: parseFloat(row.weight) || 0,
+        volume: parseFloat(row.volume) || 0,
+        description: row.description || "",
+        imgsource: `resource/${row.name}.png`,
       }));
 
       setItems(mappedItems);
     } catch (error) {
-      console.error('Error reading Excel file:', error);
-      setItems([]);
+      console.error("Error reading Excel file:", error);
     }
-  }
+  };
 
-  // 타이머 시작
+  // Timer logic
   const startTimer = () => {
     const interval = setInterval(() => {
-      setTimer(prev => {
+      setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
           endGame();
@@ -68,45 +67,59 @@ const S6: Component = () => {
     }, 1000);
   };
 
-  // 게임 종료
   const endGame = () => {
-    alert('시간이 종료되었습니다!');
-    window.location.href = 's7_sceneinfo.html';
+    alert("Time's up!");
   };
 
-  // 아이템 추가
+  // Add items to bag
   const addItemToBag = () => {
     const item = selectedItem();
     if (!item) return;
 
-    const totalWeight = item.weight * quantity();
-    const totalVolume = item.volume * quantity();
+    const totalWeight = currentWeight() + item.weight * quantity();
+    const totalVolume = currentVolume() + item.volume * quantity();
 
-    if (currentWeight() + totalWeight > maxWeight || 
-        currentVolume() + totalVolume > maxVolume) {
-      alert('가방의 용량이나 무게 제한을 초과합니다!');
+    if (totalWeight > maxWeight || totalVolume > maxVolume) {
+      alert("Bag capacity exceeded!");
       return;
     }
 
-    setCurrentWeight(prev => prev + totalWeight);
-    setCurrentVolume(prev => prev + totalVolume);
+    // Add the selected quantity of items to the queue
+    const newItems = Array(quantity()).fill(item);
+    setQ((prev) => [...prev, ...newItems]);
+    setCurrentWeight(totalWeight);
+    setCurrentVolume(totalVolume);
     setShowModal(false);
   };
 
-  // 아이템 클릭 시 모달 열기
-  const openItemModal = (item: Item) => {
-    setSelectedItem(item);
-    setQuantity(1);
-    setShowModal(true);
+  // Remove item from bag
+  const removeItemFromBag = (index: number) => {
+    const item = q()[index];
+    if (!item) return;
+
+    setQ((prev) => prev.filter((_, i) => i !== index)); // Remove item at the given index
+    setCurrentWeight((prev) => prev - item.weight);
+    setCurrentVolume((prev) => prev - item.volume);
   };
 
-  // 검색 기능
-  const handleSearch = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    setSearchTerm(target.value.toLowerCase());
+  // Generate bag contents summary
+  const getBagContents = () => {
+    const bagContents = { items: {}, totalWeight: currentWeight(), totalVolume: currentVolume() };
+
+    q().forEach((item) => {
+      const name = item.korName;
+      if (!bagContents.items[name]) {
+        bagContents.items[name] = 0;
+      }
+      bagContents.items[name] += 1;
+    });
+
+    console.log("Bag Contents:", bagContents);
   };
 
-  // 컴포넌트 마운트 시 초기화
+  // Filtered items based on search
+  const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
+
   onMount(() => {
     readItemsFromExcel();
     startTimer();
@@ -116,127 +129,95 @@ const S6: Component = () => {
     <div class="max-w-[1500px] mx-auto p-5 text-white">
       {/* Header */}
       <header class="flex justify-between items-center mb-5">
-        <div class="team-info">
-          <h1 class="text-2xl text-white">{teamName()}</h1>
+        <h1 class="text-2xl">{teamName()}</h1>
+          {/* Bag Summary Button */}
+        <div class="flex justify-center mt-4">
+          <button
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            onClick={getBagContents}
+          >
+            Log Bag Contents
+          </button>
         </div>
-        
-        <div class="timer">
-          <div class="w-[50px] h-[50px] bg-green-500 rounded-full flex items-center justify-center text-xl font-bold">
-            <span>{timer()}</span>
-          </div>
+        <div class="timer bg-green-500 w-12 h-12 rounded-full flex justify-center items-center text-xl font-bold">
+          {timer()}
         </div>
       </header>
 
       {/* Main Content */}
       <main class="grid grid-cols-[300px_1fr] gap-5">
         {/* Inventory Section */}
-        <section class="inventory-section">
-          <div class="mb-5">
-            <input 
-              type="text" 
-              placeholder="아이템 검색..." 
-              class="w-full p-2 border-none rounded bg-neutral-700 text-white"
-              onInput={handleSearch}
-            />
-          </div>
-
-          <div class="bg-neutral-800 rounded-lg p-4">
-            <div class="category">
-              <div class="grid grid-cols-3 gap-2.5">
-                {items().filter(item => item.korName.toLowerCase().includes(searchTerm())).map(item => (
-                  <div 
-                    class="item cursor-pointer" 
-                    onClick={() => openItemModal(item)}
-                  >
-                    <img src={item.imgsource} alt={item.korName} class="w-full h-auto" />
-                    <span class="item-info">{item.weight}kg</span>
-                  </div>
-                ))}
+        <section>
+          <input
+            type="text"
+            placeholder="Search items..."
+            class="w-full p-2 rounded bg-neutral-700"
+            onInput={(e) => setSearchTerm((e.target as HTMLInputElement).value.toLowerCase())}
+          />
+          <div class="grid grid-cols-3 gap-2 mt-4">
+            {filteredItems().map((item) => (
+              <div
+                class="item bg-neutral-800 p-2 rounded cursor-pointer"
+                onClick={() => {
+                  setSelectedItem(item);
+                  setQuantity(1);
+                  setShowModal(true);
+                }}
+              >
+                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <span>{item.korName}</span>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 
         {/* Bag Section */}
-        <section class="bg-neutral-800 rounded-lg p-4 h-fit min-w-[800px]">
-          <div class="mb-5">
-            <div class="space-y-2.5">
-              {/* Weight Bar */}
-              <div>
-                <div>무게</div>
-                <div class="h-5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500" style={{ width: `${(currentWeight() / maxWeight) * 100}%` }}></div>
-                </div>
-                <span>{currentWeight()}/{maxWeight}</span>
+        <section class="bg-neutral-700 rounded-lg p-4">
+          <div>Weight: {currentWeight()} / {maxWeight}</div>
+          <div>Volume: {currentVolume()} / {maxVolume}</div>
+          <div class="grid grid-cols-8 gap-2 mt-4">
+            {q().map((item, index) => (
+              <div class="item bg-neutral-800 p-2 rounded flex flex-col items-center relative">
+                <button
+                  class="absolute top-1 right-1 text-red-500"
+                  onClick={() => removeItemFromBag(index)}
+                >
+                  ×
+                </button>
+                <img src={item.imgsource} alt={item.korName} class="w-16 h-16" />
+                <span>{item.korName}</span>
               </div>
-
-              {/* Volume Bar */}
-              <div>
-                <div>부피</div>
-                <div class="h-5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500" style={{ width: `${(currentVolume() / maxVolume) * 100}%` }}></div>
-                </div>
-                <span>{currentVolume()}/{maxVolume}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bag Grid */}
-          <div class="bg-neutral-700 rounded w-full h-[400px] grid grid-cols-[repeat(8,100px)] gap-[1.25%] p-[2.5%] overflow-auto">
-            {/* Bag items will be added here */}
+            ))}
           </div>
         </section>
       </main>
 
+
+
       {/* Modal */}
       {showModal() && (
-        <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div class="bg-neutral-800 p-5 rounded-lg w-[90%] max-w-[400px]">
-            <div class="text-right cursor-pointer" onClick={() => setShowModal(false)}>×</div>
-
-            <div class="text-center mb-5">
-              <img src={selectedItem()?.imgsource} alt="item" class="w-20 h-20 mx-auto mb-2.5" />
-              <h3 class="text-green-500">{selectedItem()?.korName}</h3>
-            </div>
-
-            <table class="mb-5 w-full">
-              <tbody>
-                <tr>
-                  <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">무게:</td>
-                  <td class="p-1.5">{selectedItem()?.weight}kg</td>
-                </tr>
-                <tr>
-                  <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">부피:</td>
-                  <td class="p-1.5">{selectedItem()?.volume}㎥</td>
-                </tr>
-                <tr>
-                  <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">상세정보:</td>
-                  <td class="p-1.5 break-words">{selectedItem()?.description}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="mb-5">
-              수량:
-              <div class="flex items-center gap-2.5 mt-1.5">
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="10" 
+        <div class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center">
+          <div class="bg-neutral-800 p-5 rounded">
+            <button class="text-right" onClick={() => setShowModal(false)}>×</button>
+            <div class="text-center">
+              <img src={selectedItem()?.imgsource} alt="" class="w-24 h-24" />
+              <h3>{selectedItem()?.korName}</h3>
+              <div>Weight: {selectedItem()?.weight}kg</div>
+              <div>Volume: {selectedItem()?.volume}m³</div>
+              <div class="flex items-center gap-4 mt-4">
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
                   value={quantity()}
-                  class="flex-grow h-1 bg-neutral-700 rounded appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:cursor-pointer"
                   onInput={(e) => setQuantity(parseInt((e.target as HTMLInputElement).value))}
                 />
-                <span class="min-w-[30px] text-center">{quantity()}</span>
+                <span>{quantity()}</span>
               </div>
+              <button onClick={addItemToBag} class="mt-4 bg-green-500 px-4 py-2 rounded text-white">
+                Add to Bag
+              </button>
             </div>
-
-            <button 
-              class="w-full py-3 bg-green-500 rounded text-white font-bold hover:bg-green-600 transition-colors"
-              onClick={addItemToBag}
-            >
-              가방에 넣기
-            </button>
           </div>
         </div>
       )}
