@@ -30,6 +30,7 @@ const S6: Component = () => {
   const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
   const teamName = location.state?.teamName || "UNKNOWN_TEAM";
   const selectedBag = location.state?.selectedBag || {
+    id: 1,
     weightLimit: 10,
     volumeLimit: 10,
     bagWeight: 0,
@@ -119,18 +120,24 @@ const S6: Component = () => {
     const bagContents = { items: {}, totalWeight: currentWeight(), totalVolume: currentVolume() };
   
     q().forEach((item) => {
-      const name = item.korName;
+      const name = item.name;
       if (!bagContents.items[name]) {
         bagContents.items[name] = 0;
       }
       bagContents.items[name] += 1;
     });
-  
+    const flattenedBagContents = {
+      ...bagContents.items, // Flatten the items dictionary
+      totalWeight: bagContents.totalWeight,
+      totalVolume: bagContents.totalVolume,
+      bagID: selectedBag.id,
+    };
     try {
       // Make API call to submit bag contents
+      
       console.log(bagContents.items)
       const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
-        json: bagContents.items,
+        json: flattenedBagContents,
       }).json();
   
       console.log("API Response:", response);
@@ -145,6 +152,7 @@ const S6: Component = () => {
           bagContents: bagContents,
         },
       });
+      return;
     } catch (error) {
       console.error("Error submitting bag contents:", error);
       alert("Failed to submit bag contents. Please try again.");
