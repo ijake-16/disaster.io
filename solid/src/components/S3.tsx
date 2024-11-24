@@ -71,20 +71,20 @@ const S3: Component = () => {
           class="h-24 w-auto"
         />
       </div>
-        <div class="text-base text-amber-500 mb-2.5">{roomCode}</div>
+        <div class="text-base text-amber-500 mb-2.5 font-sans">{roomCode}</div>
 
-        <div class="text-sm text-gray-400 mb-5">입장 대기 중 ...</div>
+        <div class="text-sm text-gray-400 mb-5 font-sans">입장 대기 중 ...</div>
 
-        <div class="bg-amber-500 text-black p-2.5 rounded font-bold mb-4">
+        <div class="bg-amber-500 text-black p-2.5 rounded font-bold mb-4 font-sans">
           YOU : {currentTeamName}
         </div>
 
         {errorMessage() ? (
-          <div class="text-red-500">{errorMessage()}</div>
+          <div class="text-red-500 font-sans">{errorMessage()}</div>
         ) : (
           <For each={teamNames()}>
             {(team) => (
-              <button class="w-full bg-white text-black py-2.5 px-0 my-1 rounded text-base hover:bg-gray-100 transition-colors">
+              <button class="w-full bg-white text-black py-2.5 px-0 my-1 rounded text-base hover:bg-gray-100 transition-colors font-sans">
                 {team}
               </button>
             )}
@@ -92,7 +92,7 @@ const S3: Component = () => {
         )}
 
         <button
-          class="bg-amber-300 text-black py-2.5 px-5 mt-5 rounded text-lg"
+          class="bg-amber-300 text-black py-2.5 px-5 mt-5 rounded text-lg font-sans"
         >
           호스트가 게임을 시작할 때까지 기다려주세요.
         </button>

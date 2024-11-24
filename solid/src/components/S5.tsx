@@ -88,7 +88,7 @@ const BagSelect: Component = () => {
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white font-sans">
       <div class="container text-center">
         <div class="mb-8">
-          <p class="text-base text-amber-500">Room : {roomCode}</p>
+          <p class="text-base text-amber-500 font-sans">Room : {roomCode}</p>
           <div class="flex justify-center items-center mb-6">
             <img
               src="resource/logo.png"
@@ -96,8 +96,8 @@ const BagSelect: Component = () => {
               class="h-24 w-auto"
             />
           </div>
-          <h2 class="text-2xl mb-4">생존 물품을 담을 가방을 선택해 주세요.</h2>
-          <p class="text-amber-500">YOU : {currentTeamName}</p>
+          <h2 class="text-2xl mb-4 font-sans">생존 물품을 담을 가방을 선택해 주세요.</h2>
+          <p class="text-amber-500 font-sans">YOU : {currentTeamName}</p>
         </div>
 
         <div class="flex justify-center gap-5 pt-5">
@@ -109,11 +109,11 @@ const BagSelect: Component = () => {
               }`}
             >
               <img src={bag.image} alt={bag.alt} class="w-full mb-3" />
-              <div class="text-left">
-                <p class="mb-1">무게 한도 : {bag.weightLimit}kg</p>
-                <p class="mb-1">부피 한도 : {bag.volumeLimit}L</p>
-                <p class="mb-1">가방 무게 : {bag.bagWeight}kg</p>
-                <p class="text-gray-300">{bag.description}</p>
+              <div class="text-left font-sans">
+                <p class="mb-1 font-sans">무게 한도 : {bag.weightLimit}kg</p>
+                <p class="mb-1 font-sans">부피 한도 : {bag.volumeLimit}L</p>
+                <p class="mb-1 font-sans">가방 무게 : {bag.bagWeight}kg</p>
+                <p class="text-gray-300 font-sans">{bag.description}</p>
               </div>
             </div>
           ))}
@@ -121,7 +121,7 @@ const BagSelect: Component = () => {
 
         <button
           onClick={handleContinue}
-          class="mt-5 px-5 py-2.5 bg-amber-500 text-black rounded cursor-pointer hover:bg-amber-600 transition-colors"
+          class="mt-5 px-5 py-2.5 bg-amber-500 text-black rounded cursor-pointer hover:bg-amber-600 transition-colors font-sans"
         >
           생존 가방 싸기
         </button>

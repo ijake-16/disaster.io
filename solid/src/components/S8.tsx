@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 
 const SimulInfo: Component = () => {
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center pt-5">
+    <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center pt-5 font-sans">
       <div class="text-center">
         <div class="flex justify-center items-center mb-6">
           <img

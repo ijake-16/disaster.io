@@ -173,20 +173,11 @@ const S6: Component = () => {
   });
 
   return (
-    <div class="max-w-[1500px] mx-auto p-5 text-white">
+    <div class="max-w-[1500px] mx-auto p-5 text-white bg-neutral-950 font-sans">
       {/* Header */}
       <header class="flex justify-between items-center mb-5">
         <h1 class="text-2xl">{teamName()}</h1>
-          {/* Bag Summary Button */}
-        <div class="flex justify-center mt-4">
-          <button
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-            onClick={getBagContents}
-          >
-            Log Bag Contents
-          </button>
-        </div>
-        <div class="timer bg-green-500 w-12 h-12 rounded-full flex justify-center items-center text-xl font-bold">
+        <div class="timer bg-green-500 w-12 h-12 rounded-full flex justify-center items-center text-xl font-sans">
           {timer()}
         </div>
       </header>
@@ -221,15 +212,15 @@ const S6: Component = () => {
         {/* Bag Section */}
         <section class="bg-neutral-700 rounded-lg p-4">
           <div class="flex gap-2">
-                <div>Weight: {currentWeight()} / {maxWeight}</div>
-                <div class="w-1/3 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
-                </div>
-                <div>Volume: {currentVolume()} / {maxVolume}</div>
-                <div class="w-1/3 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
-                </div>
-              </div>
+            <div>Weight: {currentWeight()} / {maxWeight}</div>
+            <div class="w-1/3 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+              <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
+            </div>
+            <div>Volume: {currentVolume()} / {maxVolume}</div>
+            <div class="w-1/3 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+              <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
+            </div>
+          </div>
           <div class="grid grid-cols-8 gap-2 mt-4">
             {q().map((item, index) => (
               <div class="item bg-neutral-800 p-2 rounded flex flex-col items-center relative">
@@ -247,12 +238,20 @@ const S6: Component = () => {
         </section>
       </main>
 
-
+      {/* Log Bag Contents Button */}
+      <div class="flex justify-center mt-4">
+        <button
+          class="mt-5 px-5 py-2.5 bg-amber-500 text-black rounded cursor-pointer hover:bg-amber-600 transition-colors font-sans"
+          onClick={getBagContents}
+        >
+          가방 제출하기
+        </button>
+      </div>
 
       {/* Modal */}
       {showModal() && (
         <div class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center">
-          <div class="bg-neutral-800 p-5 rounded">
+          <div class="bg-neutral-800 p-5 rounded font-sans">
             <button class="text-right" onClick={() => setShowModal(false)}>×</button>
             <div class="text-center">
               <img src={selectedItem()?.imgsource} alt="" class="w-24 h-24" />
@@ -269,7 +268,7 @@ const S6: Component = () => {
                 />
                 <span>{quantity()}</span>
               </div>
-              <button onClick={addItemToBag} class="mt-4 bg-green-500 px-4 py-2 rounded text-white">
+              <button onClick={addItemToBag} class="mt-4 bg-green-500 px-4 py-2 rounded text-white font-sans">
                 Add to Bag
               </button>
             </div>

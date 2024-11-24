@@ -47,13 +47,13 @@ const S2 = () => {
           class="h-36 w-auto"
         />
       </div>
-        <div class="subtitle text-lg text-gray-400 mt-2 mb-8">
+        <div class="subtitle text-lg text-gray-400 mt-2 mb-8 font-sans">
           한국형 생존 대비 시뮬레이션
         </div>
 
         <div class="prompt text-lg mb-4">팀명을 정해주세요</div>
         <input
-          class="team-name bg-gray-200 text-black w-64 p-2 mx-auto rounded font-bold"
+          class="team-name bg-gray-200 text-black w-64 p-2 mx-auto rounded font-sans"
           placeholder="팀명을 입력하세요"
           value={teamName()}
           onInput={(e) => setTeamName(e.currentTarget.value)}
@@ -61,13 +61,13 @@ const S2 = () => {
         <div></div>
 
         <button
-          class="connect-button bg-yellow-500 text-black py-2 px-8 mt-5 rounded"
+          class="connect-button bg-yellow-500 text-black py-2 px-8 mt-5 rounded font-sans"
           onClick={handleConnect}
         >
           접속하기
         </button>
         {errorMessage() && (
-          <div class="text-red-500 mt-2">{errorMessage()}</div>
+          <div class="text-red-500 mt-2 font-sans">{errorMessage()}</div>
         )}
       </div>
     </div>

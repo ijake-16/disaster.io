@@ -38,23 +38,23 @@ const S1: Component = () => {
           class="h-36 w-auto"
         />
       </div>
-        <div class="subtitle text-lg text-gray-400 mt-2 mb-8">
+        <div class="subtitle text-lg text-gray-400 mt-2 mb-8 font-sans">
           한국형 생존 대비 시뮬레이션
         </div>
         <input
-          class="code-input bg-gray-200 text-black w-64 p-2 mx-auto rounded font-bold"
+          class="code-input bg-gray-200 text-black w-64 p-2 mx-auto rounded font-bold font-sans"
           placeholder="호스트에게 전달받은 코드 입력"
           value={roomCode()}
           onInput={(e) => setRoomCode(e.currentTarget.value)}
         />
         <button
-          class="main-button bg-yellow-500 text-black py-2 px-8 mt-5 rounded"
+          class="main-button bg-yellow-500 text-black py-2 px-8 mt-5 rounded font-sans"
           onClick={handleNext}
         >
           {'>'}
         </button>
         {errorMessage() && (
-          <div class="text-red-500 mt-2">{errorMessage()}</div>
+          <div class="text-red-500 mt-2 font-sans">{errorMessage()}</div>
         )}
       </div>
     </div>
