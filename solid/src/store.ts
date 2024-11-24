@@ -46,6 +46,7 @@ const initialResult: Result = {
   stress: Array(6).fill(0),
 };
 
-export const [team1Result, setTeam1Result] = createSignal<Result>(initialResult);
-export const [team2Result, setTeam2Result] = createSignal<Result>(initialResult);
+export const [team1Result, setTeam1Result] = createSignal<Result>({ ...initialResult });
+export const [team2Result, setTeam2Result] = createSignal<Result>({ ...initialResult });
+
 export { roomCode, updateRoomCode as setRoomCode }; 
