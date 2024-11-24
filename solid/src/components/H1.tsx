@@ -10,7 +10,7 @@ const H1Start: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex items-center justify-center">
+    <div class="min-h-screen bg-gray-800 text-white flex items-center justify-center font-sans">
       <div class="text-center">
       <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img

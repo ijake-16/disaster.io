@@ -8,7 +8,7 @@ const NoticeRoom: Component = () => {
   const currentRoomCode = roomCode(); // 배열 구조 분해 할당으로 방 코드 가져오기
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex justify-center items-center">
+    <div class="min-h-screen bg-gray-800 text-white flex justify-center items-center font-sans">
       <div class="flex flex-col justify-center items-center w-[90%] max-w-[600px] p-5 bg-gray-700 rounded-lg shadow-lg">
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img

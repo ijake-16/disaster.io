@@ -38,7 +38,7 @@ const H4PreInfo: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-900 text-white">
+    <div class="min-h-screen bg-gray-900 text-white font-sans">
       {/* Header Section */}
       <header class="p-5 text-center">
         <p class="text-gray-300">Room : {roomCode()}</p>

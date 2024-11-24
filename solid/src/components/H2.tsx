@@ -40,7 +40,7 @@ const RoomBuild: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex justify-center items-center gap-5 p-5">
+    <div class="min-h-screen bg-gray-800 text-white flex justify-center items-center gap-5 p-5 font-sans">
       {/* Left Panel */}
       <div class="flex flex-col gap-5 w-[350px] h-[90%] bg-gray-700 p-5 rounded-lg shrink-0">
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">

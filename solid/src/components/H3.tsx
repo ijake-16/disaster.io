@@ -35,7 +35,7 @@ const H3Waiting: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex items-center justify-center">
+    <div class="min-h-screen bg-gray-800 text-white flex items-center justify-center font-sans">
       <div class="w-[300px] bg-gray-700 rounded-lg p-5 shadow-lg">
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img

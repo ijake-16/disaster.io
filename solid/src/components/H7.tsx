@@ -141,7 +141,7 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
   const sanitizedTeamName = props.teamName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
 
   return (
-    <div class="bg-gray-200 border rounded-lg pt-4 pl-4 pr-6 mb-4">
+    <div class="bg-gray-200 border rounded-lg pt-4 pl-4 pr-6 mb-4 font-sans">
       <h2 class="text-xl font-bold">{props.teamName}</h2>
 
       <div class="flex items-center">

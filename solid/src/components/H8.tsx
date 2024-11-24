@@ -65,7 +65,7 @@ const H8: Component = () => {
   ];
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex flex-col">
+    <div class="min-h-screen bg-gray-800 text-white flex flex-col font-sans">
       <header class="bg-gray-900 py-4 px-5 shadow-lg">
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img

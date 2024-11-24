@@ -6,7 +6,7 @@ const SceneInfo: Component = () => {
   const navigate = useNavigate();
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center py-5">
+    <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center py-5 font-sans">
       {/* Header */}
       <div class="max-w-screen-xl mx-auto flex flex-col items-center">
         <img
