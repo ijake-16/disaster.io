@@ -35,22 +35,22 @@ const H3Waiting: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex items-center justify-center font-sans">
-      <div class="w-[300px] bg-gray-700 rounded-lg p-5 shadow-lg">
+    <div class="min-h-screen bg-neutral-950 text-white flex items-center justify-center font-sans">
+      <div class="flex flex-col items-center w-[300px] bg-gray-700 rounded-lg px-12 py-8 shadow-lg">
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
             alt="Disaster.io Logo"
-            class="h-32 w-auto mb-2"
+            class="h-32 w-auto mb-6"
           />
         </div>
         
-        <div class="text-xl text-orange-400 mb-2.5">
+        <div class="text-2xl text-center text-orange-400 mb-2.5">
           {currentRoomCode}
         </div>
         
-        <div class="text-sm text-gray-300 mb-5">
-          ({teams().length}/4) 입장 대기 중 ...
+        <div class="text-xl text-center text-gray-300 mb-5">
+          ({teams().length}/4) 입장 대기 중..
         </div>
 
         {teams().map((team) => (
@@ -61,9 +61,9 @@ const H3Waiting: Component = () => {
 
         <button 
           onClick={handleGameStart}
-          class="bg-orange-400 text-black py-2.5 px-5 mt-5 rounded text-lg cursor-pointer hover:bg-orange-500 transition-colors"
+          class="items-center bg-orange-400 text-black py-2.5 px-5 mt-5 rounded text-lg text-center cursor-pointer hover:bg-orange-500 transition-colors"
         >
-          게임시작하기
+          게임 시작하기
         </button>
       </div>
     </div>

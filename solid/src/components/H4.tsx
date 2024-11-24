@@ -38,15 +38,15 @@ const H4PreInfo: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-gray-900 text-white font-sans">
+    <div class="min-h-screen bg-neutral-950 text-white font-sans">
       {/* Header Section */}
       <header class="p-5 text-center">
-        <p class="text-gray-300">Room : {roomCode()}</p>
+        <p class="text-xl text-gray-300 mb-1">Room : {roomCode()}</p>
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
             alt="Disaster.io Logo"
-            class="h-32 w-auto mb-2"
+            class="h-32 w-auto mb-4"
           />
         </div>
         <h2 class="text-xl font-normal text-gray-300">

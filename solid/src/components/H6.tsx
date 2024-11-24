@@ -6,7 +6,7 @@ const SimulationInfo: Component = () => {
   const navigate = useNavigate();
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center pt-5 font-sans">
+    <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center pt-5 font-sans">
       {/* Header */}
       <div class="max-w-screen-xl mx-auto flex flex-col items-center">
         <img
@@ -14,7 +14,7 @@ const SimulationInfo: Component = () => {
           alt="Disaster.io Logo"
           class="h-32 w-auto mb-2"
         />
-        <h1 class="text-lg">시뮬레이션 설명</h1>
+        <h1 class="text-2xl mb-4">시뮬레이션 설명</h1>
       </div>
 
       {/* Content */}

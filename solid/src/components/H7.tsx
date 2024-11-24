@@ -111,7 +111,7 @@ const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number
     };
 
   return (
-    <div class="mb-2">
+    <div class="mb-2 font-sans">
       <div class="flex text-sm mb-1">
         <span>{`${props.label}: ${props.value}`}</span>
         {/* <span class="text-red-500">{`${props.value}`}</span> */}
@@ -156,7 +156,7 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
   const usedItem = result.used_item[props.index];
   console.log("result === success", eventResult === 'success');
   return (
-    <div class="bg-gray-200 border rounded-lg py-4 pl-4 pr-6 mb-4">
+    <div class="bg-gray-200 border rounded-lg py-4 pl-4 pr-6 mb-4 font-sans">
       <div class="flex justify-between items-center mb-2">
         <h2 class="text-xl font-bold">{props.teamName}</h2>
         
@@ -359,7 +359,7 @@ const SimulationResult: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-neutral-950 container mx-auto p-4">
+    <div class="min-h-screen bg-neutral-950 container mx-auto p-4 font-sans">
       {/* Header */}
       <div class="flex justify-center flex-col items-center mb-6">
         <img
