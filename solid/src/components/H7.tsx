@@ -1,4 +1,5 @@
 import { Component, createSignal, Show, onMount } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
 import { team1Result, team2Result} from "../store";
 import * as XLSX from "xlsx"; // Items.xlsx 처리를 위해 사용
 
@@ -37,12 +38,12 @@ interface Result {
 
 const csvData = `
 name,img_path,description,tag,require_item,success,failure
-hunger,../../resource/events/hunger.png,배가 고프다.,hunger,food,-10,
-thirst,../../resource/events/thirst.png,목이 마르다.,thirst,drink,-10,
+hunger,../../resource/events/hunger.png,배가 고프다.,hunger,food,-10,0
+thirst,../../resource/events/thirst.png,목이 마르다.,thirst,drink,-10,0
 information,../../resource/events/information.png,재난 정보가 있으면 더 수월하게 대처할 수 있겠지.,stress,info,-5,5
 floor_is_lava,../../resource/events/floor_is_lava.png,슬리퍼를 신고 나왔는데 길가에 잔해가 너무 많아.,stress,shoes,-10,10
-ouch,../../resource/events/ouch.png,가족 중 누군가가 다쳤어.,stress,medical,,15
-rainy,../../resource/events/rainy.png,비가 많이 오네.,stress,waterproof,,10
+ouch,../../resource/events/ouch.png,가족 중 누군가가 다쳤어.,stress,medical,0,15
+rainy,../../resource/events/rainy.png,비가 많이 오네.,stress,waterproof,0,10
 `.trim();
 
 // CSV 데이터를 파싱하고 정리하는 함수
@@ -104,15 +105,16 @@ const selectRandomEvents = (
 
 const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number; maxValue: number; id: any; }) => {
   const getBarColor = (value: number) => {
-    if (value <= 30) return 'bg-red-600';
+    if (value <= 30) return 'bg-green-600';
     if (value <= 60) return 'bg-yellow-600';
-    return 'bg-green-600';
+    return 'bg-red-600';
     };
 
   return (
     <div class="mb-2">
       <div class="flex text-sm mb-1">
         <span>{`${props.label}: ${props.value}`}</span>
+        {/* <span class="text-red-500">{`${props.value}`}</span> */}
       </div>
       <div class="w-full bg-gray-400 rounded-full h-2.5">
         <div 
@@ -141,6 +143,7 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
   
   // props 검증 (안전하게 디버깅)
   if (!result || props.index < 0 || props.index >= result.hunger.length) {
+    console.log("이게 왜이러지....");
     console.error("Invalid props for TeamBox:", props);
     return <div>Invalid TeamBox Data</div>;
   }
@@ -151,15 +154,16 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
   // 현재 이벤트의 결과 상태 표시
   const eventResult = result.event_result[props.index];
   const usedItem = result.used_item[props.index];
-  
+  console.log("result === success", eventResult === 'success');
   return (
-    <div class="bg-gray-200 border rounded-lg pt-4 pl-4 pr-6 mb-4">
+    <div class="bg-gray-200 border rounded-lg py-4 pl-4 pr-6 mb-4">
       <div class="flex justify-between items-center mb-2">
         <h2 class="text-xl font-bold">{props.teamName}</h2>
+        
         <div class={`mt-1 px-3 py-1 rounded-full text-sm ${
-          eventResult === "success" ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+          eventResult === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
         }`}>
-          {eventResult === "success" ? "성공" : "실패"}
+          {eventResult === 'success' ? "성공" : "실패"}
         </div>
       </div>
 
@@ -167,11 +171,11 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
         <div class="flex flex-col items-center mr-6">
           <img
             src={result.item_path[props.index] || "../../resource/none.png"}
-            alt={usedItem === "" ? "사용 아이템 없음" : usedItem}
-            class="h-20 w-20 object-contain mb-2"
+            alt={usedItem === "None" ? "사용 아이템 없음" : usedItem}
+            class="h-20 w-20 object-contain ml-2 mb-2"
           />
           <span class="text-sm text-gray-600">
-            {usedItem === "" ? "사용 아이템 없음" : `${usedItem} 사용`}
+            {usedItem === "None" ? "사용 아이템 없음" : `${usedItem} 사용`}
           </span>
         </div>
 
@@ -179,18 +183,21 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
           <StatusBar
             label="배고픔"
             value={result.hunger[props.index]}
+            // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
             maxValue={100}
             id={`hunger-bar-team-${sanitizedTeamName}`}
           />
           <StatusBar
             label="목마름"
             value={result.thirst[props.index]}
+            // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
             maxValue={100}
             id={`thirst-bar-team-${sanitizedTeamName}`}
           />
           <StatusBar
             label="스트레스"
             value={result.stress[props.index]}
+            // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
             maxValue={100}
             id={`stress-bar-team-${sanitizedTeamName}`}
           />
@@ -241,7 +248,7 @@ const updateTeamResult = (
   // 결과 업데이트
   teamResult.used_item[index] = (usedItem || "None");
   teamResult.item_path[index] = (
-    usedItem ? `../../resource/${usedItem}.png` : "/default-item.png"
+    usedItem ? `../../resource/${usedItem}.png` : ""
   );
   teamResult.event_result[index] = (success ? "success" : "failure");
   teamResult.required_item[index] = (event.require_item);
@@ -259,7 +266,7 @@ const updateTeamResult = (
     Math.max(0, Math.min(100, lastThirst + thirstChange + 10))
   );
   teamResult.stress[index] = (
-    Math.max(0, Math.min(100, lastStress + stressChange + 10))
+    Math.max(0, Math.min(100, lastStress + stressChange + 5))
   );
   console.log("last status:", lastHunger, lastThirst, lastStress);
   console.log("status change: ", hungerChange, thirstChange, stressChange);
@@ -267,6 +274,7 @@ const updateTeamResult = (
 };
 
 const SimulationResult: Component = () => {
+  const navigate = useNavigate();
   const [selectedEvents, setSelectedEvents] = createSignal<EventData[]>([]);
   const [currentEventIndex, setCurrentEventIndex] = createSignal(0);
   const maxEventIndex = 5;
@@ -287,6 +295,7 @@ const SimulationResult: Component = () => {
   
     // 자동으로 모든 이벤트를 순차적으로 처리
     processAllEvents();
+    setCurrentEventIndex(0);
   });
   
   const processAllEvents = () => {
@@ -308,12 +317,14 @@ const SimulationResult: Component = () => {
   
         updateTeamResult(currentIndex, team1Result(), currentEvent, team1MatchedItems, team1Inventory());
         updateTeamResult(currentIndex, team2Result(), currentEvent, team2MatchedItems, team2Inventory());
+        
+        console.log("updated result: ", team1Result());
 
         currentIndex++;
         setCurrentEventIndex(currentIndex);
   
         // 다음 이벤트 처리 (약간의 딜레이 추가로 비동기 실행 느낌 제공)
-        // setTimeout(processEvent, 10); // 10ms 딜레이 후 다음 이벤트로 이동
+        setTimeout(processEvent, 10); // 10ms 딜레이 후 다음 이벤트로 이동
       }
     };
   
@@ -347,24 +358,8 @@ const SimulationResult: Component = () => {
     setSelectedEvents(randomEvents);
   };
 
-  const handleNextEvent = () => {
-    const currentEvent = selectedEvents()[currentEventIndex()];
-    const requiredItem = currentEvent.require_item;
-
-
-
-    const team1MatchedItems = checkInventory(currentEventIndex(), team1Inventory(), requiredItem, itemsData());
-    const team2MatchedItems = checkInventory(currentEventIndex(), team2Inventory(), requiredItem, itemsData());
-    console.log("team1MatchedItems: ", team1MatchedItems, "team2MatchedItems: ", team2MatchedItems)
-    // Update both teams' results with their respective inventories
-    updateTeamResult(currentEventIndex(), team1Result(), currentEvent, team1MatchedItems, team1Inventory());
-    updateTeamResult(currentEventIndex(), team2Result(), currentEvent, team2MatchedItems, team2Inventory());
-  
-    setCurrentEventIndex((prev) => (prev < maxEventIndex ? prev + 1 : prev));
-  };  
-
   return (
-    <div class="min-h-screen bg-gray-800 container mx-auto p-4">
+    <div class="min-h-screen bg-neutral-950 container mx-auto p-4">
       {/* Header */}
       <div class="flex justify-center flex-col items-center mb-6">
         <img
@@ -372,7 +367,7 @@ const SimulationResult: Component = () => {
           alt="Disaster.io Logo"
           class="h-16 w-auto"
         />
-        <div class="mt-4 text-center text-white text-lg">시뮬레이션 결과</div>
+        <div class="mt-4 text-center text-white text-2xl">시뮬레이션 결과</div>
       </div>
 
       {/* Event&Teams Section */}
@@ -425,13 +420,20 @@ const SimulationResult: Component = () => {
       <Show
         when={currentEventIndex() < maxEventIndex}
         fallback={
-          <div class="text-center text-gray-500 mt-12">마지막 이벤트입니다.</div>
+          <div class="text-center">
+            <button 
+              class="bg-amber-500 text-black px-10 py-2.5 text-lg rounded-lg font-bold mt-4 hover:bg-amber-600 transition"
+              onClick={() => navigate('/host/finalresult')}
+            >
+              최종 결과 확인
+            </button>
+          </div>
         }
       >
         <div class="text-center">
           <button 
             class="bg-amber-500 text-black px-10 py-2.5 text-lg rounded-lg font-bold mt-4 hover:bg-amber-600 transition"
-            onClick={handleNextEvent}
+            onClick={setCurrentEventIndex((prev) => (prev < maxEventIndex ? prev + 1 : prev))}
           >
             다음 이벤트
           </button>
