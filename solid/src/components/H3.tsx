@@ -1,5 +1,5 @@
 import { Component, createSignal, onMount } from 'solid-js';
-import { roomCode } from "../store";
+import { roomCode, setRoomCode } from "../store";
 import ky from "ky";
 
 const H3Waiting: Component = () => {
@@ -22,9 +22,15 @@ const H3Waiting: Component = () => {
     return () => clearInterval(interval);
   });
 
-  const handleGameStart = () => {
-    // Using router would be better in a real application
-    window.location.href = '/host/preinfo';
+  const handleGameStart = async () => {
+    try {
+      await ky.post(`http://localhost:8000/host/room/${currentRoomCode}/join_confirm`);
+      setRoomCode(currentRoomCode);
+      console.log("Room code set to:", currentRoomCode);
+      window.location.href = '/host/preinfo';
+    } catch (error) {
+      console.error("Failed to start game:", error);
+    }
   };
 
   return (

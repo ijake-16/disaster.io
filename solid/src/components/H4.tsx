@@ -1,6 +1,6 @@
 import { Component } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
 import { roomCode } from '../store';
+import ky from "ky";
 
 interface FamilyMember {
   role: string;
@@ -14,8 +14,6 @@ interface RegionInfo {
 }
 
 const H4PreInfo: Component = () => {
-  const navigate = useNavigate();
-  const currentRoomCode = roomCode();
   const familyMembers: FamilyMember[] = [
     { role: '아버지', age: 50, gender: '남성' },
     { role: '어머니', age: 45, gender: '여성' },
@@ -28,15 +26,21 @@ const H4PreInfo: Component = () => {
     characteristics: ['해안가', '기후 변동 적용', '남부 지방'],
   };
 
-  const handleContinue = () => {
-    navigate('/host/sceneinfo');
+  const handleContinue = async () => {
+    try {
+      console.log("Using room code:", roomCode());
+      await ky.post(`http://localhost:8000/host/room/${roomCode()}/game_info_confirm`);
+      window.location.href = '/sceneinfo'; 
+    } catch (error) {
+      console.error("Failed to confirm game info:", error);
+    }
   };
 
   return (
     <div class="min-h-screen bg-gray-900 text-white">
       {/* Header Section */}
       <header class="p-5 text-center">
-        <p class="text-gray-300">Room : {currentRoomCode}</p>
+        <p class="text-gray-300">Room : {roomCode()}</p>
         <h1 class="text-3xl my-2">Disaster.io</h1>
         <h2 class="text-xl font-normal text-gray-300">
           가족 정보와 지역 정보를 확인하세요. 재난에 대비하세요.
