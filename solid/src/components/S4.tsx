@@ -35,7 +35,13 @@ const WaitingScreen: Component = () => {
     <div class="flex flex-col justify-center items-center h-screen bg-neutral-950 text-white font-sans">
       <div class="text-center mb-8">
         <p class="text-base text-amber-500">Room : {roomCode}</p>
-        <h1 class="text-4xl mb-2">Disaster.io</h1>
+        <div class="flex justify-center items-center mb-6">
+        <img
+          src="resource/logo.png"
+          alt="Disaster.io Logo"
+          class="h-36 w-auto"
+        />
+      </div>
         <h2 class="text-2xl">호스트의 가족 정보와 지역 정보 안내를 듣고,</h2>
         <h2 class="text-2xl">재난에 대비하세요.</h2>
         <p class="text-amber-500 mt-5">YOU : {currentTeamName}</p>

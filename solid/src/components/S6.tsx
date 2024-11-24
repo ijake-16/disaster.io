@@ -16,7 +16,7 @@ interface Item {
 const S6: Component = () => {
   const [items, setItems] = createSignal<Item[]>([]);
 
-  const [timer, setTimer] = createSignal(150);
+  const [timer, setTimer] = createSignal(15);
   const [currentWeight, setCurrentWeight] = createSignal(0);
   const [currentVolume, setCurrentVolume] = createSignal(0);
   const [q, setQ] = createSignal<Item[]>([]); // Queue for bag items
@@ -38,7 +38,7 @@ const S6: Component = () => {
   };
   const maxWeight = 10 * selectedBag.weightLimit;
   const maxVolume = 10 * selectedBag.volumeLimit;
-
+  const [istime, setistime] = createSignal(true);
   // Load items from Excel file
   const readItemsFromExcel = async () => {
     try {
@@ -81,7 +81,10 @@ const S6: Component = () => {
   };
 
   const endGame = () => {
-    alert("Time's up!");
+    if (istime == true){
+      alert("Time's up!");
+      setistime(false);
+    }
   };
 
   // Add items to bag
@@ -142,7 +145,7 @@ const S6: Component = () => {
   
       console.log("API Response:", response);
       alert(response.message || "Bag contents submitted successfully!");
-  
+      setistime(false);
       // Navigate to the next scene
       navigate("/sceneinfo", {
         state: {
@@ -218,10 +221,12 @@ const S6: Component = () => {
         {/* Bag Section */}
         <section class="bg-neutral-700 rounded-lg p-4">
           <div class="flex gap-2">
-                <div class="w-1/2 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+                <div>Weight: {currentWeight()} / {maxWeight}</div>
+                <div class="w-1/3 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
                   <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
                 </div>
-                <div class="w-1/2 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+                <div>Volume: {currentVolume()} / {maxVolume}</div>
+                <div class="w-1/3 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
                   <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
                 </div>
               </div>
