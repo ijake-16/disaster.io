@@ -7,9 +7,26 @@ const config: Config = {
   ],
   darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['NeoDunggeunmo', 'sans-serif'],
+        serif: ['NeoDunggeunmo', 'serif'],
+        mono: ['NeoDunggeunmo', 'monospace'],
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    function({ addBase }) {
+      addBase({
+        '@font-face': {
+          fontFamily: 'NeoDunggeunmo',
+          src: 'url("/resource/neodgm.woff") format("woff")',
+          fontWeight: 'normal',
+          fontStyle: 'normal'
+        }
+      });
+    }
+  ],
 };
 
 export default config;
