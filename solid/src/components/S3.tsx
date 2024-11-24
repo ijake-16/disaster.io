@@ -64,8 +64,13 @@ const S3: Component = () => {
   return (
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white">
       <div class="w-[300px] bg-neutral-800 rounded-lg p-5 shadow-lg">
-        <h1 class="font-sans text-2xl mb-0">Disaster.io</h1>
-
+      <div class="flex justify-center items-center mb-6">
+        <img
+          src="resource/logo.png"
+          alt="Disaster.io Logo"
+          class="h-24 w-auto"
+        />
+      </div>
         <div class="text-base text-amber-500 mb-2.5">{roomCode}</div>
 
         <div class="text-sm text-gray-400 mb-5">입장 대기 중 ...</div>
