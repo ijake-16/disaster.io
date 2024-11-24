@@ -31,24 +31,24 @@ const S1: Component = () => {
   return (
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white">
       <div class="container text-center">
-      <div class="flex justify-center items-center mb-6">
+      <div class="flex justify-center items-center mb-4">
         <img
           src="resource/logo.png"
           alt="Disaster.io Logo"
           class="h-36 w-auto"
         />
       </div>
-        <div class="subtitle text-lg text-gray-400 mt-2 mb-8 font-sans">
+        <div class="subtitle text-xl text-center text-gray-200 mt-2 mb-6 font-sans">
           한국형 생존 대비 시뮬레이션
         </div>
         <input
-          class="code-input bg-gray-200 text-black w-64 p-2 mx-auto rounded font-bold font-sans"
+          class="code-input bg-gray-200 text-black w-64 p-2.5 mx-auto rounded font-bold font-sans"
           placeholder="호스트에게 전달받은 코드 입력"
           value={roomCode()}
           onInput={(e) => setRoomCode(e.currentTarget.value)}
         />
         <button
-          class="main-button bg-yellow-500 text-black py-2 px-8 mt-5 rounded font-sans"
+          class="main-button bg-orange-500 text-black py-2.5 px-10 mt-5 rounded font-bold hover:bg-orange-600 transition-colors font-sans"
           onClick={handleNext}
         >
           {'>'}

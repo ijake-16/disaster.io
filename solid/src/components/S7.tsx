@@ -121,33 +121,33 @@ const S7: Component = () => {
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white font-sans">
       <div class="container max-w-4xl mx-auto px-4">
         <div class="text-center mb-8">
-          <p class="text-lg mb-2">게임 진행 완료</p>
+          <p class="text-xl text-gray-200 mb-2">게임 진행 완료</p>
           <div class="flex justify-center items-center mb-6">
             <img
               src="resource/logo.png"
               alt="Disaster.io Logo"
-              class="h-24 w-auto"
+              class="h-32 w-auto"
             />
           </div>
-          <div class="text-xl text-gray-400">GAME PLAY TIME OUT</div>
+          <div class="text-xl text-gray-300">GAME PLAY TIME OUT</div>
         </div>
 
-        <div class="flex justify-center gap-5 bg-neutral-800 p-5 rounded-lg mb-8">
+        <div class="flex justify-center gap-5 bg-gray-800 p-5 rounded-lg mb-8">
           {teams().map((team) => (
             <div class="w-1/2 bg-gray-100 text-black p-4 rounded-lg">
               <h3 class="text-lg font-bold mb-4">{team.name} 팀 현황</h3>
 
-              <div class="grid grid-cols-4 gap-2 bg-neutral-800 p-2 rounded-lg mb-4">
+              <div class="grid grid-cols-4 gap-2 bg-gray-800 p-2 rounded-lg mb-4">
                 {team.items.map((item) => (
-                  <div class="relative bg-neutral-700 p-2 flex items-center justify-center">
+                  <div class="relative bg-gray-700 p-2 flex items-center justify-center">
                     <img src={item.image} alt="Item" class="w-10 h-10" />
-                    <div class="absolute bottom-1 right-1 bg-amber-500 text-black px-1.5 rounded text-sm font-bold">
+                    <div class="absolute bottom-1 right-1 bg-orange-500 text-black px-1.5 rounded text-sm font-bold">
                       {item.count}
                     </div>
                   </div>
                 ))}
-                <div class="bg-neutral-700 p-2"></div>
-                <div class="bg-neutral-700 p-2"></div>
+                <div class="bg-gray-700 p-2"></div>
+                <div class="bg-gray-700 p-2"></div>
               </div>
 
               <div class="flex justify-center mb-4">
@@ -155,10 +155,10 @@ const S7: Component = () => {
               </div>
 
               <div class="flex gap-2">
-                <div class="w-1/2 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+                <div class="w-1/2 h-2.5 bg-gray-700 rounded-full overflow-hidden">
                   <div class="h-full bg-green-500" style={`width: ${team.volumePercent}%`}></div>
                 </div>
-                <div class="w-1/2 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+                <div class="w-1/2 h-2.5 bg-gray-700 rounded-full overflow-hidden">
                   <div class="h-full bg-green-500" style={`width: ${team.weightPercent}%`}></div>
                 </div>
               </div>
@@ -169,7 +169,7 @@ const S7: Component = () => {
         <div class="text-center">
           <button
             onClick={handleContinue}
-            class="bg-amber-500 text-black px-10 py-2.5 rounded text-lg font-bold hover:bg-amber-600 transition-colors"
+            class="bg-orange-500 text-black px-10 py-2.5 rounded text-lg font-bold hover:bg-orange-600 transition-colors"
           >
             시뮬레이션 준비 완료
           </button>

@@ -62,20 +62,20 @@ const S3: Component = () => {
   });
 
   return (
-    <div class="flex justify-center items-center h-screen bg-neutral-950 text-white">
-      <div class="w-[300px] bg-neutral-800 rounded-lg p-5 shadow-lg">
+    <div class="flex justify-center text-center items-center h-screen bg-neutral-950 text-white">
+      <div class="w-auto rounded-lg p-8 shadow-lg">
       <div class="flex justify-center items-center mb-6">
         <img
           src="resource/logo.png"
           alt="Disaster.io Logo"
-          class="h-24 w-auto"
+          class="h-36 w-auto"
         />
       </div>
-        <div class="text-base text-amber-500 mb-2.5 font-sans">{roomCode}</div>
+        <div class="text-base text-orange-500 mb-2.5 font-sans">{roomCode}</div>
 
-        <div class="text-sm text-gray-400 mb-5 font-sans">입장 대기 중 ...</div>
+        <div class="text-base text-gray-400 mb-5 font-sans">입장 대기 중 ...</div>
 
-        <div class="bg-amber-500 text-black p-2.5 rounded font-bold mb-4 font-sans">
+        <div class="w-full bg-orange-500 text-black p-2.5 rounded font-bold mb-4 font-sans">
           YOU : {currentTeamName}
         </div>
 
@@ -84,7 +84,7 @@ const S3: Component = () => {
         ) : (
           <For each={teamNames()}>
             {(team) => (
-              <button class="w-full bg-white text-black py-2.5 px-0 my-1 rounded text-base hover:bg-gray-100 transition-colors font-sans">
+              <button class="w-full bg-gray-200 text-black py-2.5 px-0 my-1 rounded text-base hover:bg-gray-400 transition-colors font-sans">
                 {team}
               </button>
             )}
@@ -92,7 +92,7 @@ const S3: Component = () => {
         )}
 
         <button
-          class="bg-amber-300 text-black py-2.5 px-5 mt-5 rounded text-lg font-sans"
+          class="w-full bg-orange-800 text-black py-2.5 px-5 mt-5 rounded text-lg hover:bg-orange-900 transition-colors font-sans"
         >
           호스트가 게임을 시작할 때까지 기다려주세요.
         </button>

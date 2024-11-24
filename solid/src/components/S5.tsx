@@ -88,32 +88,32 @@ const BagSelect: Component = () => {
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white font-sans">
       <div class="container text-center">
         <div class="mb-8">
-          <p class="text-base text-amber-500 font-sans">Room : {roomCode}</p>
-          <div class="flex justify-center items-center mb-6">
+          <p class="text-lg text-orange-500 font-sans">Room : {roomCode}</p>
+          <div class="flex justify-center items-center mb-4">
             <img
-              src="resource/logo.png"
+              src="../../resource/logo_horizon.png"
               alt="Disaster.io Logo"
-              class="h-24 w-auto"
+              class="h-20 w-auto"
             />
           </div>
-          <h2 class="text-2xl mb-4 font-sans">생존 물품을 담을 가방을 선택해 주세요.</h2>
-          <p class="text-amber-500 font-sans">YOU : {currentTeamName}</p>
+          <h2 class="text-gray-200 text-2xl font-sans">생존 물품을 담을 가방을 선택해 주세요.</h2>
+          <p class="text-orange-500 text-xl font-sans">YOU : {currentTeamName}</p>
         </div>
 
-        <div class="flex justify-center gap-5 pt-5">
+        <div class="flex flex-row items-center justify-center gap-5 text-lg">
           {bagOptions.map((bag) => (
             <div
               onClick={() => handleBagSelect(bag.id)}
-              class={`cursor-pointer p-4 ${
+              class={`flex flex-col cursor-pointer px-4 pt-0 pb-6 ${
                 selectedBagId() === bag.id ? "ring-2 ring-white" : ""
               }`}
             >
-              <img src={bag.image} alt={bag.alt} class="w-full mb-3" />
-              <div class="text-left font-sans">
+              <img src={bag.image} alt={bag.alt} class="w-[80%] mb-5 mx-auto" />
+              <div class="text-gray-200 text-left font-sans">
                 <p class="mb-1 font-sans">무게 한도 : {bag.weightLimit}kg</p>
                 <p class="mb-1 font-sans">부피 한도 : {bag.volumeLimit}L</p>
                 <p class="mb-1 font-sans">가방 무게 : {bag.bagWeight}kg</p>
-                <p class="text-gray-300 font-sans">{bag.description}</p>
+                <p class="text-gray-200 font-sans">{bag.description}</p>
               </div>
             </div>
           ))}
@@ -121,7 +121,7 @@ const BagSelect: Component = () => {
 
         <button
           onClick={handleContinue}
-          class="mt-5 px-5 py-2.5 bg-amber-500 text-black rounded cursor-pointer hover:bg-amber-600 transition-colors font-sans"
+          class="mt-8 px-10 py-2.5 bg-orange-500 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-600 transition-colors font-sans"
         >
           생존 가방 싸기
         </button>

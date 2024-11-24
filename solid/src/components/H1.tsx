@@ -19,7 +19,7 @@ const H1Start: Component = () => {
             class="h-32 w-auto mb-2"
           />
         </div>
-        <div class="text-gray-200 text-xl mt-2.5 mb-7">
+        <div class="text-gray-200 text-xl mt-2.5 mb-8">
           한국형 생존 대비 시뮬레이션
         </div>
         <button

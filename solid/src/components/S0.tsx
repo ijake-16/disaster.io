@@ -23,26 +23,26 @@ const DisasterIO = () => {
   return (
     <div class="flex items-center justify-center h-screen bg-neutral-950 text-white">
       <div class="w-72 bg-gray-800 rounded-lg p-8 flex flex-col shadow-lg">
-        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+        <div class="flex flex-col items-center text-center">
           <img
             src={logoImage}
             alt="Disaster.io Logo"
-            class="h-32 w-auto mb-2"
+            class="h-36 w-auto mb-2"
           />
         </div>
-        <div class="text-gray-400 text-sm mb-6 font-sans">한국형 생존 대비 시뮬레이션</div>
+        <div class="text-gray-200 text-xl text-center mb-6 font-sans">한국형 생존 대비 시뮬레이션</div>
         
         <button
-          class={`w-full py-2 mb-2 text-black rounded-lg ${
-            activeButton() === 'h1' ? 'bg-gray-400' : 'bg-white'
+          class={`w-full py-2.5 mb-2 text-black font-bold text-black rounded-lg ${
+            activeButton() === 'h1' ? 'bg-gray-400' : 'bg-gray-200'
           } font-sans`}
           onClick={() => handleSetDestination('h1', 'h1')}
         >
         호스트
         </button>   
         <button
-          class={`w-full py-2 mb-2 text-black rounded-lg ${
-            activeButton() === 's1' ? 'bg-gray-400' : 'bg-white'
+          class={`w-full py-2.5 mb-2 text-black font-bold text-black rounded-lg ${
+            activeButton() === 's1' ? 'bg-gray-400' : 'bg-gray-200'
           } font-sans`}
           onClick={() => handleSetDestination('s1', 's1')}
         >
@@ -50,7 +50,7 @@ const DisasterIO = () => {
         </button>
         
         <button
-          class="bg-yellow-500 text-black py-2 mt-4 rounded-lg text-lg font-sans"
+          class="bg-orange-500 text-black text-xl font-bold py-2.5 mt-4 rounded-lg text-lg font-sans hover:bg-orange-600 transition-colors"
           onClick={handleNavigate}
         >
         선택

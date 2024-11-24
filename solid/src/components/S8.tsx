@@ -15,16 +15,16 @@ const SimulInfo: Component = () => {
   });
 
   return (
-    <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center pt-5 font-sans">
+    <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center pt-8 font-sans">
       <div class="text-center">
-        <div class="flex justify-center items-center mb-6">
+        <div class="flex justify-center items-center mb-4">
           <img
             src="resource/logo.png"
             alt="Disaster.io Logo"
-            class="h-24 w-auto"
+            class="h-32 w-auto"
           />
         </div>
-        <div class="text-2xl mb-8">재난 발생</div>
+        <div class="text-2xl text-gray-200 mb-8">재난 발생</div>
       </div>
 
 
