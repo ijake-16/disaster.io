@@ -1,5 +1,3 @@
-simul.js
-
 // CSV 데이터를 파싱하고 정리하는 함수
 function parseCSV(csvData) {
     const lines = csvData.trim().split("\n");
