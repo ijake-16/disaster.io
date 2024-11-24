@@ -111,8 +111,8 @@ const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number
     };
 
   return (
-    <div class="mb-2 font-sans">
-      <div class="flex text-base mb-1">
+    <div class="mb-1 font-sans">
+      <div class="flex text-base">
         <span>{`${props.label}: ${props.value}`}</span>
         {/* <span class="text-red-500">{`${props.value}`}</span> */}
       </div>
@@ -156,11 +156,11 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
   const usedItem = result.used_item[props.index];
   console.log("result === success", eventResult === 'success');
   return (
-    <div class="bg-gray-200 border rounded-lg py-4 pl-6 pr-8 mb-4 font-sans">
-      <div class="flex justify-between items-center mb-2">
+    <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+      <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold">{props.teamName}</h2>
         
-        <div class={`mt-1 px-3 py-1 rounded-full text-base ${
+        <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
           eventResult === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
         }`}>
           {eventResult === 'success' ? "성공" : "실패"}
@@ -361,26 +361,26 @@ const SimulationResult: Component = () => {
   return (
     <div class="min-h-screen bg-neutral-950 mx-auto p-4 font-sans">
       {/* Header */}
-      <div class="flex justify-center flex-col items-center mt-2 mb-4">
+      <div class="flex justify-center flex-col items-center mt-2">
         <img
           src="../../resource/logo_horizon.png"
           alt="Disaster.io Logo"
           class="h-16 w-auto"
         />
-        <div class="mt-4 text-center text-white text-2xl">시뮬레이션 결과</div>
+        <div class="mt-2 text-center text-white text-2xl mb-4">시뮬레이션 결과</div>
       </div>
 
       {/* Event&Teams Section */}
-      <div class="w-full flex gap-x-6 items-stretch">
+      <div class="w-[70%] flex mx-auto gap-x-6 items-stretch">
         {/* Event Section */}
-        <div class="w-[45%] flex-1 bg-gray-200 shadow-md rounded-lg py-4 px-6 mb-4 flex flex-col">
-          <h2 class="text-xl font-bold mb-4">{currentEventIndex() + 1}번째 이벤트 발생</h2>
+        <div class="w-[40%] flex-1 bg-gray-200 shadow-md rounded-lg pt-2 pb-4 px-4 mb-2 flex flex-col">
+          <h2 class="text-xl font-bold mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
           
           <div class="flex flex-col justify-center items-center">
             <img 
               src={selectedEvents()[currentEventIndex()]?.img_path || "../../resource/snacks.png"}
               alt="Action Icon" 
-              class="h-50 my-10" 
+              class="h-50 my-6" 
             />
             <p class="text-lg font-bold text-center">
               {selectedEvents()[currentEventIndex()]?.description || "이벤트를 로드 중..."}
@@ -389,7 +389,7 @@ const SimulationResult: Component = () => {
         </div>
 
         {/* Teams Section */}
-        <div class="w-[55%] flex flex-col gap-y-2">
+        <div class="w-[60%] flex flex-col gap-y-1">
           <TeamBox teamName={team1Result().team} index={currentEventIndex()}/> 
           <TeamBox teamName={team2Result().team} index={currentEventIndex()}/>
         </div>
@@ -397,7 +397,7 @@ const SimulationResult: Component = () => {
 
       {/* Interactive Timeline */}
       <div class="my-4 flex justify-center">
-        <div class="w-[99%] bg-gray-300 h-2 rounded-full relative flex items-center">
+        <div class="w-[68%] bg-gray-300 h-2 rounded-full relative flex mx-auto items-center">
           {[1, 2, 3, 4, 5, 6].map((index) => (
             <button 
               class={`

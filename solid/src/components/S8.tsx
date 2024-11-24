@@ -24,7 +24,7 @@ const SimulInfo: Component = () => {
             class="h-32 w-auto"
           />
         </div>
-        <div class="text-2xl text-gray-200 mb-8">재난 발생</div>
+        <div class="text-2xl text-gray-200 mb-4">재난 발생</div>
       </div>
 
 

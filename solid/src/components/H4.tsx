@@ -1,7 +1,7 @@
 import { Component } from 'solid-js';
 import { roomCode } from '../store';
 import ky from "ky";
-import logoImage from '../../resource/logo.png';
+import logoImage from '../../resource/logo_horizon.png';
 
 interface FamilyMember {
   role: string;
@@ -40,13 +40,13 @@ const H4PreInfo: Component = () => {
   return (
     <div class="min-h-screen bg-neutral-950 text-white font-sans">
       {/* Header Section */}
-      <header class="p-5 text-center">
-        <p class="text-xl text-gray-200 mb-1">Room : {roomCode()}</p>
+      <header class="p-4 text-center">
+        <p class="text-xl text-orange-500 mb-1">Room : {roomCode()}</p>
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
             alt="Disaster.io Logo"
-            class="h-32 w-auto mb-4"
+            class="h-16 w-auto mb-4"
           />
         </div>
         <h2 class="text-xl font-normal text-gray-200">
@@ -55,7 +55,7 @@ const H4PreInfo: Component = () => {
       </header>
 
       {/* Information Boxes */}
-      <div class="flex flex-col md:flex-row justify-center items-stretch gap-5 p-5">
+      <div class="flex flex-col md:flex-row justify-center items-stretch gap-4 p-5">
         {/* Family Info Box */}
         <div class="w-full md:w-64">
           <div class="bg-gray-200 rounded-lg p-5 h-full text-black">
@@ -99,7 +99,7 @@ const H4PreInfo: Component = () => {
       </div>
 
       {/* Continue Button */}
-      <div class="text-center mt-5 pb-8">
+      <div class="text-center mt-4 pb-8">
         <button
           onClick={handleContinue}
           class="bg-orange-400 text-black text-xl font-bold px-10 py-2.5 rounded-lg hover:bg-amber-600 transition-colors"

@@ -1,6 +1,6 @@
 import { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import logoImage from '../../resource/logo.png';
+import logoImage from '../../resource/logo_horizon.png';
 
 const SimulationInfo: Component = () => {
   const navigate = useNavigate();
@@ -12,19 +12,19 @@ const SimulationInfo: Component = () => {
         <img
           src={logoImage}
           alt="Disaster.io Logo"
-          class="h-32 w-auto mb-2"
+          class="h-16 w-auto mb-2"
         />
         <h1 class="text-2xl mb-4">시뮬레이션 설명</h1>
       </div>
 
       {/* Content */}
-      <div class="flex justify-center items-center gap-5 bg-gray-200 text-black p-5 rounded-lg max-w-3xl w-4/5 mb-5">
+      <div class="flex justify-center items-center bg-gray-800 text-gray-200 p-8 rounded-lg max-w-3xl w-4/5 mb-4">
         {/* Situation Section */}
         <div class="flex flex-col items-center">
           <img 
             src="../../resource/earthquake.png" 
             alt="Situation Icon" 
-            class="w-80 h-auto"
+            class="w-100 h-auto"
           />
           <p class="text-xl mt-2.5">
             Situation: 진도 7.0의 대지진
@@ -36,7 +36,7 @@ const SimulationInfo: Component = () => {
           <img 
             src="../../resource/earthquake.png" 
             alt="Goal Icon" 
-            class="w-80 h-auto"
+            class="w-100 h-auto"
           />
           <p class="text-xl mt-2.5">
             Goal: 무사히 대피소로 이동하기

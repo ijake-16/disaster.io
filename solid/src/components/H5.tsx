@@ -1,6 +1,6 @@
 import { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import logoImage from '../../resource/logo.png';
+import logoImage from '../../resource/logo_horizon.png';
 
 const SceneInfo: Component = () => {
   const navigate = useNavigate();
@@ -12,13 +12,13 @@ const SceneInfo: Component = () => {
         <img
           src={logoImage}
           alt="Disaster.io Logo"
-          class="h-32 w-auto mb-2"
+          class="h-16 w-auto mb-2"
         />
         <h1 class="text-2xl mb-4">게임 플레이</h1>
       </div>
 
       {/* Game Status Container */}
-      <div class="flex justify-center bg-gray-700 gap-5 w-4/5 max-w-[1100px] p-5 rounded-lg">
+      <div class="flex justify-center bg-gray-800 gap-5 w-4/5 max-w-[1100px] p-5 rounded-lg">
         {/* Team 1 Status */}
         <TeamStatus 
           teamName="정빈팀 팀 현황"
@@ -69,9 +69,9 @@ const TeamStatus: Component<TeamStatusProps> = (props) => {
       <h3 class="text-xl font-bold mb-3">{props.teamName}</h3>
       
       {/* Inventory Grid */}
-      <div class="grid grid-cols-4 gap-1 p-2 bg-gray-500 rounded-lg">
+      <div class="grid grid-cols-4 gap-1 p-2 bg-gray-700 rounded-lg">
         {props.items.map(item => (
-          <div class="bg-gray-400 p-2 relative flex items-center justify-center">
+          <div class="bg-gray-500 p-2 relative flex items-center justify-center">
             <img src={item.img} alt="Item" class="w-10 h-10" />
             <div class="absolute bottom-1 right-1 bg-orange-500 text-black px-1.5 rounded text-sm font-bold">
               {item.count}
@@ -80,7 +80,7 @@ const TeamStatus: Component<TeamStatusProps> = (props) => {
         ))}
         {/* Empty slots */}
         {[...Array(4 - props.items.length)].map(() => (
-          <div class="bg-gray-400 p-2" />
+          <div class="bg-gray-500 p-2" />
         ))}
       </div>
 

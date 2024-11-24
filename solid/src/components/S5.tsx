@@ -85,7 +85,7 @@ const BagSelect: Component = () => {
   
 
   return (
-    <div class="flex justify-center items-center h-screen bg-neutral-950 text-white font-sans">
+    <div class="flex justify-center items-center min-h-screen bg-neutral-950 text-white font-sans">
       <div class="container text-center">
         <div class="mb-8">
           <p class="text-lg text-orange-500 font-sans">Room : {roomCode}</p>
@@ -104,15 +104,15 @@ const BagSelect: Component = () => {
           {bagOptions.map((bag) => (
             <div
               onClick={() => handleBagSelect(bag.id)}
-              class={`flex flex-col cursor-pointer px-4 pt-0 pb-6 ${
+              class={`flex flex-col cursor-pointer px-4 pt-0 pb-4 ${
                 selectedBagId() === bag.id ? "ring-2 ring-white" : ""
               }`}
             >
-              <img src={bag.image} alt={bag.alt} class="w-[80%] mb-5 mx-auto" />
+              <img src={bag.image} alt={bag.alt} class="max-w-[200px] mb-3 mx-auto" />
               <div class="text-gray-200 text-left font-sans">
-                <p class="mb-1 font-sans">무게 한도 : {bag.weightLimit}kg</p>
-                <p class="mb-1 font-sans">부피 한도 : {bag.volumeLimit}L</p>
-                <p class="mb-1 font-sans">가방 무게 : {bag.bagWeight}kg</p>
+                <p class="mb font-sans">무게 한도 : {bag.weightLimit}kg</p>
+                <p class="mb font-sans">부피 한도 : {bag.volumeLimit}L</p>
+                <p class="mb font-sans">가방 무게 : {bag.bagWeight}kg</p>
                 <p class="text-gray-200 font-sans">{bag.description}</p>
               </div>
             </div>

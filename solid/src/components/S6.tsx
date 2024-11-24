@@ -218,13 +218,13 @@ const S6: Component = () => {
 
         {/* Bag Section */}
         <section class="bg-gray-700 rounded-lg p-4">
-          <div class="text-xl flex gap-2">
+          <div class="text-lg flex gap-4">
             <div>Weight: {currentWeight()} / {maxWeight}</div>
-            <div class="mt-1 w-1/3 h-3 mr-2 bg-gray-600 rounded-full overflow-hidden">
+            <div class="mt-1 w-[30%] ml-1 h-3 mr-2 bg-gray-600 rounded-full overflow-hidden">
               <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
             </div>
             <div>Volume: {currentVolume()} / {maxVolume}</div>
-            <div class="mt-1 w-1/3 h-3 bg-gray-600 rounded-full overflow-hidden">
+            <div class="mt-1 w-[30%] ml-1 h-3 bg-gray-600 rounded-full overflow-hidden">
               <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
             </div>
           </div>

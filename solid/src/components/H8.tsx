@@ -79,7 +79,7 @@ const H8: Component = () => {
 
       <main class="flex flex-1">
         {/* 랭킹 섹션 */}
-        <div class="w-[30%] bg-gray-500 p-5">
+        <div class="w-[30%] bg-gray-600 p-5">
           <h2 class="text-2xl text-center mb-4">팀 랭킹</h2>
           <div class="space-y-2">
             {['Team 1', 'Team 2'].map((team, index) => (
@@ -101,14 +101,14 @@ const H8: Component = () => {
         </div>
 
         {/* 상세 정보 섹션 */}
-        <div class="flex-1 bg-gray-700 p-5">
+        <div class="flex-1 bg-gray-800 p-5">
           {selectedTeam() ? (
             <>
               {/* 이벤트 상태 표시 */}
               <div class="max-w-3xl mx-auto mb-8 mt-4">
                 <div class="relative">
                   {/* 배경 선 */}
-                  <div class="absolute top-6 left-0 right-0 h-[2px] bg-gray-700 -z-10" />
+                  <div class="absolute top-6 left-0 right-0 h-[2px] bg-gray-800 -z-10" />
                   
                   <div class="flex justify-between mb-2">
                     {selectedTeam() && teamResults.find(r => r.team === selectedTeam())?.event_result.map((result, index) => (
@@ -128,11 +128,11 @@ const H8: Component = () => {
 
               {/* 이벤트 상세 정보 */}
               {selectedTeam() && selectedEvent() !== null && (
-                <div class="bg-gray-400 p-5 rounded-lg max-w-2xl mx-auto">
+                <div class="bg-gray-600 p-5 rounded-lg max-w-2xl mx-auto">
                   <h3 class="text-xl mb-4">이벤트 {selectedEvent()! + 1} 상세 정보</h3>
                   
                   {/* 스탯 바들 */}
-                  <div class="space-y-4 mb-8">
+                  <div class="space-y-4 mb-6">
                     {[
                       { 
                         label: '배고픔', 
@@ -169,12 +169,12 @@ const H8: Component = () => {
                         <p class="mb-1">
                           {stat.label}: {stat.value}
                           {stat.prevValue !== null && (
-                            <span class={`ml-2 ${stat.value > stat.prevValue ? 'text-red-500' : 'text-green-500'}`}>
+                            <span class={`ml-1 ${stat.value > stat.prevValue ? 'text-red-500' : 'text-green-500'}`}>
                               {stat.value > stat.prevValue ? '+' : ''}{stat.value - stat.prevValue}
                             </span>
                           )}
                         </p>
-                        <div class="w-full h-5 bg-gray-300 rounded-full overflow-hidden">
+                        <div class="w-full h-3 bg-gray-400 rounded-full overflow-hidden">
                           <div
                             class={`h-full rounded-full transform-gpu ${stat.getColor(stat.value)}`}
                             style={{
@@ -190,8 +190,8 @@ const H8: Component = () => {
                   </div>
 
                   {/* 필요 아이템 목록 */}
-                  <div class="mt-8">
-                    <h4 class="text-lg mb-3">필요했던 아이템:</h4>
+                  <div class="mt-4">
+                    <h4 class="text-lg mb-2">필요했던 아이템:</h4>
                     <div class="space-y-3">
                       {selectedTeam() && selectedEvent() !== null && 
                         teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!] ? (

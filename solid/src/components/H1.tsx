@@ -12,14 +12,14 @@ const H1Start: Component = () => {
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex items-center justify-center font-sans">
       <div class="text-center">
-      <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+      <div class="mx-auto flex flex-col items-center">
           <img
             src={logoImage}
             alt="Disaster.io Logo"
-            class="h-32 w-auto mb-2"
+            class="h-36 w-auto mb-2"
           />
         </div>
-        <div class="text-gray-200 text-xl mt-2.5 mb-8">
+        <div class="text-neutral-200 text-xl mt-2.5 mb-8">
           한국형 생존 대비 시뮬레이션
         </div>
         <button
