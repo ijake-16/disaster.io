@@ -41,7 +41,7 @@ const H4PreInfo: Component = () => {
     <div class="min-h-screen bg-neutral-950 text-white font-sans">
       {/* Header Section */}
       <header class="p-5 text-center">
-        <p class="text-xl text-gray-300 mb-1">Room : {roomCode()}</p>
+        <p class="text-xl text-gray-200 mb-1">Room : {roomCode()}</p>
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
@@ -49,7 +49,7 @@ const H4PreInfo: Component = () => {
             class="h-32 w-auto mb-4"
           />
         </div>
-        <h2 class="text-xl font-normal text-gray-300">
+        <h2 class="text-xl font-normal text-gray-200">
           가족 정보와 지역 정보를 확인하세요. 재난에 대비하세요.
         </h2>
       </header>
@@ -64,7 +64,7 @@ const H4PreInfo: Component = () => {
               alt="Family Icon" 
               class="w-full rounded-lg"
             />
-            <div class="mt-3 text-sm leading-relaxed">
+            <div class="mt-3 text-base leading-relaxed">
               <p>당신의 가족 구성원은 다음과 같습니다.</p>
               <div class="mt-2">
                 {familyMembers.map((member) => (
@@ -85,7 +85,7 @@ const H4PreInfo: Component = () => {
               alt="Region Icon" 
               class="w-full rounded-lg"
             />
-            <div class="mt-3 text-sm leading-relaxed">
+            <div class="mt-3 text-base leading-relaxed">
               <p>당신의 거주 지역은 다음과 같습니다.</p>
               <div class="mt-2">
                 <p>{regionInfo.type}</p>
@@ -102,7 +102,7 @@ const H4PreInfo: Component = () => {
       <div class="text-center mt-5 pb-8">
         <button
           onClick={handleContinue}
-          class="bg-amber-500 text-black px-10 py-2 rounded-lg text-lg hover:bg-amber-600 transition-colors"
+          class="bg-orange-400 text-black text-xl font-bold px-10 py-2.5 rounded-lg hover:bg-amber-600 transition-colors"
         >
           네, 생존할 준비가 되었습니다.
         </button>

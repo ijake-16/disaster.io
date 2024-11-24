@@ -8,7 +8,7 @@ const SimulationInfo: Component = () => {
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center pt-5 font-sans">
       {/* Header */}
-      <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+      <div class="max-w-screen-xl mx-auto mt-2 flex flex-col items-center">
         <img
           src={logoImage}
           alt="Disaster.io Logo"
@@ -18,15 +18,15 @@ const SimulationInfo: Component = () => {
       </div>
 
       {/* Content */}
-      <div class="flex justify-center items-center gap-8 bg-gray-200 text-black p-5 rounded-lg max-w-3xl w-4/5 mb-5">
+      <div class="flex justify-center items-center gap-5 bg-gray-200 text-black p-5 rounded-lg max-w-3xl w-4/5 mb-5">
         {/* Situation Section */}
         <div class="flex flex-col items-center">
           <img 
-            src="/resource/ebrush.png" 
+            src="../../resource/earthquake.png" 
             alt="Situation Icon" 
-            class="w-16 h-16"
+            class="w-80 h-auto"
           />
-          <p class="text-lg mt-2.5">
+          <p class="text-xl mt-2.5">
             Situation: 진도 7.0의 대지진
           </p>
         </div>
@@ -34,11 +34,11 @@ const SimulationInfo: Component = () => {
         {/* Goal Section */}
         <div class="flex flex-col items-center">
           <img 
-            src="/resource/snacks.png" 
+            src="../../resource/earthquake.png" 
             alt="Goal Icon" 
-            class="w-16 h-16"
+            class="w-80 h-auto"
           />
-          <p class="text-lg mt-2.5">
+          <p class="text-xl mt-2.5">
             Goal: 무사히 대피소로 이동하기
           </p>
         </div>
@@ -47,7 +47,7 @@ const SimulationInfo: Component = () => {
       {/* Start Button */}
       <button
         onClick={() => navigate('/host/simulresult')}
-        class="bg-amber-500 text-black px-10 py-2.5 text-lg rounded-lg font-bold mt-8 hover:bg-amber-600 transition-colors"
+        class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-amber-600 transition-colors"
       >
         시뮬레이션 시작!
       </button>

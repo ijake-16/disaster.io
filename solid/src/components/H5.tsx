@@ -8,7 +8,7 @@ const SceneInfo: Component = () => {
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center py-5 font-sans">
       {/* Header */}
-      <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+      <div class="max-w-screen-xl mx-auto mt-2 flex flex-col items-center">
         <img
           src={logoImage}
           alt="Disaster.io Logo"
@@ -18,7 +18,7 @@ const SceneInfo: Component = () => {
       </div>
 
       {/* Game Status Container */}
-      <div class="flex justify-center gap-5 w-4/5 max-w-[900px] bg-gray-700 p-5 rounded-lg">
+      <div class="flex justify-center bg-gray-700 gap-5 w-4/5 max-w-[1100px] p-5 rounded-lg">
         {/* Team 1 Status */}
         <TeamStatus 
           teamName="정빈팀 팀 현황"
@@ -46,7 +46,7 @@ const SceneInfo: Component = () => {
       <div class="mt-5">
         <button 
           onClick={() => navigate('/host/simulinfo')}
-          class="bg-orange-500 text-black px-10 py-2 text-lg font-bold rounded-md hover:bg-orange-600"
+          class="bg-orange-500 text-black px-10 py-2.5 text-xl font-bold rounded-md hover:bg-orange-600"
         >
           게임 완료
         </button>
@@ -65,13 +65,13 @@ interface TeamStatusProps {
 
 const TeamStatus: Component<TeamStatusProps> = (props) => {
   return (
-    <div class="bg-gray-100 text-black p-4 rounded-lg w-[45%]">
-      <h3 class="text-lg font-bold mb-3">{props.teamName}</h3>
+    <div class="bg-gray-200 text-black p-4 rounded-lg w-[50%]">
+      <h3 class="text-xl font-bold mb-3">{props.teamName}</h3>
       
       {/* Inventory Grid */}
-      <div class="grid grid-cols-4 gap-1 p-2 bg-gray-800 rounded-lg">
+      <div class="grid grid-cols-4 gap-1 p-2 bg-gray-500 rounded-lg">
         {props.items.map(item => (
-          <div class="bg-gray-600 p-2 relative flex items-center justify-center">
+          <div class="bg-gray-400 p-2 relative flex items-center justify-center">
             <img src={item.img} alt="Item" class="w-10 h-10" />
             <div class="absolute bottom-1 right-1 bg-orange-500 text-black px-1.5 rounded text-sm font-bold">
               {item.count}
@@ -80,7 +80,7 @@ const TeamStatus: Component<TeamStatusProps> = (props) => {
         ))}
         {/* Empty slots */}
         {[...Array(4 - props.items.length)].map(() => (
-          <div class="bg-gray-600 p-2" />
+          <div class="bg-gray-400 p-2" />
         ))}
       </div>
 
@@ -101,7 +101,7 @@ const TeamStatus: Component<TeamStatusProps> = (props) => {
 // StatusBar Component
 const StatusBar: Component<{ percent: number }> = (props) => {
   return (
-    <div class="w-[45%] h-2.5 bg-gray-600 rounded overflow-hidden">
+    <div class="w-[45%] h-3 bg-gray-500 rounded overflow-hidden mb-2">
       <div 
         class="h-full bg-green-500 transition-all duration-300"
         style={{ width: `${props.percent}%` }}

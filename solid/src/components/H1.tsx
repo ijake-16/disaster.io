@@ -19,12 +19,12 @@ const H1Start: Component = () => {
             class="h-32 w-auto mb-2"
           />
         </div>
-        <div class="text-gray-300 text-xl mt-2.5 mb-7">
+        <div class="text-gray-200 text-xl mt-2.5 mb-7">
           한국형 생존 대비 시뮬레이션
         </div>
         <button
           onClick={handleNext}
-          class="bg-orange-500 text-black px-5 py-1.5 rounded text-lg cursor-pointer hover:bg-orange-400 transition-colors"
+          class="bg-orange-500 text-black px-5 py-1.5 rounded text-lg cursor-pointer hover:bg-orange-600 transition-colors"
         >
           -&gt;
         </button>

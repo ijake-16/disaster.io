@@ -112,7 +112,7 @@ const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number
 
   return (
     <div class="mb-2 font-sans">
-      <div class="flex text-sm mb-1">
+      <div class="flex text-base mb-1">
         <span>{`${props.label}: ${props.value}`}</span>
         {/* <span class="text-red-500">{`${props.value}`}</span> */}
       </div>
@@ -156,11 +156,11 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
   const usedItem = result.used_item[props.index];
   console.log("result === success", eventResult === 'success');
   return (
-    <div class="bg-gray-200 border rounded-lg py-4 pl-4 pr-6 mb-4 font-sans">
+    <div class="bg-gray-200 border rounded-lg py-4 pl-6 pr-8 mb-4 font-sans">
       <div class="flex justify-between items-center mb-2">
         <h2 class="text-xl font-bold">{props.teamName}</h2>
         
-        <div class={`mt-1 px-3 py-1 rounded-full text-sm ${
+        <div class={`mt-1 px-3 py-1 rounded-full text-base ${
           eventResult === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
         }`}>
           {eventResult === 'success' ? "성공" : "실패"}
@@ -168,7 +168,7 @@ const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: numbe
       </div>
 
       <div class="flex items-center">
-        <div class="flex flex-col items-center mr-6">
+        <div class="flex flex-col text-base items-center ml-4 mr-8">
           <img
             src={result.item_path[props.index] || "../../resource/none.png"}
             alt={usedItem === "None" ? "사용 아이템 없음" : usedItem}
@@ -359,9 +359,9 @@ const SimulationResult: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-neutral-950 container mx-auto p-4 font-sans">
+    <div class="min-h-screen bg-neutral-950 mx-auto p-4 font-sans">
       {/* Header */}
-      <div class="flex justify-center flex-col items-center mb-6">
+      <div class="flex justify-center flex-col items-center mt-2 mb-4">
         <img
           src="../../resource/logo_horizon.png"
           alt="Disaster.io Logo"
@@ -373,14 +373,14 @@ const SimulationResult: Component = () => {
       {/* Event&Teams Section */}
       <div class="w-full flex gap-x-6 items-stretch">
         {/* Event Section */}
-        <div class="w-[45%] flex-1 bg-gray-200 shadow-md rounded-lg p-4 mb-4 flex flex-col">
+        <div class="w-[45%] flex-1 bg-gray-200 shadow-md rounded-lg py-4 px-6 mb-4 flex flex-col">
           <h2 class="text-xl font-bold mb-4">{currentEventIndex() + 1}번째 이벤트 발생</h2>
           
           <div class="flex flex-col justify-center items-center">
             <img 
               src={selectedEvents()[currentEventIndex()]?.img_path || "../../resource/snacks.png"}
               alt="Action Icon" 
-              class="h-40 my-10" 
+              class="h-50 my-10" 
             />
             <p class="text-lg font-bold text-center">
               {selectedEvents()[currentEventIndex()]?.description || "이벤트를 로드 중..."}
@@ -389,7 +389,7 @@ const SimulationResult: Component = () => {
         </div>
 
         {/* Teams Section */}
-        <div class="w-[55%] flex flex-col gap-y-4">
+        <div class="w-[55%] flex flex-col gap-y-2">
           <TeamBox teamName={team1Result().team} index={currentEventIndex()}/> 
           <TeamBox teamName={team2Result().team} index={currentEventIndex()}/>
         </div>
@@ -403,8 +403,8 @@ const SimulationResult: Component = () => {
               class={`
                 absolute w-5 h-5 rounded-full border-1.5 transition-all duration-300
                 ${index === (currentEventIndex() + 1)
-                  ? 'bg-amber-500 border-amber-500 scale-125' 
-                  : 'bg-gray-300 border-gray-300 hover:bg-amber-600'}
+                  ? 'bg-orange-400 border-orange-400 scale-125' 
+                  : 'bg-gray-300 border-gray-300 hover:bg-orange-600'}
               `}
               style={{ 
                 left: `${(index - 1) * 20}%`, 
@@ -422,7 +422,7 @@ const SimulationResult: Component = () => {
         fallback={
           <div class="text-center">
             <button 
-              class="bg-amber-500 text-black px-10 py-2.5 text-lg rounded-lg font-bold mt-4 hover:bg-amber-600 transition"
+              class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-600 transition"
               onClick={() => navigate('/host/finalresult')}
             >
               최종 결과 확인
@@ -432,7 +432,7 @@ const SimulationResult: Component = () => {
       >
         <div class="text-center">
           <button 
-            class="bg-amber-500 text-black px-10 py-2.5 text-lg rounded-lg font-bold mt-4 hover:bg-amber-600 transition"
+            class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-600 transition"
             onClick={setCurrentEventIndex((prev) => (prev < maxEventIndex ? prev + 1 : prev))}
           >
             다음 이벤트

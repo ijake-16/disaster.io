@@ -49,7 +49,7 @@ const H3Waiting: Component = () => {
           {currentRoomCode}
         </div>
         
-        <div class="text-xl text-center text-gray-300 mb-5">
+        <div class="text-xl text-center text-gray-200 mb-5">
           ({teams().length}/4) 입장 대기 중..
         </div>
 
@@ -61,7 +61,7 @@ const H3Waiting: Component = () => {
 
         <button 
           onClick={handleGameStart}
-          class="items-center bg-orange-400 text-black py-2.5 px-5 mt-5 rounded text-lg text-center cursor-pointer hover:bg-orange-500 transition-colors"
+          class="items-center bg-orange-400 text-black text-xl font-bold py-2.5 px-5 mt-5 rounded text-xl text-center cursor-pointer hover:bg-orange-500 transition-colors"
         >
           게임 시작하기
         </button>

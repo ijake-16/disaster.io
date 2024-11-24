@@ -1,7 +1,7 @@
 import { Component, createSignal } from 'solid-js';
 import { useNavigate } from "@solidjs/router";
 import ky from "ky";
-import logoImage from '../../resource/logo.png';
+import logoImage from '../../resource/logo_horizon.png';
 
 interface Result {
   team: string;
@@ -67,19 +67,19 @@ const H8: Component = () => {
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col font-sans">
       <header class="bg-neutral-950 py-4 px-5 shadow-lg">
-        <div class="max-w-screen-xl mx-auto mb-2 flex flex-col items-center">
+        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
             alt="Disaster.io Logo"
             class="h-12 w-auto mb-2"
           />
-          <h1 class="text-xl text-gray-300">이벤트 결과</h1>
+          <h1 class="text-xl text-gray-200">이벤트 결과</h1>
         </div>
       </header>
 
       <main class="flex flex-1">
         {/* 랭킹 섹션 */}
-        <div class="w-[30%] bg-gray-700 p-5">
+        <div class="w-[30%] bg-gray-500 p-5">
           <h2 class="text-2xl text-center mb-4">팀 랭킹</h2>
           <div class="space-y-2">
             {['Team 1', 'Team 2'].map((team, index) => (
@@ -87,12 +87,12 @@ const H8: Component = () => {
                 onClick={() => setSelectedTeam(team)}
                 class={`flex items-center p-3 rounded cursor-pointer transition-colors
                   ${selectedTeam() === team 
-                    ? 'bg-orange-400 hover:bg-orange-500 text-black font-bold' 
-                    : 'bg-white hover:bg-gray-200 text-black font-bold'}`}
+                    ? 'bg-orange-500 hover:bg-orange-600 text-lg text-black font-bold' 
+                    : 'bg-gray-200 hover:bg-gray-400 text-lg text-black font-bold'}`}
               >
                 <span class="mr-3">{index + 1}</span>
                 <span class="flex-1">{team}</span>
-                <span class="bg-white text-green-700 px-2 py-1 rounded text-sm font-bold">
+                <span class="bg-gray-200 text-green-700 px-2 py-1 rounded text-lg font-bold">
                   {5 - index}
                 </span>
               </div>
@@ -101,20 +101,20 @@ const H8: Component = () => {
         </div>
 
         {/* 상세 정보 섹션 */}
-        <div class="flex-1 bg-gray-800 p-5">
+        <div class="flex-1 bg-gray-700 p-5">
           {selectedTeam() ? (
             <>
               {/* 이벤트 상태 표시 */}
               <div class="max-w-3xl mx-auto mb-8 mt-4">
                 <div class="relative">
                   {/* 배경 선 */}
-                  <div class="absolute top-6 left-0 right-0 h-[2px] bg-gray-600 -z-10" />
+                  <div class="absolute top-6 left-0 right-0 h-[2px] bg-gray-700 -z-10" />
                   
                   <div class="flex justify-between mb-2">
                     {selectedTeam() && teamResults.find(r => r.team === selectedTeam())?.event_result.map((result, index) => (
                       <button
                         onClick={() => setSelectedEvent(index)}
-                        class={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-colors
+                        class={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl transition-colors
                           ${result === 'success' 
                             ? 'bg-green-500 hover:bg-green-700' 
                             : 'bg-red-500 hover:bg-red-700'}`}
@@ -128,7 +128,7 @@ const H8: Component = () => {
 
               {/* 이벤트 상세 정보 */}
               {selectedTeam() && selectedEvent() !== null && (
-                <div class="bg-gray-700 p-5 rounded-lg max-w-2xl mx-auto">
+                <div class="bg-gray-400 p-5 rounded-lg max-w-2xl mx-auto">
                   <h3 class="text-xl mb-4">이벤트 {selectedEvent()! + 1} 상세 정보</h3>
                   
                   {/* 스탯 바들 */}
@@ -174,7 +174,7 @@ const H8: Component = () => {
                             </span>
                           )}
                         </p>
-                        <div class="w-full h-5 bg-gray-600 rounded-full overflow-hidden">
+                        <div class="w-full h-5 bg-gray-300 rounded-full overflow-hidden">
                           <div
                             class={`h-full rounded-full transform-gpu ${stat.getColor(stat.value)}`}
                             style={{
@@ -195,8 +195,8 @@ const H8: Component = () => {
                     <div class="space-y-3">
                       {selectedTeam() && selectedEvent() !== null && 
                         teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!] ? (
-                          <div class="bg-gray-600 p-3 rounded flex items-center gap-4">
-                            <div class="w-12 h-12 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                          <div class="bg-gray-400 p-3 rounded flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gray-500 rounded-lg flex-shrink-0 overflow-hidden">
                               <img 
                                 src={`/images/items/${teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!]}.png`}
                                 alt={teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!]}
@@ -207,13 +207,13 @@ const H8: Component = () => {
                               <h5 class="font-bold mb-1">
                                 {getItemName(teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!])}
                               </h5>
-                              <p class="text-sm text-gray-300">
+                              <p class="text-sm text-gray-200">
                                 {getItemDescription(teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!])}
                               </p>
                             </div>
                           </div>
                         ) : (
-                          <div class="bg-gray-600 p-3 rounded">없음</div>
+                          <div class="bg-gray-400 p-3 rounded">없음</div>
                         )
                       }
                     </div>

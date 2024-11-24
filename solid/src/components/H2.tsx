@@ -40,9 +40,9 @@ const RoomBuild: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-neutral-950 text-white flex justify-center items-center gap-5 p-5 font-sans">
+    <div class="min-h-screen bg-neutral-950 text-gray-200 flex justify-center items-center gap-5 p-5 font-sans">
       {/* Left Panel */}
-      <div class="flex flex-col gap-5 w-[350px] h-[90%] bg-gray-700 p-5 rounded-lg shrink-0">
+      <div class="flex flex-col gap-5 w-[20%] h-[90%] bg-gray-700 p-5 rounded-lg shrink-0">
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
@@ -51,27 +51,27 @@ const RoomBuild: Component = () => {
           />
         </div>
 
-        <div class="bg-gray-600 p-4 text-center rounded">게임 설정</div>
+        <div class="bg-gray-800 text-2xl p-4 text-center rounded">게임 설정</div>
 
         <input
-          class="bg-gray-600 p-4 text-center rounded"
+          class="bg-gray-800 text-xl p-4 text-center rounded"
           placeholder="방 제목을 입력하세요"
           value={roomTitle()}
           onInput={(e) => setRoomTitle(e.currentTarget.value)}
         />
 
-        <div class="bg-gray-600 p-4 rounded flex justify-between items-center">
+        <div class="bg-gray-800 text-xl p-4 rounded flex justify-between items-center">
           <span>최대 팀 수</span>
           <span>4</span>
         </div>
 
-        <div class="bg-gray-600 p-4 rounded flex justify-between items-center">
+        <div class="bg-gray-800 text-xl p-4 rounded flex justify-between items-center">
           <span>가방 싸기 시간</span>
           <span>150</span>
         </div>
 
         <button
-          class="bg-orange-500 p-4 rounded font-bold text-black hover:bg-orange-600 transition-colors"
+          class="bg-orange-500 p-4 text-xl rounded font-bold text-black hover:bg-orange-600 transition-colors"
           onClick={createRoom}
         >
           방 만들기
@@ -79,8 +79,8 @@ const RoomBuild: Component = () => {
       </div>
 
       {/* Right Panel */}
-      <div class="flex flex-col gap-5 w-[1000px] h-[90%] bg-gray-700 p-5 rounded-lg shrink-0 grow">
-        <div class="bg-orange-500 p-3 text-center rounded text-black text-lg">
+      <div class="flex flex-col gap-5 w-[60%] h-[90%] bg-gray-700 p-5 rounded-lg shrink-0 grow">
+        <div class="bg-orange-500 text-2xl font-bold p-3 text-center rounded text-black text-lg">
           사전 정보 설정
         </div>
 
@@ -103,7 +103,7 @@ const RoomBuild: Component = () => {
           ))}
         </div>
 
-        <div class="bg-orange-500 p-3 text-center rounded text-black text-lg">
+        <div class="bg-orange-500 text-2xl font-bold p-3 text-center rounded text-black text-lg">
           재난 정보 설정
         </div>
 
