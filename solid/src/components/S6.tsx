@@ -152,7 +152,6 @@ const S6: Component = () => {
           bagContents: bagContents,
         },
       });
-      return;
     } catch (error) {
       console.error("Error submitting bag contents:", error);
       alert("Failed to submit bag contents. Please try again.");
@@ -218,8 +217,14 @@ const S6: Component = () => {
 
         {/* Bag Section */}
         <section class="bg-neutral-700 rounded-lg p-4">
-          <div>Weight: {currentWeight()} / {maxWeight}</div>
-          <div>Volume: {currentVolume()} / {maxVolume}</div>
+          <div class="flex gap-2">
+                <div class="w-1/2 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
+                </div>
+                <div class="w-1/2 h-2.5 bg-neutral-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
+                </div>
+              </div>
           <div class="grid grid-cols-8 gap-2 mt-4">
             {q().map((item, index) => (
               <div class="item bg-neutral-800 p-2 rounded flex flex-col items-center relative">
