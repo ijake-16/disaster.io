@@ -1,5 +1,6 @@
 import { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
+import logoImage from '../../resource/logo.png';
 
 const SimulationInfo: Component = () => {
   const navigate = useNavigate();
@@ -7,9 +8,13 @@ const SimulationInfo: Component = () => {
   return (
     <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center pt-5">
       {/* Header */}
-      <div class="mb-5">
-        <h1 class="text-3xl font-bold">Disaster.io</h1>
-        <div class="text-lg">시뮬레이션 설명</div>
+      <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+        <img
+          src={logoImage}
+          alt="Disaster.io Logo"
+          class="h-32 w-auto mb-2"
+        />
+        <h1 class="text-lg">시뮬레이션 설명</h1>
       </div>
 
       {/* Content */}
