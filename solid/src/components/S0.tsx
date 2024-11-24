@@ -22,13 +22,13 @@ const DisasterIO = () => {
   return (
     <div class="flex items-center justify-center h-screen bg-neutral-950 text-white">
       <div class="w-72 bg-gray-800 rounded-lg p-8 flex flex-col shadow-lg">
-        <h1 class="text-4xl mb-0">Disaster.io</h1>
-        <div class="text-gray-400 text-sm mb-6">한국형 생존 대비 시뮬레이션</div>
+        <h1 class="text-4xl mb-0 font-sans">Disaster.io</h1>
+        <div class="text-gray-400 text-sm mb-6 font-sans">한국형 생존 대비 시뮬레이션</div>
         
         <button
           class={`w-full py-2 mb-2 text-black rounded-lg ${
             activeButton() === 'h1' ? 'bg-gray-400' : 'bg-white'
-          }`}
+          } font-sans`}
           onClick={() => handleSetDestination('h1', 'h1')}
         >
         호스트
@@ -36,14 +36,14 @@ const DisasterIO = () => {
         <button
           class={`w-full py-2 mb-2 text-black rounded-lg ${
             activeButton() === 's1' ? 'bg-gray-400' : 'bg-white'
-          }`}
+          } font-sans`}
           onClick={() => handleSetDestination('s1', 's1')}
         >
         플레이어
         </button>
         
         <button
-          class="bg-yellow-500 text-black py-2 mt-4 rounded-lg text-lg"
+          class="bg-yellow-500 text-black py-2 mt-4 rounded-lg text-lg font-sans"
           onClick={handleNavigate}
         >
         선택

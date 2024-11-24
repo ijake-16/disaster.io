@@ -7,20 +7,12 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .database import Database
 from . import host, player
 
 engine = None
 
 
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    await Database.init()
-    yield
-    await Database.close()
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
