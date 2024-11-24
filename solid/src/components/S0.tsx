@@ -1,4 +1,5 @@
 import { createSignal } from 'solid-js';
+import logoImage from '../../resource/logo.png';
 
 const DisasterIO = () => {
   const [destination, setDestination] = createSignal('');
@@ -22,7 +23,13 @@ const DisasterIO = () => {
   return (
     <div class="flex items-center justify-center h-screen bg-neutral-950 text-white">
       <div class="w-72 bg-gray-800 rounded-lg p-8 flex flex-col shadow-lg">
-        <h1 class="text-4xl mb-0 font-sans">Disaster.io</h1>
+        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+          <img
+            src={logoImage}
+            alt="Disaster.io Logo"
+            class="h-32 w-auto mb-2"
+          />
+        </div>
         <div class="text-gray-400 text-sm mb-6 font-sans">한국형 생존 대비 시뮬레이션</div>
         
         <button

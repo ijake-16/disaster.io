@@ -122,7 +122,13 @@ const S7: Component = () => {
       <div class="container max-w-4xl mx-auto px-4">
         <div class="text-center mb-8">
           <p class="text-lg mb-2">게임 진행 완료</p>
-          <h1 class="text-4xl mb-2">Disaster.io</h1>
+          <div class="flex justify-center items-center mb-6">
+            <img
+              src="resource/logo.png"
+              alt="Disaster.io Logo"
+              class="h-24 w-auto"
+            />
+          </div>
           <div class="text-xl text-gray-400">GAME PLAY TIME OUT</div>
         </div>
 

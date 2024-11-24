@@ -1,5 +1,6 @@
 import { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
+import logoImage from '../../resource/logo.png';
 
 const SceneInfo: Component = () => {
   const navigate = useNavigate();
@@ -7,9 +8,13 @@ const SceneInfo: Component = () => {
   return (
     <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center py-5">
       {/* Header */}
-      <div class="text-center">
-        <h1 class="text-5xl mb-2">Disaster.io</h1>
-        <div class="text-xl mb-5">GAME PLAYING</div>
+      <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+        <img
+          src={logoImage}
+          alt="Disaster.io Logo"
+          class="h-32 w-auto mb-2"
+        />
+        <h1 class="text-lg">게임 플레이</h1>
       </div>
 
       {/* Game Status Container */}

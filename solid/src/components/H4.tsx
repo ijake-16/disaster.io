@@ -1,6 +1,7 @@
 import { Component } from 'solid-js';
 import { roomCode } from '../store';
 import ky from "ky";
+import logoImage from '../../resource/logo.png';
 
 interface FamilyMember {
   role: string;
@@ -30,7 +31,7 @@ const H4PreInfo: Component = () => {
     try {
       console.log("Using room code:", roomCode());
       await ky.post(`http://localhost:8000/host/room/${roomCode()}/game_info_confirm`);
-      window.location.href = '/sceneinfo'; 
+      window.location.href = '/host/sceneinfo'; 
     } catch (error) {
       console.error("Failed to confirm game info:", error);
     }
@@ -41,7 +42,13 @@ const H4PreInfo: Component = () => {
       {/* Header Section */}
       <header class="p-5 text-center">
         <p class="text-gray-300">Room : {roomCode()}</p>
-        <h1 class="text-3xl my-2">Disaster.io</h1>
+        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+          <img
+            src={logoImage}
+            alt="Disaster.io Logo"
+            class="h-32 w-auto mb-2"
+          />
+        </div>
         <h2 class="text-xl font-normal text-gray-300">
           가족 정보와 지역 정보를 확인하세요. 재난에 대비하세요.
         </h2>

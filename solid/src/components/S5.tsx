@@ -89,7 +89,13 @@ const BagSelect: Component = () => {
       <div class="container text-center">
         <div class="mb-8">
           <p class="text-base text-amber-500">Room : {roomCode}</p>
-          <h1 class="text-4xl mb-2">Disaster.io</h1>
+          <div class="flex justify-center items-center mb-6">
+            <img
+              src="resource/logo.png"
+              alt="Disaster.io Logo"
+              class="h-24 w-auto"
+            />
+          </div>
           <h2 class="text-2xl mb-4">생존 물품을 담을 가방을 선택해 주세요.</h2>
           <p class="text-amber-500">YOU : {currentTeamName}</p>
         </div>

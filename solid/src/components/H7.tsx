@@ -1,5 +1,3 @@
-H7 
-
 import { Component, createSignal, Show, onMount } from 'solid-js';
 import { team1Result, team2Result } from "../store";
 

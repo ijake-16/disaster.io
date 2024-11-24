@@ -2,6 +2,7 @@ import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import ky from "ky";
 import { setRoomCode } from "../store";
+import logoImage from '../../resource/logo_horizon.png';
 
 const RoomBuild: Component = () => {
   const navigate = useNavigate();
@@ -42,9 +43,13 @@ const RoomBuild: Component = () => {
     <div class="min-h-screen bg-gray-800 text-white flex justify-center items-center gap-5 p-5">
       {/* Left Panel */}
       <div class="flex flex-col gap-5 w-[350px] h-[90%] bg-gray-700 p-5 rounded-lg shrink-0">
-        <h1 class="text-center bg-orange-500 p-3 rounded text-2xl text-black">
-          Disaster.io
-        </h1>
+        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+          <img
+            src={logoImage}
+            alt="Disaster.io Logo"
+            class="h-9 w-auto mb-2"
+          />
+        </div>
 
         <div class="bg-gray-600 p-4 text-center rounded">게임 설정</div>
 

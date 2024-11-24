@@ -4,7 +4,13 @@ const SimulInfo: Component = () => {
   return (
     <div class="min-h-screen bg-gray-800 text-white flex flex-col items-center pt-5">
       <div class="text-center">
-        <h1 class="text-5xl mb-2.5">Disaster.io</h1>
+        <div class="flex justify-center items-center mb-6">
+          <img
+            src="resource/logo.png"
+            alt="Disaster.io Logo"
+            class="h-24 w-auto"
+          />
+        </div>
         <div class="text-2xl mb-8">재난 발생</div>
       </div>
 

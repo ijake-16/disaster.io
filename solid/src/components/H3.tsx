@@ -1,6 +1,7 @@
 import { Component, createSignal, onMount } from 'solid-js';
 import { roomCode, setRoomCode } from "../store";
 import ky from "ky";
+import logoImage from '../../resource/logo.png';
 
 const H3Waiting: Component = () => {
   const [teams, setTeams] = createSignal<string[]>([]);
@@ -36,7 +37,13 @@ const H3Waiting: Component = () => {
   return (
     <div class="min-h-screen bg-gray-800 text-white flex items-center justify-center">
       <div class="w-[300px] bg-gray-700 rounded-lg p-5 shadow-lg">
-        <h1 class="text-2xl m-0">Disaster.io</h1>
+        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+          <img
+            src={logoImage}
+            alt="Disaster.io Logo"
+            class="h-32 w-auto mb-2"
+          />
+        </div>
         
         <div class="text-xl text-orange-400 mb-2.5">
           {currentRoomCode}
