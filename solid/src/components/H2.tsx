@@ -91,7 +91,7 @@ const RoomBuild: Component = () => {
                 const index = (gridIndex - 1) * 4 + imgIndex - 1;
                 return (
                   <img
-                    src="../../resource/water.png"
+                    src="../../resource/tsunami.png"
                     class={`w-full h-[100px] object-scale-down cursor-pointer border-2 
                       ${selectedPreInfo() === index ? "border-yellow-400" : "border-transparent"} 
                       hover:border-orange-600`}
@@ -114,7 +114,7 @@ const RoomBuild: Component = () => {
                 const index = (gridIndex - 1) * 4 + imgIndex - 1;
                 return (
                   <img
-                    src="../../resource/water.png"
+                    src="../../resource/earthquake.png"
                     class={`w-full h-[100px] object-scale-down cursor-pointer border-2 
                       ${selectedDisaster() === index ? "border-yellow-400" : "border-transparent"} 
                       hover:border-orange-600`}
