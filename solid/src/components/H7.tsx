@@ -231,6 +231,7 @@ const updateTeamResult = (
 ) => {
   const usedItem = matchedItems.length > 0 ? matchedItems[0] : null;
   const success = !!usedItem;
+  console.log("updating team result: ", teamResult);
 
   // 아이템 사용 시 인벤토리에서 차감
   if (usedItem && inventory[usedItem] > 0) {
@@ -281,10 +282,10 @@ const SimulationResult: Component = () => {
 
   // 팀별 인벤토리 상태 관리
   const [team1Inventory, setTeam1Inventory] = createSignal({
-    "pants": 1, "water": 4, "lantern": 1, "tuna": 3
+    "pants": 1, "radio": 1, "water": 4, "lantern": 1, "tuna": 3, "firstaid": 1
   });
   const [team2Inventory, setTeam2Inventory] = createSignal({
-    "pants": 1, "water": 4, "lantern": 1, "tuna": 3
+    "pants": 1, "shoes": 1, "coffee": 2, "lantern": 1, "snacks": 3, "firstaid": 1
   });
 
   const [itemsData, setItemsData] = createSignal<Record<string, string>>({});
@@ -292,6 +293,7 @@ const SimulationResult: Component = () => {
   onMount(() => {
     generateEvents();
     loadItemsData();
+    // setCurrentEventIndex(0);
   
     // 자동으로 모든 이벤트를 순차적으로 처리
     processAllEvents();
@@ -307,6 +309,7 @@ const SimulationResult: Component = () => {
         console.log("---------------------------------------");
         console.log("current event: ", currentIndex, selectedEvents()[currentIndex]);
         console.log("team1Inventory: ", team1Inventory());
+        console.log("team2Inventory: ", team2Inventory());
         
         const currentEvent = selectedEvents()[currentIndex];
         const requiredItem = currentEvent.require_item;
@@ -319,6 +322,7 @@ const SimulationResult: Component = () => {
         updateTeamResult(currentIndex, team2Result(), currentEvent, team2MatchedItems, team2Inventory());
         
         console.log("updated result: ", team1Result());
+        console.log("updated result: ", team2Result());
 
         currentIndex++;
         setCurrentEventIndex(currentIndex);
@@ -326,6 +330,7 @@ const SimulationResult: Component = () => {
         // 다음 이벤트 처리 (약간의 딜레이 추가로 비동기 실행 느낌 제공)
         setTimeout(processEvent, 10); // 10ms 딜레이 후 다음 이벤트로 이동
       }
+      else setCurrentEventIndex(0);
     };
   
     processEvent();
@@ -358,8 +363,16 @@ const SimulationResult: Component = () => {
     setSelectedEvents(randomEvents);
   };
 
+  // "다음 이벤트" 버튼 클릭 시 동작 수정
+  const nextEvent = () => {
+    setCurrentEventIndex((prev) => {
+      const nextIndex = prev < selectedEvents().length - 1 ? prev + 1 : prev;
+      return nextIndex;
+    });
+  };
+
   return (
-    <div class="min-h-screen bg-neutral-950 mx-auto p-4 font-sans">
+    <div class="min-h-screen bg-neutral-950 container mx-auto p-4 font-sans">
       {/* Header */}
       <div class="flex justify-center flex-col items-center mt-2">
         <img
@@ -433,7 +446,7 @@ const SimulationResult: Component = () => {
         <div class="text-center">
           <button 
             class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-600 transition"
-            onClick={setCurrentEventIndex((prev) => (prev < maxEventIndex ? prev + 1 : prev))}
+            onClick={nextEvent}
           >
             다음 이벤트
           </button>
