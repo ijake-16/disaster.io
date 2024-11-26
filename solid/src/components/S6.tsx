@@ -36,8 +36,8 @@ const S6: Component = () => {
     bagWeight: 0,
     description: "기본 가방 설명",
   };
-  const maxWeight = selectedBag.weightLimit;
-  const maxVolume = selectedBag.volumeLimit;
+  const maxWeight = 10 * selectedBag.weightLimit;
+  const maxVolume = 10 * selectedBag.volumeLimit;
   const [istime, setistime] = createSignal(true);
   // Load items from Excel file
   const readItemsFromExcel = async () => {
@@ -113,9 +113,9 @@ const S6: Component = () => {
     const item = q()[index];
     if (!item) return;
 
-    setQ((prev) => prev.filter((_, i) => i !== index));
-    setCurrentWeight((prev) => Number((prev - item.weight).toFixed(1)));
-    setCurrentVolume((prev) => Number((prev - item.volume).toFixed(1)));
+    setQ((prev) => prev.filter((_, i) => i !== index)); // Remove item at the given index
+    setCurrentWeight((prev) => prev - item.weight);
+    setCurrentVolume((prev) => prev - item.volume);
   };
 
   // Generate bag contents summary
