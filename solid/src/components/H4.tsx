@@ -31,7 +31,7 @@ const H4PreInfo: Component = () => {
     try {
       console.log("Using room code:", roomCode());
       await ky.post(`http://localhost:8000/host/room/${roomCode()}/game_info_confirm`);
-      window.location.href = '/host/sceneinfo'; 
+      window.location.href = '/host/readyinfo'; 
     } catch (error) {
       console.error("Failed to confirm game info:", error);
     }
