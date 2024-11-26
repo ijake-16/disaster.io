@@ -94,3 +94,19 @@ async def get_bag_contents(room_code: str):
     
     return team_bags
 
+#h8
+@router.post("/room/{room_code}/game_start_confirm")
+async def confirm_to_start_game_simulation(room_code: str):
+    """
+    게임 시뮬레이션을 시작합니다.
+    """
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    room.current_phase = "simulation"
+    return {
+        "message": "게임 시뮬레이션을 시작합니다",
+        "current_phase": room.current_phase
+    }
+
