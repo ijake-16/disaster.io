@@ -1,8 +1,10 @@
-# 참여형 방재 교육 게임 (Interactive Disaster Prevention Education Game)
+# DISASTER.IO
+## 참여형 방재 교육 게임 (Interactive Disaster Prevention Education Game)
 
 ### 한 줄 요약 (One-liner Summary)
-2팀: 재난 예방교육시 교육자-참여자 상호작용이 가능하도록 돕는 참여형 방재 교육 게임  
-Team 2: An interactive disaster prevention education game that facilitates educator-participant interactions during disaster prevention training.
+2팀: 재난 예방교육시 교육자-참여자 상호작용이 가능하도록 돕는 참여형 방재 교육 게임 플랫폼
+
+Team 2: An interactive disaster prevention education game that facilitates educator-participant interactions during disaster prevention drill.
 
 ---
 
@@ -47,46 +49,49 @@ This solution utilizes a game-based learning approach to enable real-time intera
 ## 설치 및 실행 방법 (Installation & Execution)
 
 ### 한국어
-1. 이 저장소를 클론합니다:
+1. Docker Daemon이 실행 중인지 확인합니다. 만약 Docker Daemon이 설치되어있지 않은 경우 https://docs.docker.com/engine/install/ 에서 다운로드 하시기 바랍니다.
+
+2. 이 저장소를 클론합니다:
    ```bash
    git clone https://github.com/username/repository.git
    ```
-2. 프로젝트 디렉토리로 이동합니다:
+3. 프로젝트 디렉토리로 이동합니다:
    ```bash
    cd repository
    ```
-3. 필수 종속성을 설치합니다:
+4. Docker를 활용해 애플리케이션을 실행합니다:
    ```bash
-   npm install
+   docker compose up --build # for mac / linux
    ```
-4. 애플리케이션을 실행합니다:
-   ```bash
-   npm start
+   ```powershell
+   docker-compose up --build # for windows
    ```
 
+
 ### English
-1. Clone this repository:
+1. Make sure Docker Daemon is running. If not installed, do install it from here: https://docs.docker.com/engine/install/
+
+2. Clone this repository:
    ```bash
    git clone https://github.com/username/repository.git
    ```
-2. Navigate to the project directory:
+3. Navigate to the project directory:
    ```bash
    cd repository
    ```
-3. Install required dependencies:
+4. Run the applications using Docker:
    ```bash
-   npm install
+   docker compose up --build # for mac / linux
    ```
-4. Run the application:
-   ```bash
-   npm start
+   ```powershell
+   docker-compose up --build # for windows
    ```
+
 
 ---
 
 ## 데모 영상 (Demo Video)
 - [Demo Video 링크](#)  
-(*Link to a demo video if available.*)
 
 ---
 
@@ -100,12 +105,18 @@ This solution utilizes a game-based learning approach to enable real-time intera
 ## 팀 및 팀원 소개 (Team & Members)
 
 ### 팀원 (Team Members)
-- **홍길동 (Hong Gil-dong)**: 개발자 (Developer)  
-  이메일: hong@example.com | GitHub: [hong](https://github.com/hong)
-- **김철수 (Kim Cheol-su)**: 디자이너 (Designer)  
-  이메일: kim@example.com | GitHub: [kim](https://github.com/kim)
-- **이영희 (Lee Young-hee)**: 기획자 (Planner)  
-  이메일: lee@example.com | GitHub: [lee](https://github.com/lee)
+- **김정빈 (Jeongbin Kim)**: PM, 기획자, 개발자 (PM, Planner, Developer)  
+  이메일: jake16@kaist.ac.kr | GitHub: [ijake-16](https://github.com/ijake-16)
+- **김지민 (Jimin Kim)**: 기획자, 개발자 (Planner, Developer)
+  이메일: kjm10122@gmail.com | GitHub: [VVictorVV](https://github.com/VVictorVV)
+- **윤지훈 (Jihoon Youn)**: 기획자, 개발자 (Planner, Lead Developer)  
+  이메일: jihoon9835@gmail.com | GitHub: [younjihoon](https://github.com/younjihoon)
+- **이재현 (Jaehyeon Lee)**: 개발자 (Developer)
+  이메일: jh5323565@kaist.ac.kr | GitHub: [jaedungg](https://github.com/jaedungg)
+- **임자영 (Jayeong Im)**: 디자이너, 기획자 (Designer, Planner)
+  이메일: bagjay@kaist.ac.kr | GitHub: [Gomchiiii](https://github.com/Gomchiiii)
+- **황보민석 (Minseok Hwangbo)**: 개발자 (Developer)
+  이메일: ecobrick@kaist.ac.kr | GitHub: [hwangbominseok](https://github.com/hwangbominseok)
 
 ### 멘토 및 펠로우 (Mentors & Fellows)
 - **멘토 이름 (Mentor Name)**: [멘토 연락처 또는 링크](#)
