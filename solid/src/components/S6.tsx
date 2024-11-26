@@ -120,7 +120,7 @@ const S6: Component = () => {
 
   // Generate bag contents summary
   const getBagContents = async () => {
-    const bagContents = { items: {}, totalWeight: currentWeight(), totalVolume: currentVolume() };
+    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
   
     q().forEach((item) => {
       const name = item.name;
