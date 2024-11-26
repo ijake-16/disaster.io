@@ -24,7 +24,7 @@ const updateRoomCode = (code: string | null) => {
   setRoomCode(code);
 };
 
-interface Result {
+interface Result1 {
   team: string;
   used_item: string[];
   item_path: string[];
@@ -35,8 +35,19 @@ interface Result {
   stress: number[];
 }
 
-const initialResult: Result = {
-  team:"팀1",
+interface Result2 {
+  team: string;
+  used_item: string[];
+  item_path: string[];
+  event_result: string[];
+  required_item: string[]; //각 이벤트에서 필요한 아이템 태그 저장
+  hunger: number[];
+  thirst: number[];
+  stress: number[];
+}
+
+const initialResult1: Result1 = {
+  team:"team1",
   used_item: Array(6).fill(""),
   item_path: Array(6).fill(""),
   event_result: Array(6).fill(""),
@@ -46,7 +57,18 @@ const initialResult: Result = {
   stress: Array(6).fill(0),
 };
 
-export const [team1Result, setTeam1Result] = createSignal<Result>({ ...initialResult });
-export const [team2Result, setTeam2Result] = createSignal<Result>({ ...initialResult });
+const initialResult2: Result2 = {
+  team:"team2",
+  used_item: Array(6).fill(""),
+  item_path: Array(6).fill(""),
+  event_result: Array(6).fill(""),
+  required_item: Array(6).fill(""), //각 이벤트에서 필요한 아이템 태그 저장
+  hunger: Array(6).fill(0),
+  thirst: Array(6).fill(0),
+  stress: Array(6).fill(0),
+};
+
+export const [team1Result, setTeam1Result] = createSignal<Result1>({ ...initialResult1 });
+export const [team2Result, setTeam2Result] = createSignal<Result2>({ ...initialResult2 });
 
 export { roomCode, updateRoomCode as setRoomCode }; 

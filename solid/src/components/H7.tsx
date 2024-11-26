@@ -1,11 +1,11 @@
 import { Component, createSignal, Show, onMount } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { team1Result, team2Result} from "../store";
+import { team1Result, team2Result, setTeam1Result, setTeam2Result} from "../store";
 import * as XLSX from "xlsx"; // Items.xlsx 처리를 위해 사용
 
 /////////////////////////////////////////////// 팀 이름 입력
-team1Result().team = "팀1"
-team2Result().team = "팀2"
+team1Result().team = "team1"
+team2Result().team = "team2"
 
   
 interface EventData {
@@ -111,7 +111,7 @@ const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number
     };
 
   return (
-    <div class="mb-1 font-sans">
+    <div class="mb-2 font-sans">
       <div class="flex text-base">
         <span>{`${props.label}: ${props.value}`}</span>
         {/* <span class="text-red-500">{`${props.value}`}</span> */}
@@ -138,74 +138,74 @@ interface TeamBoxProps {
   index: number; // 팀 인덱스
 }
 
-const TeamBox: Component<TeamBoxProps> = (props: {teamName: string, index: number}) => {
-  const result = props.teamName === team1Result().team ? team1Result() : team2Result();
+// const TeamBox: Component<TeamBoxProps> = (props: {team_number: number, teamName: string, index: number}) => {
+//   const result = props.team_number == 1 ? team1Result() : team2Result();
+//   console.log("teambox called for", props.team_number);
   
-  // props 검증 (안전하게 디버깅)
-  if (!result || props.index < 0 || props.index >= result.hunger.length) {
-    console.log("이게 왜이러지....");
-    console.error("Invalid props for TeamBox:", props);
-    return <div>Invalid TeamBox Data</div>;
-  }
+//   // props 검증 (안전하게 디버깅)
+//   if (!result || props.index < 0 || props.index >= result.hunger.length) {
+//     console.error("Invalid props for TeamBox:", props);
+//     return <div>Invalid TeamBox Data</div>;
+//   }
 
-  // 유효한 ID 생성 (공백, 특수문자 방지)
-  const sanitizedTeamName = props.teamName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+//   // 유효한 ID 생성 (공백, 특수문자 방지)
+//   const sanitizedTeamName = props.teamName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
   
-  // 현재 이벤트의 결과 상태 표시
-  const eventResult = result.event_result[props.index];
-  const usedItem = result.used_item[props.index];
-  console.log("result === success", eventResult === 'success');
-  return (
-    <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold">{props.teamName}</h2>
+//   // 현재 이벤트의 결과 상태 표시
+//   const eventResult = result.event_result[props.index];
+//   const usedItem = result.used_item[props.index];
+//   console.log("result === success", eventResult === 'success');
+//   return (
+//     <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+//       <div class="flex justify-between items-center">
+//         <h2 class="text-xl font-bold">{props.teamName}</h2>
         
-        <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
-          eventResult === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
-        }`}>
-          {eventResult === 'success' ? "성공" : "실패"}
-        </div>
-      </div>
+//         <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
+//           eventResult === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+//         }`}>
+//           {eventResult === 'success' ? "성공" : "실패"}
+//         </div>
+//       </div>
 
-      <div class="flex items-center">
-        <div class="flex flex-col text-base items-center ml-4 mr-8">
-          <img
-            src={result.item_path[props.index] || "../../resource/none.png"}
-            alt={usedItem === "None" ? "사용 아이템 없음" : usedItem}
-            class="h-20 w-20 object-contain ml-2 mb-2"
-          />
-          <span class="text-sm text-gray-600">
-            {usedItem === "None" ? "사용 아이템 없음" : `${usedItem} 사용`}
-          </span>
-        </div>
+//       <div class="flex items-center">
+//         <div class="flex flex-col text-base items-center ml-4 mr-8">
+//           <img
+//             src={result.item_path[props.index] || "../../resource/none.png"}
+//             alt={usedItem === "None" ? "사용 아이템 없음" : usedItem}
+//             class="h-20 w-20 object-contain ml-2 my-2"
+//           />
+//           <span class="text-sm text-gray-600">
+//             {usedItem === "None" ? "사용 아이템 없음" : `${usedItem} 사용`}
+//           </span>
+//         </div>
 
-        <div class="flex-grow">
-          <StatusBar
-            label="배고픔"
-            value={result.hunger[props.index]}
-            // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
-            maxValue={100}
-            id={`hunger-bar-team-${sanitizedTeamName}`}
-          />
-          <StatusBar
-            label="목마름"
-            value={result.thirst[props.index]}
-            // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
-            maxValue={100}
-            id={`thirst-bar-team-${sanitizedTeamName}`}
-          />
-          <StatusBar
-            label="스트레스"
-            value={result.stress[props.index]}
-            // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
-            maxValue={100}
-            id={`stress-bar-team-${sanitizedTeamName}`}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
+//         <div class="flex-grow">
+//           <StatusBar
+//             label="배고픔"
+//             value={result.hunger[props.index]}
+//             // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
+//             maxValue={100}
+//             id={`hunger-bar-team-${sanitizedTeamName}`}
+//           />
+//           <StatusBar
+//             label="목마름"
+//             value={result.thirst[props.index]}
+//             // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
+//             maxValue={100}
+//             id={`thirst-bar-team-${sanitizedTeamName}`}
+//           />
+//           <StatusBar
+//             label="스트레스"
+//             value={result.stress[props.index]}
+//             // prevValue={result.hunger[props.index] - (result.hunger[props.index-1] || 0)}
+//             maxValue={100}
+//             id={`stress-bar-team-${sanitizedTeamName}`}
+//           />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 // 인벤토리 체크 함수
 const checkInventory = (index: number, inventory: Record<string, number>, requiredItem: string, itemsData: Record<string, string>) => {
@@ -222,16 +222,68 @@ const checkInventory = (index: number, inventory: Record<string, number>, requir
 };
 
 
+// const updateTeamResult = (
+//   index: number,
+//   teamResult: Result,
+//   event: EventData,
+//   matchedItems: string[],
+//   inventory: Record<string, number>
+// ) => {
+//   const usedItem = matchedItems.length > 0 ? matchedItems[0] : null;
+//   const success = !!usedItem;
+//   console.log("updating team result: ", teamResult);
+
+//   // 아이템 사용 시 인벤토리에서 차감
+//   if (usedItem && inventory[usedItem] > 0) {
+//     inventory[usedItem]--;
+//   }
+
+//   // 상태 변화 계산
+//   const hungerChange = event.tag === "hunger" ? 
+//     (success ? parseInt(event.success) : parseInt(event.failure)) : 0;
+//   const thirstChange = event.tag === "thirst" ? 
+//     (success ? parseInt(event.success) : parseInt(event.failure)) : 0;
+//   const stressChange = event.tag === "stress" ? 
+//     (success ? parseInt(event.success) : parseInt(event.failure)) : 0;
+
+//   // 결과 업데이트
+//   teamResult.used_item[index] = (usedItem || "None");
+//   teamResult.item_path[index] = (
+//     usedItem ? `../../resource/${usedItem}.png` : ""
+//   );
+//   teamResult.event_result[index] = (success ? "success" : "failure");
+//   teamResult.required_item[index] = (event.require_item);
+
+//   // 이전 상태값 가져오기
+//   const lastHunger = teamResult.hunger[index- 1] || 0;
+//   const lastThirst = teamResult.thirst[index - 1] || 0;
+//   const lastStress = teamResult.stress[index - 1] || 0;
+
+//   // 새로운 상태값 계산 및 저장
+//   teamResult.hunger[index] = (
+//     Math.max(0, Math.min(100, lastHunger + hungerChange + 10))
+//   );
+//   teamResult.thirst[index] = (
+//     Math.max(0, Math.min(100, lastThirst + thirstChange + 10))
+//   );
+//   teamResult.stress[index] = (
+//     Math.max(0, Math.min(100, lastStress + stressChange + 5))
+//   );
+//   console.log("last status:", lastHunger, lastThirst, lastStress);
+//   console.log("status change: ", hungerChange, thirstChange, stressChange);
+//   console.log("updated status:", lastHunger + hungerChange + 10, lastThirst + thirstChange + 10, lastStress + stressChange + 10);
+// };
+
 const updateTeamResult = (
   index: number,
-  teamResult: Result,
+  team_number: number,
   event: EventData,
   matchedItems: string[],
   inventory: Record<string, number>
 ) => {
   const usedItem = matchedItems.length > 0 ? matchedItems[0] : null;
   const success = !!usedItem;
-  console.log("updating team result: ", teamResult);
+  console.log(`Updating team result for team ${team_number}`);
 
   // 아이템 사용 시 인벤토리에서 차감
   if (usedItem && inventory[usedItem] > 0) {
@@ -239,40 +291,75 @@ const updateTeamResult = (
   }
 
   // 상태 변화 계산
-  const hungerChange = event.tag === "hunger" ? 
-    (success ? parseInt(event.success) : parseInt(event.failure)) : 0;
-  const thirstChange = event.tag === "thirst" ? 
-    (success ? parseInt(event.success) : parseInt(event.failure)) : 0;
-  const stressChange = event.tag === "stress" ? 
-    (success ? parseInt(event.success) : parseInt(event.failure)) : 0;
+  const hungerChange =
+    event.tag === "hunger"
+      ? success
+        ? parseInt(event.success)
+        : parseInt(event.failure)
+      : 0;
+  const thirstChange =
+    event.tag === "thirst"
+      ? success
+        ? parseInt(event.success)
+        : parseInt(event.failure)
+      : 0;
+  const stressChange =
+    event.tag === "stress"
+      ? success
+        ? parseInt(event.success)
+        : parseInt(event.failure)
+      : 0;
 
-  // 결과 업데이트
-  teamResult.used_item[index] = (usedItem || "None");
-  teamResult.item_path[index] = (
-    usedItem ? `../../resource/${usedItem}.png` : ""
-  );
-  teamResult.event_result[index] = (success ? "success" : "failure");
-  teamResult.required_item[index] = (event.require_item);
+  // 팀에 따라 setTeam1Result 또는 setTeam2Result 사용
+  const updateResult = team_number == 1 ? setTeam1Result : setTeam2Result;
 
-  // 이전 상태값 가져오기
-  const lastHunger = teamResult.hunger[index- 1] || 0;
-  const lastThirst = teamResult.thirst[index - 1] || 0;
-  const lastStress = teamResult.stress[index - 1] || 0;
+  updateResult((prevResult) => {
+    const lastHunger = prevResult.hunger[index - 1] || 0;
+    const lastThirst = prevResult.thirst[index - 1] || 0;
+    const lastStress = prevResult.stress[index - 1] || 0;
 
-  // 새로운 상태값 계산 및 저장
-  teamResult.hunger[index] = (
-    Math.max(0, Math.min(100, lastHunger + hungerChange + 10))
-  );
-  teamResult.thirst[index] = (
-    Math.max(0, Math.min(100, lastThirst + thirstChange + 10))
-  );
-  teamResult.stress[index] = (
-    Math.max(0, Math.min(100, lastStress + stressChange + 5))
-  );
-  console.log("last status:", lastHunger, lastThirst, lastStress);
-  console.log("status change: ", hungerChange, thirstChange, stressChange);
-  console.log("updated status:", lastHunger + hungerChange + 10, lastThirst + thirstChange + 10, lastStress + stressChange + 10);
+    return {
+      ...prevResult,
+      used_item: prevResult.used_item.map((item, idx) =>
+        idx === index ? (usedItem || "None") : item
+      ),
+      item_path: prevResult.item_path.map((path, idx) =>
+        idx === index ? (usedItem ? `../../resource/${usedItem}.png` : "") : path
+      ),
+      event_result: prevResult.event_result.map((result, idx) =>
+        idx === index ? (success ? "success" : "failure") : result
+      ),
+      required_item: prevResult.required_item.map((reqItem, idx) =>
+        idx === index ? event.require_item : reqItem
+      ),
+      hunger: prevResult.hunger.map((hunger, idx) =>
+        idx === index
+          ? Math.max(0, Math.min(100, lastHunger + hungerChange + 10))
+          : hunger
+      ),
+      thirst: prevResult.thirst.map((thirst, idx) =>
+        idx === index
+          ? Math.max(0, Math.min(100, lastThirst + thirstChange + 10))
+          : thirst
+      ),
+      stress: prevResult.stress.map((stress, idx) =>
+        idx === index
+          ? Math.max(0, Math.min(100, lastStress + stressChange + 5))
+          : stress
+      ),
+    };
+  });
+
+  // console.log("Status updated:", {
+  //   hungerChange,
+  //   thirstChange,
+  //   stressChange,
+  //   hunger: hungerChange + 10,
+  //   thirst: thirstChange + 10,
+  //   stress: stressChange + 5,
+  // });
 };
+
 
 const SimulationResult: Component = () => {
   const navigate = useNavigate();
@@ -282,10 +369,10 @@ const SimulationResult: Component = () => {
 
   // 팀별 인벤토리 상태 관리
   const [team1Inventory, setTeam1Inventory] = createSignal({
-    "pants": 1, "radio": 1, "water": 4, "lantern": 1, "tuna": 3, "firstaid": 1
+    "pants": 1, "radio": 1, "umbrella": 1, "water": 4, "lantern": 1, "tuna": 3, "firstaid": 1
   });
   const [team2Inventory, setTeam2Inventory] = createSignal({
-    "pants": 1, "shoes": 1, "coffee": 2, "lantern": 1, "snacks": 3, "firstaid": 1
+    "pants": 1, "shoes": 1, "umbrella": 1, "coffee": 2, "lantern": 1, "snacks": 3, "firstaid": 1
   });
 
   const [itemsData, setItemsData] = createSignal<Record<string, string>>({});
@@ -293,7 +380,7 @@ const SimulationResult: Component = () => {
   onMount(() => {
     generateEvents();
     loadItemsData();
-    // setCurrentEventIndex(0);
+    console.log(selectedEvents())
   
     // 자동으로 모든 이벤트를 순차적으로 처리
     processAllEvents();
@@ -317,12 +404,12 @@ const SimulationResult: Component = () => {
         
         const team1MatchedItems = checkInventory(currentIndex, team1Inventory(), requiredItem, itemsData());
         const team2MatchedItems = checkInventory(currentIndex, team2Inventory(), requiredItem, itemsData());
-  
-        updateTeamResult(currentIndex, team1Result(), currentEvent, team1MatchedItems, team1Inventory());
-        updateTeamResult(currentIndex, team2Result(), currentEvent, team2MatchedItems, team2Inventory());
+
+        updateTeamResult(currentIndex, 1, currentEvent, team1MatchedItems, team1Inventory());
+        updateTeamResult(currentIndex, 2, currentEvent, team2MatchedItems, team2Inventory());
         
-        console.log("updated result: ", team1Result());
-        console.log("updated result: ", team2Result());
+        // console.log("updated result: ", team1Result());
+        // console.log("updated result: ", team2Result());
 
         currentIndex++;
         setCurrentEventIndex(currentIndex);
@@ -387,7 +474,7 @@ const SimulationResult: Component = () => {
       <div class="w-[70%] flex mx-auto gap-x-6 items-stretch">
         {/* Event Section */}
         <div class="w-[40%] flex-1 bg-gray-200 shadow-md rounded-lg pt-2 pb-4 px-4 mb-2 flex flex-col">
-          <h2 class="text-xl font-bold mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
+          <h2 class="text-xl font-bold mt-2 mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
           
           <div class="flex flex-col justify-center items-center">
             <img 
@@ -403,8 +490,104 @@ const SimulationResult: Component = () => {
 
         {/* Teams Section */}
         <div class="w-[60%] flex flex-col gap-y-1">
-          <TeamBox teamName={team1Result().team} index={currentEventIndex()}/> 
-          <TeamBox teamName={team2Result().team} index={currentEventIndex()}/>
+          {/* team1 */}
+          <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-bold">{team1Result().team}</h2>
+              
+              <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
+                team1Result().event_result[currentEventIndex()] === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+              }`}>
+                {team1Result().event_result[currentEventIndex()] === 'success' ? "성공" : "실패"}
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="flex flex-col text-base items-center ml-4 mr-8">
+                <img
+                  src={team1Result().item_path[currentEventIndex()] || "../../resource/none.png"}
+                  alt={team1Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : team1Result().used_item[currentEventIndex()]}
+                  class="h-20 w-20 object-contain ml-2 my-2"
+                />
+                <span class="text-sm text-gray-600">
+                  {team1Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : `${team1Result().used_item[currentEventIndex()]} 사용`}
+                </span>
+              </div>
+
+              <div class="flex-grow">
+                <StatusBar
+                  label="배고픔"
+                  value={team1Result().hunger[currentEventIndex()]}
+                  // prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
+                  maxValue={100}
+                  id={`hunger-bar-team-${team1Result().team}`}
+                />
+                <StatusBar
+                  label="목마름"
+                  value={team1Result().thirst[currentEventIndex()]}
+                  // prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
+                  maxValue={100}
+                  id={`thirst-bar-team-${team1Result().team}`}
+                />
+                <StatusBar
+                  label="스트레스"
+                  value={team1Result().stress[currentEventIndex()]}
+                  // prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
+                  maxValue={100}
+                  id={`stress-bar-team-${team1Result().team}`}
+                />
+              </div>
+            </div>
+          </div>
+          {/* team2 */}
+          <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-bold">{team2Result().team}</h2>
+              
+              <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
+                team2Result().event_result[currentEventIndex()] === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+              }`}>
+                {team2Result().event_result[currentEventIndex()] === 'success' ? "성공" : "실패"}
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="flex flex-col text-base items-center ml-4 mr-8">
+                <img
+                  src={team2Result().item_path[currentEventIndex()] || "../../resource/none.png"}
+                  alt={team2Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : team2Result().used_item[currentEventIndex()]}
+                  class="h-20 w-20 object-contain ml-2 my-2"
+                />
+                <span class="text-sm text-gray-600">
+                  {team2Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : `${team2Result().used_item[currentEventIndex()]} 사용`}
+                </span>
+              </div>
+
+              <div class="flex-grow">
+                <StatusBar
+                  label="배고픔"
+                  value={team2Result().hunger[currentEventIndex()]}
+                  // prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
+                  maxValue={100}
+                  id={`hunger-bar-team-${team2Result().team}`}
+                />
+                <StatusBar
+                  label="목마름"
+                  value={team2Result().thirst[currentEventIndex()]}
+                  // prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
+                  maxValue={100}
+                  id={`thirst-bar-team-${team2Result().team}`}
+                />
+                <StatusBar
+                  label="스트레스"
+                  value={team2Result().stress[currentEventIndex()]}
+                  // prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
+                  maxValue={100}
+                  id={`stress-bar-team-${team2Result().team}`}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
