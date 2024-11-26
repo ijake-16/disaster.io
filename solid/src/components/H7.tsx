@@ -266,19 +266,19 @@ const SimulationResult: Component = () => {
         const { totalWeight, totalVolume, bagID, ...items } = bagContents;
 
         console.log(teamName);
-        console.log("teamName === team1name", teamName === team1name());
 
         return [teamName, items];
       }).filter(Boolean); // Filter out any null results
+      
       setTeam1Result((prev) => ({...prev,  team: teamStatuses[0][0]}));
       setTeam2Result((prev) => ({...prev,  team: teamStatuses[1][0]}));
       setTeam1Inventory(teamStatuses[0][1]);
       setTeam2Inventory(teamStatuses[1][1]);
+      
       console.log("team1 name: ", team1Result().team, ", team2 name: ", team2Result().team);
       console.log("team1 inventory: ", team1Inventory());
       console.log("team2 inventory: ", team2Inventory());
     } catch (error) {
-      console.log(teamBags, bagContents);
       console.error("Failed to fetch team data:", error);
     }}
 
