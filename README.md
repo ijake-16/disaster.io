@@ -2,9 +2,9 @@
 ## 참여형 방재 교육 게임 (Interactive Disaster Prevention Education Game)
 
 ### 한 줄 요약 (One-liner Summary)
-2팀: 재난 예방교육시 교육자-참여자 상호작용이 가능하도록 돕는 참여형 방재 교육 게임 플랫폼
+재난 예방교육시 교육자-참여자 상호작용이 가능하도록 돕는 참여형 방재 교육 게임 플랫폼
 
-Team 2: An interactive disaster prevention education game that facilitates educator-participant interactions during disaster prevention drill.
+An interactive disaster prevention education game that facilitates educator-participant interactions during disaster prevention drill.
 
 ---
 
@@ -21,13 +21,15 @@ Disaster prevention education holds significant social value, but most current a
 ### 한국어
 이 솔루션은 게임 기반 학습 방식을 활용하여 교육자와 참여자 간 실시간 상호작용을 제공합니다. 기존의 일방향적인 교육 방식과 달리, 참여형 게임 메커니즘을 통해 몰입감과 학습 효과를 극대화합니다.
 
+본 프로토타입에서는 DISASTER.IO 플랫폼의 데모 게임인 가방으로 살아남기를 제작해보았습니다.
+
 #### 특장점
+- 교육자 입장에서 편리한 사용감
 - 실시간 피드백 및 상호작용 기능
-- 다양한 시나리오를 통한 실습 기회 제공
+- 다양한 시나리오를 통한 몰입감 높은 실습 기회 제공
 - 게임 메커니즘을 통한 재미와 학습의 조화
 
 #### 기대 효과
-- 재난 대처 능력 향상
 - 교육 참여율 및 만족도 증가
 - 실질적인 방재 교육 효과 강화
 
@@ -35,12 +37,12 @@ Disaster prevention education holds significant social value, but most current a
 This solution utilizes a game-based learning approach to enable real-time interaction between educators and participants. Unlike traditional one-way education methods, it maximizes engagement and learning through interactive game mechanics.
 
 #### Key Features
+- Educator oriented solution
 - Real-time feedback and interaction capabilities
-- Practice opportunities through diverse scenarios
+- Intensive Practice opportunities through diverse scenarios
 - A balance of fun and learning via game mechanics
 
 #### Expected Outcomes
-- Enhanced disaster response capabilities
 - Increased participation and satisfaction in education
 - Improved effectiveness of disaster prevention education
 
@@ -107,7 +109,7 @@ This solution utilizes a game-based learning approach to enable real-time intera
 ### 팀원 (Team Members)
 - **김정빈 (Jeongbin Kim)**: PM, 기획자, 개발자 (PM, Planner, Developer)  
   이메일: jake16@kaist.ac.kr | GitHub: [ijake-16](https://github.com/ijake-16)
-- **김지민 (Jimin Kim)**: 기획자, 개발자 (Planner, Developer)
+- **김지민 (Jimin Kim)**: 기획자, 개발자 (Planner, Developer) 
   이메일: kjm10122@gmail.com | GitHub: [VVictorVV](https://github.com/VVictorVV)
 - **윤지훈 (Jihoon Youn)**: 기획자, 개발자 (Planner, Lead Developer)  
   이메일: jihoon9835@gmail.com | GitHub: [younjihoon](https://github.com/younjihoon)
@@ -119,11 +121,10 @@ This solution utilizes a game-based learning approach to enable real-time intera
   이메일: ecobrick@kaist.ac.kr | GitHub: [hwangbominseok](https://github.com/hwangbominseok)
 
 ### 멘토 및 펠로우 (Mentors & Fellows)
-- **멘토 이름 (Mentor Name)**: [멘토 연락처 또는 링크](#)
 - **펠로우 조직 (Fellow Organization)**: [Organization Website](#)
+- **Mentor : 이상은 (Sangeun Lee)**: [멘토 연락처 또는 링크](#)
 
 ---
 
 ## 라이선스 (License)
 MIT License  
-(*Optional if not applicable.*)
