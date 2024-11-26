@@ -1,5 +1,6 @@
-import { Component, createSignal } from 'solid-js';
+import { Component, createSignal, onMount } from 'solid-js';
 import { useNavigate } from "@solidjs/router";
+import { team1Result, team2Result, setTeam1Result, setTeam2Result} from "../store";
 import ky from "ky";
 import logoImage from '../../resource/logo_horizon.png';
 
@@ -42,27 +43,26 @@ const H8: Component = () => {
   };
 
   const teamResults: Result[] = [
-    {
-      team: 'Team 1',
-      used_item: Array(6).fill(''),
-      item_path: Array(6).fill(''),
-      event_result: ['success', 'failure', 'success', 'failure', 'success', 'failure'],
-      required_item: ['', 'water', '', 'food', '', 'medkit'],
-      hunger: [80, 90, 60, 95, 70, 85],
-      thirst: [70, 85, 50, 88, 60, 80],
-      stress: [20, 60, 10, 75, 15, 45]
-    },
-    {
-      team: 'Team 2',
-      used_item: Array(6).fill(''),
-      item_path: Array(6).fill(''),
-      event_result: ['success', 'failure', 'success', 'failure', 'success', 'failure'],
-      required_item: ['', 'water', '', 'food', '', 'medkit'],
-      hunger: [80, 90, 60, 95, 70, 85],
-      thirst: [70, 85, 50, 88, 60, 80],
-      stress: [20, 60, 10, 75, 15, 45]
-    }
+    team1Result(),
+    team2Result()
   ];
+
+  // teamResults 배열을 매핑할 때 사용할 팀 이름 배열 추가
+  const teamNames = ['Team 1', 'Team 2'];
+
+  // 팀별 성공 횟수를 계산하는 함수
+  const getSuccessCount = (result: Result): number => {
+    return result.event_result.filter(result => result === 'success').length;
+  };
+
+  // 성공 횟수에 따라 정렬된 팀 결과
+  const sortedTeamResults = [...teamResults].sort((a, b) => 
+    getSuccessCount(b) - getSuccessCount(a)
+  );
+
+  onMount(() => {
+    console.log(teamResults)
+  });
 
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col font-sans">
@@ -82,18 +82,21 @@ const H8: Component = () => {
         <div class="w-[30%] bg-gray-600 p-5">
           <h2 class="text-2xl text-center mb-4">팀 랭킹</h2>
           <div class="space-y-2">
-            {['Team 1', 'Team 2'].map((team, index) => (
+            {sortedTeamResults.map((result, index) => (
               <div
-                onClick={() => setSelectedTeam(team)}
+                onClick={() => {
+                  setSelectedTeam(result.team);
+                  console.log('Selected team:', result.team);
+                }}
                 class={`flex items-center p-3 rounded cursor-pointer transition-colors
-                  ${selectedTeam() === team 
+                  ${selectedTeam() === result.team 
                     ? 'bg-orange-500 hover:bg-orange-600 text-lg text-black font-bold' 
                     : 'bg-gray-200 hover:bg-gray-400 text-lg text-black font-bold'}`}
               >
                 <span class="mr-3">{index + 1}</span>
-                <span class="flex-1">{team}</span>
+                <span class="flex-1">{result.team}</span>
                 <span class="bg-gray-200 text-green-700 px-2 py-1 rounded text-lg font-bold">
-                  {5 - index}
+                  {getSuccessCount(result)}
                 </span>
               </div>
             ))}
