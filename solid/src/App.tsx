@@ -4,6 +4,7 @@ import H2 from './components/H2.tsx';
 import H2_1 from './components/H2-1.tsx';
 import H3 from './components/H3.tsx';
 import H4 from './components/H4.tsx';
+import H5_0 from './components/H5-0.tsx';
 import H5 from './components/H5.tsx';
 import H6 from './components/H6.tsx';
 import H7 from './components/H7.tsx';
@@ -25,6 +26,7 @@ function App() {
       <Route path="/host/notice" component={H2_1} />
       <Route path="/host/waiting" component={H3} />
       <Route path="/host/preinfo" component={H4} />
+      <Route path="/host/readyinfo" component={H5_0} />
       <Route path="/host/sceneinfo" component={H5} />
       <Route path="/host/simulinfo" component={H6} />
       <Route path="/host/simulresult" component={H7} />
