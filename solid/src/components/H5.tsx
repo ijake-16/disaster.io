@@ -119,6 +119,16 @@ const SceneInfo: Component = () => {
     return () => clearInterval(interval);
   });
 
+  const handleSimulStart = async () => {
+    try {
+      await ky.post(`http://localhost:8000/host/room/${currentroomCode}/game_start_confirm`);
+      console.log("Game simulation started for room code:", currentroomCode);
+      window.location.href = '/host/simulinfo';
+      // Optionally, redirect or update state after starting the simulation
+    } catch (error) {
+      console.error("Failed to start game simulation:", error);
+    }
+  };
 
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center py-5 font-sans">
@@ -168,10 +178,12 @@ const SceneInfo: Component = () => {
 
         <div class="mt-5">
           <button 
-            onClick={() => navigate('/host/simulinfo')}
+            onClick={() => {
+              handleSimulStart();
+            }}
             class="bg-orange-500 text-black px-10 py-2.5 text-xl font-bold rounded-md hover:bg-orange-600"
           >
-            게임 완료
+            가방 싸기 완료
           </button>
         </div>
       </div>

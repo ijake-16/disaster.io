@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount } from "solid-js";
+import { Component, createSignal, onMount, onCleanup } from "solid-js";
 import { useNavigate, useLocation } from "@solidjs/router";
 import ky from "ky";
 
@@ -108,14 +108,28 @@ const S7: Component = () => {
     }
   };
   
-  // Fetch data on component mount
+  const checkSimulStartConfirmed = async () => {
+    try {
+      const response = await ky
+        .get(`http://localhost:8000/player/room/${roomCode}/game_start_confirmed`)
+        .json<{ message: string; current_phase: string }>();
+
+      if (response.current_phase === "simulation") {
+        navigate("/simulinfo");
+      }
+    } catch (error) {
+      console.error("Error checking game start confirmed:", error);
+    }
+  };
+
   onMount(() => {
     fetchTeamData();
-  });
+    const checkGameStartConfirmedInterval = setInterval(checkSimulStartConfirmed, 1000);
 
-  const handleContinue = () => {
-    navigate("/simulinfo");
-  };
+    onCleanup(() => {
+      clearInterval(checkGameStartConfirmedInterval);
+    });
+  });
 
   return (
     <div class="flex justify-center items-center h-screen bg-neutral-950 text-white font-sans">
@@ -168,10 +182,9 @@ const S7: Component = () => {
 
         <div class="text-center">
           <button
-            onClick={handleContinue}
-            class="bg-orange-500 text-black px-10 py-2.5 rounded text-lg font-bold hover:bg-orange-600 transition-colors"
+            class="bg-gray-500 text-black px-10 py-2.5 rounded text-lg font-bold"
           >
-            시뮬레이션 준비 완료
+            대기중
           </button>
         </div>
       </div>
