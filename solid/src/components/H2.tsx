@@ -1,136 +1,43 @@
-import { Component, createSignal } from "solid-js";
-import { useNavigate } from "@solidjs/router";
-import ky from "ky";
-import { setRoomCode } from "../store";
-import logoImage from '../../resource/logo_horizon.png';
+import { Component } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+import { roomCode } from '../store'; // 글로벌 상태 임포트
+import logoImage from '../../resource/logo.png';
 
-const RoomBuild: Component = () => {
+const NoticeRoom: Component = () => {
   const navigate = useNavigate();
-  const [roomTitle, setRoomTitle] = createSignal("");
-  const [selectedPreInfo, setSelectedPreInfo] = createSignal<number | null>(null);
-  const [selectedDisaster, setSelectedDisaster] = createSignal<number | null>(null);
-
-  const createRoom = async () => {
-    try {
-      const payload = {
-        host_nickname: roomTitle(),
-        selected_pre_info: selectedPreInfo(),
-        selected_disaster: selectedDisaster(),
-      };
-
-      const response = await ky.post("http://localhost:8000/host/create_room", {
-          json: payload,
-        })
-        .json<{ room_code: string; host_nickname: string }>();
-
-      console.log("Room created successfully:", response);
-      setRoomCode(response.room_code);
-      navigate("/host/notice");
-    } catch (error) {
-      console.error("Failed to create room:", error);
-    }
-  };
-
-  const toggleBorder = (section: "pre" | "disaster", index: number) => (event: Event) => {
-    if (section === "pre") {
-      setSelectedPreInfo(index);
-    } else {
-      setSelectedDisaster(index);
-    }
-  };
+  const currentRoomCode = roomCode(); // 배열 구조 분해 할당으로 방 코드 가져오기
 
   return (
-    <div class="min-h-screen bg-neutral-950 text-gray-200 flex flex-col mx-auto justify-center items-center font-sans">
-      {/* Header Section */}
-      <div class="mx-auto flex items-center">
-        <img
-          src={logoImage}
-          alt="Disaster.io Logo"
-          class="h-16 w-auto mb-6"
-        />
-      </div>
-
-      {/* Panels Section */}
-      <div class="w-[80%] gap-1 flex flex-row">
-        {/* Left Panel */}
-        <div class="flex flex-col gap-5 w-[30%] h-[90%] bg-gray-800 p-5 rounded-lg shrink-0">
-          <div class="bg-gray-700 text-xl p-4 text-center rounded">게임 설정</div>
-          <input
-            class="bg-gray-700 text-lg p-4 text-center rounded"
-            placeholder="방 제목을 입력하세요"
-            value={roomTitle()}
-            onInput={(e) => setRoomTitle(e.currentTarget.value)}
+    <div class="min-h-screen bg-neutral-950 text-white flex justify-center items-center font-sans">
+      <div class="flex flex-col justify-center items-center w-[90%] max-w-[435px] py-8 bg-gray-800 rounded-lg shadow-lg">
+        <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+          <img
+            src={logoImage}
+            alt="Disaster.io Logo"
+            class="h-32 w-auto mb-6"
           />
+        </div>
+        
+        <p class="text-lg text-gray-200 mb-4 max-w-[80%] leading-relaxed">
+          화면 공유를 통해 다른 참가자들이 이 화면을 볼 수 있도록 설정하세요.
+          아래의 방 코드로 참가자들이 입장할 수 있습니다.
+        </p>
 
-          <div class="bg-gray-700 text-lg p-4 rounded flex justify-between items-center">
-            <span>최대 팀 수</span>
-            <span>4</span>
-          </div>
-
-          <div class="bg-gray-700 text-lg p-4 rounded flex justify-between items-center">
-            <span>가방 싸기 시간</span>
-            <span>150</span>
-          </div>
-
-          <button
-            class="bg-orange-500 p-4 text-xl rounded font-bold text-black hover:bg-orange-600 transition-colors"
-            onClick={createRoom}
-          >
-            방 만들기
-          </button>
+        <div class="text-6xl text-orange-400 font-bold py-4 px-6 bg-gray-900 border-3 border-orange-400 rounded-lg mb-4 tracking-widest">
+          {currentRoomCode || '882910'} {/* 방 코드가 없으면 기본값 사용 */}
         </div>
 
-        {/* Right Panel */}
-        <div class="flex flex-col gap-3 w-[55%] h-[90%] bg-gray-800 p-5 rounded-lg shrink-0 grow">
-          <div class="bg-orange-500 text-xl font-bold p-2.5 text-center rounded text-black">
-            사전 정보 설정
-          </div>
-
-          <div class="flex flex-row gap-2">
-            {[1, 2].map((gridIndex) => (
-              <div class="grid grid-cols-2 gap-2 w-full rounded-lg overflow-hidden p-1">
-                {[1, 2].map((imgIndex) => {
-                  const index = (gridIndex - 1) * 4 + imgIndex - 1;
-                  return (
-                    <img
-                      src="../../resource/tsunami.png"
-                      class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
-                        ${selectedPreInfo() === index ? "border-orange-400" : "border-transparent"} 
-                        hover:border-orange-600`}
-                      onClick={toggleBorder("pre", index)}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-
-          <div class="bg-orange-500 text-xl font-bold p-2.5 text-center rounded text-black">
-            재난 정보 설정
-          </div>
-
-          <div class="flex flex-row gap-2">
-            {[1, 2].map((gridIndex) => (
-              <div class="grid grid-cols-2 gap-2 w-full rounded-lg overflow-hidden p-1">
-                {[1, 2].map((imgIndex) => {
-                  const index = (gridIndex - 1) * 4 + imgIndex - 1;
-                  return (
-                    <img
-                      src="../../resource/earthquake.png"
-                      class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
-                        ${selectedDisaster() === index ? "border-yellow-400" : "border-transparent"} 
-                        hover:border-orange-600`}
-                      onClick={toggleBorder("disaster", index)}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+        <div class="mt-2">
+          <button
+            onClick={() => navigate('/host/waiting')}
+            class="bg-orange-400 text-black py-2.5 px-10  rounded font-bold text-xl hover:bg-amber-600 transition-colors"
+          >
+            다음으로
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default RoomBuild;
+export default NoticeRoom;

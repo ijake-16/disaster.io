@@ -12,7 +12,7 @@ const DisasterIO = () => {
 
   const handleNavigate = () => {
     if (destination() === 'h1') {
-      window.location.href = '/host/start';
+      window.location.href = '/host/roombuild';
     } else if (destination() === 's1') {
       window.location.href = '/start';
     } else {

@@ -1,7 +1,6 @@
 import { Router, Route } from '@solidjs/router';
 import H1 from './components/H1.tsx';
 import H2 from './components/H2.tsx';
-import H2_1 from './components/H2-1.tsx';
 import H3 from './components/H3.tsx';
 import H4 from './components/H4.tsx';
 import H5_0 from './components/H5-0.tsx';
@@ -21,9 +20,8 @@ import S8 from './components/S8.tsx';
 function App() {
   return (
     <Router>
-      <Route path="/host/start" component={H1} />
-      <Route path="/host/roombuild" component={H2} />
-      <Route path="/host/notice" component={H2_1} />
+      <Route path="/host/roombuild" component={H1} />
+      <Route path="/host/notice" component={H2} />
       <Route path="/host/waiting" component={H3} />
       <Route path="/host/preinfo" component={H4} />
       <Route path="/host/readyinfo" component={H5_0} />
