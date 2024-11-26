@@ -121,8 +121,8 @@ This solution utilizes a game-based learning approach to enable real-time intera
   이메일: ecobrick@kaist.ac.kr | GitHub: [hwangbominseok](https://github.com/hwangbominseok)
 
 ### 멘토 및 펠로우 (Mentors & Fellows)
-- **펠로우 조직 (Fellow Organization)**: [Organization Website](#)
-- **Mentor : 이상은 (Sangeun Lee)**: [멘토 연락처 또는 링크](#)
+- **Fellow : 더프라미스 김동훈 펠로우님 (Donghoon Kim @ The Promise)**: [Organization Website](#)
+- **Mentor : 카카오페이 이상은 멘토님 (Sangeun Lee @ Kakaopay)**: [멘토 연락처 또는 링크](#)
 
 ---
 
