@@ -103,18 +103,28 @@ const selectRandomEvents = (
 };
 
 
-const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number; maxValue: number; id: any; }) => {
+const StatusBar: Component<StatusBarProps> = (props: { label: any; value: number; prevValue: number; maxValue: number; id: any; }) => {
   const getBarColor = (value: number) => {
     if (value <= 30) return 'bg-green-600';
     if (value <= 60) return 'bg-yellow-600';
     return 'bg-red-600';
-    };
+  };
+  const getResultColor = (value: number) => {
+    if (value < 0) return 'text-green-600';
+    return 'text-red-600';
+  };  
+  const getResultSign = (value: number) => {
+    if (value <= 0) return '';
+    return '+';
+  };  
 
   return (
     <div class="mb-2 font-sans">
       <div class="flex text-base">
-        <span>{`${props.label}: ${props.value}`}</span>
-        {/* <span class="text-red-500">{`${props.value}`}</span> */}
+        <span>{`${props.label}:${props.value}`}</span> 
+        <span 
+          class={`${getResultColor(props.prevValue)} ml-1`}
+        >{`${getResultSign(props.prevValue)}${props.prevValue == 0 ? '' : props.prevValue}`}</span>
       </div>
       <div class="w-full bg-gray-400 rounded-full h-2.5">
         <div 
@@ -210,7 +220,7 @@ interface TeamBoxProps {
 // 인벤토리 체크 함수
 const checkInventory = (index: number, inventory: Record<string, number>, requiredItem: string, itemsData: Record<string, string>) => {
   const matchedItems: string[] = [];
-
+  console.log("required item: ", requiredItem, " inventory: ", inventory);
   Object.entries(inventory).forEach(([item, count]) => {
     if (count > 0 && itemsData[item] === requiredItem) {
       matchedItems.push(item);
@@ -383,8 +393,11 @@ const SimulationResult: Component = () => {
     console.log(selectedEvents())
   
     // 자동으로 모든 이벤트를 순차적으로 처리
-    processAllEvents();
-    setCurrentEventIndex(0);
+    setTimeout(() => {
+      processAllEvents();
+      setCurrentEventIndex(0);
+      }, 
+      200);
   });
   
   const processAllEvents = () => {
@@ -506,11 +519,11 @@ const SimulationResult: Component = () => {
               <div class="flex flex-col text-base items-center ml-4 mr-8">
                 <img
                   src={team1Result().item_path[currentEventIndex()] || "../../resource/none.png"}
-                  alt={team1Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : team1Result().used_item[currentEventIndex()]}
-                  class="h-20 w-20 object-contain ml-2 my-2"
+                  alt={team1Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : team1Result().used_item[currentEventIndex()]}
+                  class="h-20 w-20 object-contain mx-2 my-2"
                 />
                 <span class="text-sm text-gray-600">
-                  {team1Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : `${team1Result().used_item[currentEventIndex()]} 사용`}
+                  {team1Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : `${team1Result().used_item[currentEventIndex()]} 사용`}
                 </span>
               </div>
 
@@ -518,21 +531,21 @@ const SimulationResult: Component = () => {
                 <StatusBar
                   label="배고픔"
                   value={team1Result().hunger[currentEventIndex()]}
-                  // prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
+                  prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
                   maxValue={100}
                   id={`hunger-bar-team-${team1Result().team}`}
                 />
                 <StatusBar
                   label="목마름"
                   value={team1Result().thirst[currentEventIndex()]}
-                  // prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
+                  prevValue={team1Result().thirst[currentEventIndex()] - (team1Result().thirst[currentEventIndex()-1] || 0)}
                   maxValue={100}
                   id={`thirst-bar-team-${team1Result().team}`}
                 />
                 <StatusBar
                   label="스트레스"
                   value={team1Result().stress[currentEventIndex()]}
-                  // prevValue={team1Result().hunger[currentEventIndex()] - (team1Result().hunger[currentEventIndex()-1] || 0)}
+                  prevValue={team1Result().stress[currentEventIndex()] - (team1Result().stress[currentEventIndex()-1] || 0)}
                   maxValue={100}
                   id={`stress-bar-team-${team1Result().team}`}
                 />
@@ -555,11 +568,11 @@ const SimulationResult: Component = () => {
               <div class="flex flex-col text-base items-center ml-4 mr-8">
                 <img
                   src={team2Result().item_path[currentEventIndex()] || "../../resource/none.png"}
-                  alt={team2Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : team2Result().used_item[currentEventIndex()]}
-                  class="h-20 w-20 object-contain ml-2 my-2"
+                  alt={team2Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : team2Result().used_item[currentEventIndex()]}
+                  class="h-20 w-20 object-contain mx-2 my-2"
                 />
                 <span class="text-sm text-gray-600">
-                  {team2Result().used_item[currentEventIndex()] === "None" ? "사용 아이템 없음" : `${team2Result().used_item[currentEventIndex()]} 사용`}
+                  {team2Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : `${team2Result().used_item[currentEventIndex()]} 사용`}
                 </span>
               </div>
 
@@ -567,21 +580,21 @@ const SimulationResult: Component = () => {
                 <StatusBar
                   label="배고픔"
                   value={team2Result().hunger[currentEventIndex()]}
-                  // prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
+                  prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
                   maxValue={100}
                   id={`hunger-bar-team-${team2Result().team}`}
                 />
                 <StatusBar
                   label="목마름"
                   value={team2Result().thirst[currentEventIndex()]}
-                  // prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
+                  prevValue={team2Result().thirst[currentEventIndex()] - (team2Result().thirst[currentEventIndex()-1] || 0)}
                   maxValue={100}
                   id={`thirst-bar-team-${team2Result().team}`}
                 />
                 <StatusBar
                   label="스트레스"
                   value={team2Result().stress[currentEventIndex()]}
-                  // prevValue={team2Result().hunger[currentEventIndex()] - (team2Result().hunger[currentEventIndex()-1] || 0)}
+                  prevValue={team2Result().stress[currentEventIndex()] - (team2Result().stress[currentEventIndex()-1] || 0)}
                   maxValue={100}
                   id={`stress-bar-team-${team2Result().team}`}
                 />
