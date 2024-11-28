@@ -24,7 +24,7 @@ const S6: Component = () => {
   const [quantity, setQuantity] = createSignal(1); // Number of items to add
   const [showModal, setShowModal] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal("");
-
+  const [isDisabled, setIsDisabled] = createSignal(true);
   const location = useLocation();
   const navigate = useNavigate();
   const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
@@ -120,6 +120,7 @@ const S6: Component = () => {
 
   // Generate bag contents summary
   const getBagContents = async () => {
+    setIsDisabled(false);
     const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
   
     q().forEach((item) => {
@@ -163,13 +164,47 @@ const S6: Component = () => {
     console.log("Bag Contents:", bagContents);
   };
   
-
+  const getAutoBagContents = async () => {
+    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
+  
+    q().forEach((item) => {
+      const name = item.name;
+      if (!bagContents.items[name]) {
+        bagContents.items[name] = 0;
+      }
+      bagContents.items[name] += 1;
+    });
+    const flattenedBagContents = {
+      ...bagContents.items, // Flatten the items dictionary
+      totalWeight: bagContents.totalWeight,
+      totalVolume: bagContents.totalVolume,
+      bagID: 100,
+    };
+    try {
+      // Make API call to submit bag contents
+      
+      console.log(bagContents.items)
+      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
+        json: flattenedBagContents,
+      }).json();
+  
+      console.log("API Response:", response);
+    } catch (error) {
+      console.error("Error auto saving bag contents:", error);
+      alert("Failed to auto save bag contents. Please try again.");
+    }
+  
+    console.log("Bag Contents:", bagContents);
+  };
   // Filtered items based on search
   const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
 
   onMount(() => {
     readItemsFromExcel();
     startTimer();
+    if (isDisabled()) {
+      getAutoBagContents();
+    }
   });
 
   return (
