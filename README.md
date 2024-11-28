@@ -1,6 +1,7 @@
 # 가방으로 살아남기 (Surviving with a Bag)
 
 💡  **가방으로 살아남기**는 게임 요소로 재난 교육의 효과를 높이는 **웹 기반 교육 게임**입니다. 재난 상황에서 생존 가방을 준비하고, 시뮬레이션을 통해 생존 전략을 테스트하고 피드백하는 단계로 구성되어 있습니다.
+
 **💡 *Surviving with a Bag*** is a **web-based educational game** designed to enhance disaster education through gamification. It focuses on preparing survival bags, testing survival strategies through simulations, and providing feedback.
 
 ![logo_image.png](logo_image.png)
@@ -9,23 +10,23 @@
 
 ### 팀원 (Team Members)
 - **김정빈(Jungbin Kim)** - KAIST 전산학부 20학번
-    팀장, 기획 및 개발 (Team Leader, Planning and Development)
-    ✉️ Mail: [jake16@kaist.ac.kr](mailto:jake16@kaist.ac.kr) | GitHub: ijake-16
+    - 팀장, 기획 및 개발 (Team Leader, Planning and Development)
+    - ✉️ Mail: [jake16@kaist.ac.kr](mailto:jake16@kaist.ac.kr) | GitHub: ijake-16
 - **윤지훈(Jihoon Yoon)** - KAIST 전기및전자공학부 20학번
-    기획 및 개발 (Planning and Development) | GitHub: younjihoon
-    ✉️ Mail: [kjm10122@gmail.com](mailto:kjm10122@gmail.com)
+    - 기획 및 개발 (Planning and Development) | GitHub: younjihoon
+    - ✉️ Mail: [kjm10122@gmail.com](mailto:kjm10122@gmail.com)
 - **김지민(Jimin Kim)** - KAIST 전산학부 21학번
-    기획 및 개발 (Planning and Development) | GitHub: VVictorVV
-    ✉️ Mail: [jihoon9835@gmail.com](mailto:jihoon9835@gmail.com)
+    - 기획 및 개발 (Planning and Development) | GitHub: VVictorVV
+    - ✉️ Mail: [jihoon9835@gmail.com](mailto:jihoon9835@gmail.com)
 - **이재현(Jaehyeon Lee)** - KAIST 전산학부 22학번
-    기획 및 개발 (Planning and Development) | GitHub: jaedungg
-    ✉️ Mail: [jh5323565@kaist.ac.kr](mailto:jh5323565@kaist.ac.kr) [jh5323565@gmail.com](mailto:jh5323565@gmail.com)
+    - 기획 및 개발 (Planning and Development) | GitHub: jaedungg
+    - ✉️ Mail: [jh5323565@kaist.ac.kr](mailto:jh5323565@kaist.ac.kr) [jh5323565@gmail.com](mailto:jh5323565@gmail.com)
 - **임자영(Jayeong Im)** - KAIST 산업디자인학과 22학번
-    기획 및 디자인 (Planning and Design)
-    ✉️ Mail: [bagjay@kaist.ac](mailto:bagjay@kaist.ac) | GitHub: Gomchiiii
+    - 기획 및 디자인 (Planning and Design)
+    - ✉️ Mail: [bagjay@kaist.ac](mailto:bagjay@kaist.ac) | GitHub: Gomchiiii
 - **황보민석(Minseok Hwangbo)** - KAIST 전산학부 23학번
-    기획 및 개발 (Planning and Development)
-    ✉️ Mail: [ecobrick@kaist.ac.kr](mailto:ecobrick@kaist.ac.kr) | GitHub: hwangbominseok
+    - 기획 및 개발 (Planning and Development)
+    - ✉️ Mail: [ecobrick@kaist.ac.kr](mailto:ecobrick@kaist.ac.kr) | GitHub: hwangbominseok
 
 ### 펠로우 및 멘토 (Fellow & Mentor)
 - **Fellow : 더프라미스 김동훈 펠로우님** (Donghoon Kim @ The Promise): Organization Website
@@ -57,9 +58,10 @@ There is a negative perception of disaster safety education in Korea, and effect
         - 기존 솔루션
             
             생존가방 키트: 실제 재난 상황이 발생했을 때, 필요한 물품들을 빠르게 챙겨보는 연습. 교육자와 참여자가 함께 참여해서 몰입도를 높일 수 있다.
-            
-            ![bagkit_img.png](bagkit_img.png){ width=250 }
-            
+            <br>
+            <img src="bagkit_img.png" alt="설명" style="width:50%; height:auto;">
+
+
         - 참고: 교육자가 게임을 호스팅하여 진행하고 피드백을 수집하는 방식
             - https://kahoot.com/
             - https://www.slido.com/

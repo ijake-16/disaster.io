@@ -262,7 +262,7 @@ const H8: Component = () => {
                     <h4 class="text-lg mb-2">필요했던 아이템:</h4>
                     <div class="space-y-3">
                       {isLoading() ? (
-                        <div class="bg-gray-400 p-3 rounded">로딩 중...</div>
+                        <div class="bg-gray-700 p-3 rounded">로딩 중...</div>
                       ) : (
                         selectedTeam() && selectedEvent() !== null && 
                         (() => {
@@ -273,7 +273,7 @@ const H8: Component = () => {
                             matchingItems.map(itemName => {
                               const itemInfo = itemDetails()[itemName];
                               return (
-                                <div class="bg-gray-400 p-3 rounded flex items-center gap-4">
+                                <div class="bg-gray-700 p-3 rounded flex items-center gap-4">
                                   <div class="w-12 h-12 bg-gray-500 rounded-lg flex-shrink-0 overflow-hidden">
                                     <img 
                                       src={`../../resource/${itemName}.png`}
@@ -293,7 +293,7 @@ const H8: Component = () => {
                               );
                             })
                           ) : (
-                            <div class="bg-gray-400 p-3 rounded">없음</div>
+                            <div class="bg-gray-700 p-3 rounded">없음</div>
                           );
                         })()
                       )}
