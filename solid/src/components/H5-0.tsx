@@ -81,9 +81,21 @@ const ReadyInfo: Component = () => {
       console.error("Failed to fetch team data:", error);
     }
   };
-  
+  const fetchTeams = async () => {
+    try {
+      const response = await ky.get(`http://localhost:8000/host/room/${currentroomCode}/info`).json<{ room_code: string, host_nickname: string,players: string[] }>();
+      const teamStatuses = response.players.map((player) => ({
+        name: player, // 플레이어명을 name에 매핑
+        ready: null,  // ready는 항상 null 
+      }));
+      setTeams(teamStatuses);
+    } catch (error) {
+      console.error("Failed to fetch teams:", error);
+    }
+  };
   // Fetch data on component mount
   onMount(() => {
+    fetchTeams();
     fetchTeamData();
     const interval = setInterval(fetchTeamData, 5000);
 
