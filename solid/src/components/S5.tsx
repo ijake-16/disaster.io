@@ -88,7 +88,7 @@ const BagSelect: Component = () => {
     <div class="flex justify-center items-center min-h-screen bg-neutral-950 text-white font-sans">
       <div class="container text-center">
         <div class="mb-8">
-          <p class="text-lg text-orange-500 font-sans">Room : {roomCode}</p>
+          <p class="text-lg text-orange-400 font-sans">Room : {roomCode}</p>
           <div class="flex justify-center items-center mb-4">
             <img
               src="../../resource/logo_horizon.png"
@@ -97,7 +97,7 @@ const BagSelect: Component = () => {
             />
           </div>
           <h2 class="text-gray-200 text-2xl font-sans">생존 물품을 담을 가방을 선택해 주세요.</h2>
-          <p class="text-orange-500 text-xl font-sans">YOU : {currentTeamName}</p>
+          <p class="text-orange-400 text-xl font-sans">YOU : {currentTeamName}</p>
         </div>
 
         <div class="flex flex-row items-center justify-center gap-5 text-lg">
@@ -121,7 +121,7 @@ const BagSelect: Component = () => {
 
         <button
           onClick={handleContinue}
-          class="mt-8 px-10 py-2.5 bg-orange-500 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-600 transition-colors font-sans"
+          class="mt-8 px-10 py-2.5 bg-orange-400 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-500 transition-colors font-sans"
         >
           생존 가방 싸기
         </button>

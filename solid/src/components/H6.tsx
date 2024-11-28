@@ -47,7 +47,7 @@ const SimulationInfo: Component = () => {
       {/* Start Button */}
       <button
         onClick={() => navigate('/host/simulresult')}
-        class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-amber-600 transition-colors"
+        class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-500 transition-colors"
       >
         시뮬레이션 시작!
       </button>

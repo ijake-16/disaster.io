@@ -74,7 +74,7 @@ const RoomBuild: Component = () => {
           </div>
 
           <button
-            class="bg-orange-500 p-4 text-xl rounded font-bold text-black hover:bg-orange-600 transition-colors"
+            class="bg-orange-400 p-4 text-xl rounded font-bold text-black hover:bg-orange-500 transition-colors"
             onClick={createRoom}
           >
             방 만들기
@@ -83,7 +83,7 @@ const RoomBuild: Component = () => {
 
         {/* Right Panel */}
         <div class="flex flex-col gap-3 w-[55%] h-[90%] bg-gray-800 p-5 rounded-lg shrink-0 grow">
-          <div class="bg-orange-500 text-xl font-bold p-2.5 text-center rounded text-black">
+          <div class="bg-orange-400 text-xl font-bold p-2.5 text-center rounded text-black">
             사전 정보 설정
           </div>
 
@@ -98,7 +98,7 @@ const RoomBuild: Component = () => {
                       src={family_info[(gridIndex - 1)*2 + imgIndex - 1]}
                       class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
                         ${selectedPreInfo() === index ? "border-orange-400" : "border-transparent"} 
-                        hover:border-orange-600`}
+                        hover:border-orange-500`}
                       onClick={toggleBorder("pre", index)}
                     />
                   );
@@ -107,7 +107,7 @@ const RoomBuild: Component = () => {
             ))}
           </div>
 
-          <div class="bg-orange-500 text-xl font-bold p-2.5 text-center rounded text-black">
+          <div class="bg-orange-400 text-xl font-bold p-2.5 text-center rounded text-black">
             재난 정보 설정
           </div>
 
@@ -121,7 +121,7 @@ const RoomBuild: Component = () => {
                       src={disaster_info[(gridIndex - 1)*2 + imgIndex - 1]}
                       class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
                         ${selectedDisaster() === index ? "border-yellow-400" : "border-transparent"} 
-                        hover:border-orange-600`}
+                        hover:border-orange-500`}
                       onClick={toggleBorder("disaster", index)}
                     />
                   );

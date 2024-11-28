@@ -30,7 +30,7 @@ const NoticeRoom: Component = () => {
         <div class="mt-2">
           <button
             onClick={() => navigate('/host/waiting')}
-            class="bg-orange-400 text-black py-2.5 px-10  rounded font-bold text-xl hover:bg-amber-600 transition-colors"
+            class="bg-orange-400 text-black py-2.5 px-10  rounded font-bold text-xl hover:bg-orange-500 transition-colors"
           >
             다음으로
           </button>

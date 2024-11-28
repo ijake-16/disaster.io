@@ -151,7 +151,7 @@ const SceneInfo: Component = () => {
                 {team.items.map((item) => (
                   <div class="bg-gray-500 p-2 relative flex items-center justify-center">
                     <img src={item.image} alt="Item" class="w-10 h-10" />
-                    <div class="absolute bottom-1 right-1 bg-orange-500 text-black px-1.5 rounded text-sm font-bold">
+                    <div class="absolute bottom-1 right-1 bg-orange-400 text-black px-1.5 rounded text-sm font-bold">
                       {item.count}
                     </div>
                   </div>
@@ -181,7 +181,7 @@ const SceneInfo: Component = () => {
             onClick={() => {
               handleSimulStart();
             }}
-            class="bg-orange-500 text-black px-10 py-2.5 text-xl font-bold rounded-md hover:bg-orange-600"
+            class="bg-orange-400 text-black px-10 py-2.5 text-xl font-bold rounded-md hover:bg-orange-500"
           >
             가방 싸기 완료
           </button>

@@ -61,7 +61,7 @@ const S2 = () => {
         <div></div>
 
         <button
-          class="connect-button bg-orange-500 text-black text-xl font-bold py-2.5 px-10 mt-5 rounded font-bold hover:bg-orange-600 transition-colors font-sans"
+          class="connect-button bg-orange-400 text-black text-xl font-bold py-2.5 px-10 mt-5 rounded font-bold hover:bg-orange-500 transition-colors font-sans"
           onClick={handleConnect}
         >
           접속하기

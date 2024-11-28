@@ -40,7 +40,7 @@ const H4PreInfo: Component = () => {
     <div class="min-h-screen bg-neutral-950 text-white font-sans">
       {/* Header Section */}
       <header class="p-4 text-center">
-        <p class="text-xl text-orange-500 mb-1">Room : {roomCode()}</p>
+        <p class="text-xl text-orange-400 mb-1">Room : {roomCode()}</p>
         <div class="max-w-screen-xl mx-auto flex flex-col items-center">
           <img
             src={logoImage}
@@ -106,7 +106,7 @@ const H4PreInfo: Component = () => {
       <div class="text-center mt-4 pb-8">
         <button
           onClick={handleContinue}
-          class="bg-orange-400 text-black text-xl font-bold px-10 py-2.5 rounded-lg hover:bg-amber-600 transition-colors"
+          class="bg-orange-400 text-black text-xl font-bold px-10 py-2.5 rounded-lg hover:bg-orange-500 transition-colors"
         >
           네, 생존할 준비가 되었습니다.
         </button>

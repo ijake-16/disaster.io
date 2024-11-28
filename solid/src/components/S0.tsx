@@ -50,7 +50,7 @@ const DisasterIO = () => {
         </button>
         
         <button
-          class="bg-orange-500 text-black text-xl font-bold py-2.5 mt-4 rounded-lg text-lg font-sans hover:bg-orange-600 transition-colors"
+          class="bg-orange-400 text-black text-xl font-bold py-2.5 mt-4 rounded-lg text-lg font-sans hover:bg-orange-500 transition-colors"
           onClick={handleNavigate}
         >
         선택
