@@ -45,53 +45,6 @@ const BagSelect: Component = () => {
       weightLimit: 10,
       volumeLimit: 15,
       bagWeight: 0.5,
-      description: "가벼운 에코백mport { Component, createSignal } from "solid-js";
-import { useLocation, useNavigate } from "@solidjs/router";
-import ky from "ky";
-
-interface BagOption {
-  id: number;
-  image: string;
-  alt: string;
-  weightLimit: number;
-  volumeLimit: number;
-  bagWeight: number;
-  description: string;
-}
-
-const BagSelect: Component = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
-  const currentTeamName = location.state?.teamName || "UNKNOWN_TEAM";
-  const [selectedBagId, setSelectedBagId] = createSignal<number>(1);
-
-  const bagOptions: BagOption[] = [
-    {
-      id: 1,
-      image: "resource/militarybag.png",
-      alt: "Military Backpack",
-      weightLimit: 30,
-      volumeLimit: 30,
-      bagWeight: 5,
-      description: "튼튼 등산베낭",
-    },
-    {
-      id: 2,
-      image: "resource/kidbag.png",
-      alt: "Cute Backpack",
-      weightLimit: 15,
-      volumeLimit: 15,
-      bagWeight: 1,
-      description: "아동용 책가방",
-    },
-    {
-      id: 3,
-      image: "resource/ecobag.png",
-      alt: "Eco Tote Bag",
-      weightLimit: 10,
-      volumeLimit: 15,
-      bagWeight: 0.5,
       description: "가벼운 에코백",
     },
   ];
