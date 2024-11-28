@@ -386,7 +386,7 @@ const SimulationResult: Component = () => {
           <h2 class="text-xl font-bold mt-2 mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
           
           <div class="flex flex-col justify-center items-center">
-            <img 
+          <img 
               src={selectedEvents()[currentEventIndex()]?.img_path || "../../resource/snacks.png"}
               alt="Action Icon" 
               class="h-50 my-6" 

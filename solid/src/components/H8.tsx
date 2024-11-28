@@ -3,6 +3,8 @@ import { useNavigate } from "@solidjs/router";
 import { team1Result, team2Result, setTeam1Result, setTeam2Result} from "../store";
 import ky from "ky";
 import logoImage from '../../resource/logo_horizon.png';
+import * as XLSX from 'xlsx';
+import { itemTagMapping, setItemTagMapping, itemDetails, setItemDetails } from '../store';
 
 interface Result {
   team: string;
@@ -23,9 +25,12 @@ const H8: Component = () => {
   // 아이템 이름을 반환하는 함수 추가
   const getItemName = (itemId: string): string => {
     const itemNames: { [key: string]: string } = {
-      'water': '물',
+      'drink': '음료',
       'food': '음식',
-      'medkit': '의료 키트',
+      'medical': '의료용품',
+      'info': '정보 수집용 도구',
+      'shoes': '운동화',
+      'waterproof': '방우구',
       '': '없음'
     };
     return itemNames[itemId] || itemId;
@@ -34,12 +39,21 @@ const H8: Component = () => {
   // 아이템 설명을 반환하는 함수 추가
   const getItemDescription = (itemId: string): string => {
     const itemDescriptions: { [key: string]: string } = {
-      'water': '갈증을 해소할 수 있는 물입니다.',
+      'drink': '갈증을 해소할 수 있는 음료입니다.',
       'food': '배고픔을 해결할 수 있는 음식입니다.',
-      'medkit': '부상을 치료할 수 있는 의료 키트입니다.',
+      'medical': '부상을 치료하기 위해 사용되는 의료용품입니다.',
+      'info': '재난 정보를 효과적으로 수집할 수 있는 도구입니다.',
+      'shoes': '땅에 떨어진 위험한 잔해로부터 발을 보호하기 위해 사용됩니다.',
+      'waterproof': '비를 피해 젖는 것을 막을 수 있는 도구입니다.',
       '': '필요한 아이템이 없습니다.'
     };
     return itemDescriptions[itemId] || '아이템 설명이 없습니다.';
+  };
+
+  // 아이템 이미지를 반환하는 함수 수정
+  const getItemImage = (itemId: string, teamResult: Result, eventIndex: number): string => {
+    // required_item의 eventIndex에 해당하는 아이템과 동일한 순서의 item_path 반환
+    return teamResult.item_path[eventIndex] || '';
   };
 
   const teamResults: Result[] = [
@@ -60,8 +74,53 @@ const H8: Component = () => {
     getSuccessCount(b) - getSuccessCount(a)
   );
 
+  // Items.xlsx에서 데이터를 로드하는 함수 수정
+  const loadItemsData = async () => {
+    try {
+      const response = await fetch("../../Items.xlsx");
+      const arrayBuffer = await response.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(sheet) as Array<{
+        name: string;
+        tag: string;
+        korName: string;
+        description: string;
+      }>;
+
+      // 태그별로 아이템을 그룹화
+      const taggedItems: Record<string, string[]> = {
+        'drink': [],
+        'food': [],
+        'medical': [],
+        'info': [],
+        'shoes': [],
+        'waterproof': []
+      };
+
+      // 아이템 상세 정보 저장
+      const details: Record<string, { name: string; korName: string; description: string }> = {};
+
+      data.forEach((item) => {
+        if (taggedItems[item.tag]) {
+          taggedItems[item.tag].push(item.name);
+        }
+        details[item.name] = {
+          name: item.name,
+          korName: item.korName,
+          description: item.description
+        };
+      });
+
+      setItemTagMapping(taggedItems);
+      setItemDetails(details);
+    } catch (error) {
+      console.error("Failed to load items data:", error);
+    }
+  };
+
   onMount(() => {
-    console.log(teamResults)
+    loadItemsData();
   });
 
   return (
@@ -197,27 +256,37 @@ const H8: Component = () => {
                     <h4 class="text-lg mb-2">필요했던 아이템:</h4>
                     <div class="space-y-3">
                       {selectedTeam() && selectedEvent() !== null && 
-                        teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!] ? (
-                          <div class="bg-gray-400 p-3 rounded flex items-center gap-4">
-                            <div class="w-12 h-12 bg-gray-500 rounded-lg flex-shrink-0 overflow-hidden">
-                              <img 
-                                src={`/images/items/${teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!]}.png`}
-                                alt={teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!]}
-                                class="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div>
-                              <h5 class="font-bold mb-1">
-                                {getItemName(teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!])}
-                              </h5>
-                              <p class="text-sm text-gray-200">
-                                {getItemDescription(teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!])}
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div class="bg-gray-400 p-3 rounded">없음</div>
-                        )
+                        (() => {
+                          const requiredTag = teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!];
+                          const matchingItems = itemTagMapping()[requiredTag] || [];
+                          
+                          return matchingItems.length > 0 ? (
+                            matchingItems.map(itemName => {
+                              const itemInfo = itemDetails()[itemName];
+                              return (
+                                <div class="bg-gray-400 p-3 rounded flex items-center gap-4">
+                                  <div class="w-12 h-12 bg-gray-500 rounded-lg flex-shrink-0 overflow-hidden">
+                                    <img 
+                                      src={`../../resource/${itemName}.png`}
+                                      alt={itemInfo?.korName || itemName}
+                                      class="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div>
+                                    <h5 class="font-bold mb-1">
+                                      {itemInfo?.korName || itemName}
+                                    </h5>
+                                    <p class="text-sm text-gray-200">
+                                      {itemInfo?.description || "설명이 없습니다."}
+                                    </p>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div class="bg-gray-400 p-3 rounded">없음</div>
+                          );
+                        })()
                       }
                     </div>
                   </div>
