@@ -161,8 +161,6 @@ const S7: Component = () => {
                     </div>
                   </div>
                 ))}
-                <div class="bg-gray-700 p-2"></div>
-                <div class="bg-gray-700 p-2"></div>
               </div>
 
               <div class="flex justify-center mb-4">
