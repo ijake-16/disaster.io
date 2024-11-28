@@ -384,7 +384,7 @@ const SimulationResult: Component = () => {
       <div class="w-[70%] flex mx-auto gap-x-6 items-stretch">
         {/* Event Section */}
         <div class="w-[40%] flex-1 bg-gray-800 shadow-md rounded-lg pt-2 pb-4 px-4 mb-2 flex flex-col">
-          <h2 class="text-xl font-bold mt-2 mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
+          <h2 class="text-xl text-gray-200 font-bold mt-2 mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
           
           <div class="flex flex-col justify-center items-center">
           <img 
@@ -392,7 +392,7 @@ const SimulationResult: Component = () => {
               alt="Action Icon" 
               class="h-50 my-6" 
             />
-            <p class="text-lg font-bold text-center">
+            <p class="text-lg text-gray-200 font-bold text-center">
               {selectedEvents()[currentEventIndex()]?.description || "이벤트를 로드 중..."}
             </p>
           </div>
@@ -401,9 +401,9 @@ const SimulationResult: Component = () => {
         {/* Teams Section */}
         <div class="w-[60%] flex flex-col gap-y-1">
           {/* team1 */}
-          <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+          <div class="bg-gray-800 rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-bold">{team1Result().team}</h2>
+              <h2 class="text-xl text-gray-200 font-bold">{team1Result().team}</h2>
               
               <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
                 team1Result().event_result[currentEventIndex()] === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
@@ -419,12 +419,12 @@ const SimulationResult: Component = () => {
                   alt={team1Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : team1Result().used_item[currentEventIndex()]}
                   class="h-20 w-20 object-contain mx-2 my-2"
                 />
-                <span class="text-sm text-gray-600">
+                <span class="text-sm text-gray-200">
                   {team1Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : `${team1Result().used_item[currentEventIndex()]} 사용`}
                 </span>
               </div>
 
-              <div class="flex-grow">
+              <div class="flex-grow text-gray-200">
                 <StatusBar
                   label="배고픔"
                   value={team1Result().hunger[currentEventIndex()]}
@@ -450,9 +450,9 @@ const SimulationResult: Component = () => {
             </div>
           </div>
           {/* team2 */}
-          <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+          <div class="bg-gray-800 rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-bold">{team2Result().team}</h2>
+              <h2 class="text-xl text-gray-200 font-bold">{team2Result().team}</h2>
               
               <div class={`mt-1 px-3 pt-1 rounded-full text-base ${
                 team2Result().event_result[currentEventIndex()] === 'success' ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
@@ -461,19 +461,19 @@ const SimulationResult: Component = () => {
               </div>
             </div>
 
-            <div class="flex items-center">
+            <div class="flex text-gray-200 items-center">
               <div class="flex flex-col text-base items-center ml-4 mr-8">
                 <img
                   src={team2Result().item_path[currentEventIndex()] || "../../resource/none.png"}
                   alt={team2Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : team2Result().used_item[currentEventIndex()]}
                   class="h-20 w-20 object-contain mx-2 my-2"
                 />
-                <span class="text-sm text-gray-600">
+                <span class="text-sm text-gray-200">
                   {team2Result().used_item[currentEventIndex()] === "None" ? "아이템 없음" : `${team2Result().used_item[currentEventIndex()]} 사용`}
                 </span>
               </div>
 
-              <div class="flex-grow">
+              <div class="flex-grow text-gray-200">
                 <StatusBar
                   label="배고픔"
                   value={team2Result().hunger[currentEventIndex()]}

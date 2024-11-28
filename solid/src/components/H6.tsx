@@ -34,7 +34,7 @@ const SimulationInfo: Component = () => {
         {/* Goal Section */}
         <div class="flex flex-col items-center">
           <img 
-            src="../../resource/earthquake.png" 
+            src="../../resource/map.png" 
             alt="Goal Icon" 
             class="w-100 h-auto"
           />
