@@ -400,7 +400,7 @@ const SimulationResult: Component = () => {
         {/* Teams Section */}
         <div class="w-[60%] flex flex-col gap-y-1">
           {/* team1 */}
-          <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+          <div class="bg-gray-800 rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-bold">{team1Result().team}</h2>
               
@@ -449,7 +449,7 @@ const SimulationResult: Component = () => {
             </div>
           </div>
           {/* team2 */}
-          <div class="bg-gray-200 border rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
+          <div class="bg-gray-800 rounded-lg pt-2 py-4 pl-4 pr-6 mb-2 font-sans">
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-bold">{team2Result().team}</h2>
               
