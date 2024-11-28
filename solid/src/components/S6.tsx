@@ -96,7 +96,7 @@ const S6: Component = () => {
     const totalVolume = currentVolume() + item.volume * quantity();
 
     if (totalWeight > maxWeight || totalVolume > maxVolume) {
-      alert("Bag capacity exceeded!");
+      alert("가방에 더 이상 물건을 넣을 수 없습니다!");
       return;
     }
 
