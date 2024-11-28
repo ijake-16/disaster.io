@@ -30,33 +30,33 @@ const ReadyInfo: Component = () => {
       const bagOptions: BagOption[] = [
         {
           id: 1,
-          image: "../resource/militarybag.png",
+          image: "resource/militarybag.png",
           alt: "Military Backpack",
           weightLimit: 30,
           volumeLimit: 30,
           bagWeight: 5,
-          description: "그린다그리워현역시절사용하던휴가가방",
+          description: "튼튼 등산베낭",
         },
         {
           id: 2,
-          image: "../resource/kidbag.png",
+          image: "resource/kidbag.png",
           alt: "Cute Backpack",
           weightLimit: 15,
           volumeLimit: 15,
           bagWeight: 1,
-          description: "우리아이술안주티니핑책가방",
+          description: "아동용 책가방",
         },
         {
           id: 3,
-          image: "../resource/ecobag.png",
+          image: "resource/ecobag.png",
           alt: "Eco Tote Bag",
           weightLimit: 10,
           volumeLimit: 15,
           bagWeight: 0.5,
-          description: "곧죽어도환경살려튼튼경제적에코백",
+          description: "가벼운 에코백",
         },
       ];
-  
+    
       // Fetch team bags data from the API
       const teamBags = await ky
         .get(`http://localhost:8000/host/room/${currentroomCode}/bag_contents`)
