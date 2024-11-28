@@ -121,7 +121,7 @@ const ReadyInfo: Component = () => {
         {teams().map((team) => (
           <div class="bg-gray-200 text-black p-4 rounded-lg w-[50%]">
             <h3 class="text-xl font-bold mb-3">{team.name} 팀 현황</h3>
-            <div class="mt-4">
+            <div class={`mt-4 font-bold ${team.ready ? "text-green-500" : "text-gray-500"}`}>
               {team.ready ? "준비 완료" : "준비 중..."}
             </div>
           </div>
@@ -131,8 +131,8 @@ const ReadyInfo: Component = () => {
       <div class="mt-5">
         <button 
           onClick={() => navigate('/host/sceneinfo')}
-          class={`bg-orange-500 text-black px-10 py-2.5 text-xl font-bold rounded-md ${
-            isDisabled() ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-orange-600'
+          class={`bg-orange-400 text-black px-10 py-2.5 text-xl font-bold rounded-md ${
+            isDisabled() ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-orange-500'
           }`}
           disabled={isDisabled()}
         >
