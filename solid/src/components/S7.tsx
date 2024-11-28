@@ -125,9 +125,10 @@ const S7: Component = () => {
   onMount(() => {
     fetchTeamData();
     const checkGameStartConfirmedInterval = setInterval(checkSimulStartConfirmed, 1000);
-
+    const fetchTeamDataInterval = setInterval(fetchTeamData, 3000);
     onCleanup(() => {
       clearInterval(checkGameStartConfirmedInterval);
+      clearInterval(fetchTeamDataInterval);
     });
   });
 
