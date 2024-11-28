@@ -108,12 +108,12 @@ const BagSelect: Component = () => {
                 selectedBagId() === bag.id ? "ring-2 ring-white" : ""
               }`}
             >
+              <div class="text-gray-100 text-center font-sans text-2xl">{bag.description}</div>
               <img src={bag.image} alt={bag.alt} class="max-w-[200px] mb-3 mx-auto" />
               <div class="text-gray-200 text-left font-sans">
                 <p class="mb font-sans">무게 한도 : {bag.weightLimit}kg</p>
                 <p class="mb font-sans">부피 한도 : {bag.volumeLimit}L</p>
                 <p class="mb font-sans">가방 무게 : {bag.bagWeight}kg</p>
-                <p class="text-gray-200 font-sans">{bag.description}</p>
               </div>
             </div>
           ))}
