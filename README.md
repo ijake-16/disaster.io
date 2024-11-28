@@ -14,7 +14,7 @@ Disaster.io is an interactive disaster education game platform designed to facil
 
 ## 프로젝트 개요 (Project Overview)
 
-- **목표**
+- **목적**
     - 이 솔루션은 **게임 기반 학습 방식을 활용하여 교육자와 참여자 간 실시간 상호작용**을 제공합니다. 기존의 일방향적인 교육 방식과 달리, 참여형 게임 메커니즘을 통해 몰입감과 학습 효과를 극대화합니다.
     - 본 프로토타입에서는 DISASTER.IO 플랫폼의 데모 게임인 **가방으로 살아남기**를 제작했습니다.
     - This solution utilizes a **game-based learning approach to enable real-time interaction** between educators and participants. Unlike traditional one-way education methods, it maximizes engagement and learning through interactive game mechanics.
@@ -54,21 +54,21 @@ Disaster.io is an interactive disaster education game platform designed to facil
 [Demo Video 링크](#)  
 
 ### 특징 및 장점 (Features & Benefits)
-- **실시간 피드백 및 상호작용:** 
+- **실시간 피드백 및 상호작용:**  
     교육자와 학습자 간 실시간 피드백과 상호작용을 통해 학습 흥미를 유발하고 기억에 오래 남는 경험을 제공합니다.
-- **몰입형 학습:** 
+- **몰입형 학습:**  
     다양한 시나리오와 게임 메커니즘을 활용하여 재미와 학습을 조화롭게 결합한 참여형 교육을 제공합니다.
-- **효과적인 교육 전달:** 
+- **효과적인 교육 전달:**  
     단방향 강의를 넘어선 상호작용 방식으로 기존 방재 교육의 한계를 극복하고, 더 높은 학습 효과를 보장합니다.
-- **교육 확산성:** 
+- **교육 확산성:**  
     온라인 게임 형태로 시공간의 제약 없이 누구나 쉽게 접근 가능하며, 방재 교육 자료로 활용할 수 있어 교육 전파에 기여합니다.
-- **Real-Time Feedback and Interaction:** 
+- **Real-Time Feedback and Interaction:**  
     Facilitates real-time feedback and interaction between educators and learners, enhancing engagement and creating a lasting learning experience.
-- **Immersive Learning:** 
+- **Immersive Learning:**  
     Offers interactive education by combining engaging scenarios with game mechanics, balancing fun and learning effectively.
-- **Effective Knowledge Delivery:** 
+- **Effective Knowledge Delivery:**  
     Overcomes the limitations of traditional disaster education through participatory methods, ensuring greater learning impact.
-- **Scalable Education:** 
+- **Scalable Education:**  
     Provides disaster education without time or space constraints through online games, enabling easy access and contributing to the dissemination of educational resources.
 
 ## 기대 효과 (Expected Benefits)
