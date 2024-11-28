@@ -27,7 +27,7 @@ const BagSelect: Component = () => {
       weightLimit: 30,
       volumeLimit: 30,
       bagWeight: 5,
-      description: "튼튼한 등산가방",
+      description: "튼튼 등산베낭",
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ const BagSelect: Component = () => {
       weightLimit: 15,
       volumeLimit: 15,
       bagWeight: 1,
-      description: "어린이용 책가방",
+      description: "아동용 책가방",
     },
     {
       id: 3,
