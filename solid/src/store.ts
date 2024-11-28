@@ -40,7 +40,7 @@ interface Result2 {
   used_item: string[];
   item_path: string[];
   event_result: string[];
-  required_item: string[]; //각 이벤트에서 필요한 아이템 태그 저장
+  required_item: string[]; //각 이벤트에서 필요한 아���템 태그 저장
   hunger: number[];
   thirst: number[];
   stress: number[];
@@ -71,4 +71,23 @@ const initialResult2: Result2 = {
 export const [team1Result, setTeam1Result] = createSignal<Result1>({ ...initialResult1 });
 export const [team2Result, setTeam2Result] = createSignal<Result2>({ ...initialResult2 });
 
-export { roomCode, updateRoomCode as setRoomCode }; 
+export { roomCode, updateRoomCode as setRoomCode };
+
+// 아이템 정보 인터페이스 추가
+interface ItemInfo {
+  name: string;
+  korName: string;
+  description: string;
+}
+
+// 아이템 태그별 매핑 데이터와 상세 정보 추가
+export const [itemTagMapping, setItemTagMapping] = createSignal<Record<string, string[]>>({
+  'drink': [],
+  'food': [],
+  'medical': [],
+  'info': [],
+  'shoes': [],
+  'waterproof': []
+});
+
+export const [itemDetails, setItemDetails] = createSignal<Record<string, ItemInfo>>({}); 
