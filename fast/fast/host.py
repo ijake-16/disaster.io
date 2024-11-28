@@ -1,12 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from .models import game_rooms, Room, generate_room_code, CreateRoomRequest
 from typing import Dict
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/host")
 
 #h1
 @router.post("/create_room")
 async def create_room(request: CreateRoomRequest):
+    logger.info(f"Received POST /create_room with payload: {request.model_dump()}")
     room_code = generate_room_code()
     while room_code in game_rooms:
         room_code = generate_room_code()
@@ -89,4 +93,20 @@ async def get_bag_contents(room_code: str):
         team_bags[team_name] = team.bag_contents
     
     return team_bags
+
+#h8
+@router.post("/room/{room_code}/game_start_confirm")
+async def confirm_to_start_game_simulation(room_code: str):
+    """
+    게임 시뮬레이션을 시작합니다.
+    """
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    room.current_phase = "simulation"
+    return {
+        "message": "게임 시뮬레이션을 시작합니다",
+        "current_phase": room.current_phase
+    }
 

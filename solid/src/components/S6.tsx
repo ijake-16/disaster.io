@@ -1,5 +1,7 @@
-import { Component, createSignal, createEffect, onMount } from "solid-js";
-import * as XLSX from 'xlsx';
+import { Component, createSignal, onMount } from "solid-js";
+import { useLocation, useNavigate } from "@solidjs/router";
+import * as XLSX from "xlsx";
+import ky from "ky";
 
 interface Item {
   id: number;
@@ -12,52 +14,62 @@ interface Item {
 }
 
 const S6: Component = () => {
-  // 상태 관리
   const [items, setItems] = createSignal<Item[]>([]);
-  const [teamName, setTeamName] = createSignal("Team Name");
+
   const [timer, setTimer] = createSignal(150);
   const [currentWeight, setCurrentWeight] = createSignal(0);
   const [currentVolume, setCurrentVolume] = createSignal(0);
+  const [q, setQ] = createSignal<Item[]>([]); // Queue for bag items
   const [selectedItem, setSelectedItem] = createSignal<Item | null>(null);
-  const [quantity, setQuantity] = createSignal(1);
+  const [quantity, setQuantity] = createSignal(1); // Number of items to add
   const [showModal, setShowModal] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal("");
-
-  const maxWeight = 100;
-  const maxVolume = 100;
-
-  // Excel 파일에서 아이템 데이터 읽기
-  async function readItemsFromExcel() {
+  const [isDisabled, setIsDisabled] = createSignal(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
+  const teamName = location.state?.teamName || "UNKNOWN_TEAM";
+  const selectedBag = location.state?.selectedBag || {
+    id: 1,
+    weightLimit: 10,
+    volumeLimit: 10,
+    bagWeight: 0,
+    description: "기본 가방 설명",
+  };
+  const maxWeight = selectedBag.weightLimit;
+  const maxVolume = selectedBag.volumeLimit;
+  const [istime, setistime] = createSignal(true);
+  // Load items from Excel file
+  const readItemsFromExcel = async () => {
     try {
       const response = await fetch("Items.xlsx");
       const arrayBuffer = await response.arrayBuffer();
       const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: "array" });
-      
+
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
-      
-      const mappedItems = data.map((row: any, index) => ({
+      const data = XLSX.utils.sheet_to_json<Item>(worksheet);
+
+      const mappedItems = data.map((row, index) => ({
         id: index + 1,
-        korName: row['korName'] || '',
-        name: row['name'] || '',
-        weight: parseFloat(row['weight']) || 0,
-        volume: parseFloat(row['volume']) || 0,
-        description: row['description'] || '',
-        imgsource: `resource/${row['name']}.png`
+        korName: row.korName || "",
+        name: row.name || "",
+        weight: parseFloat(row.weight) || 0,
+        volume: parseFloat(row.volume) || 0,
+        description: row.description || "",
+        imgsource: `resource/${row.name}.png`,
       }));
 
       setItems(mappedItems);
     } catch (error) {
-      console.error('Error reading Excel file:', error);
-      setItems([]);
+      console.error("Error reading Excel file:", error);
     }
-  }
+  };
 
-  // 타이머 시작
+  // Timer logic
   const startTimer = () => {
     const interval = setInterval(() => {
-      setTimer(prev => {
+      setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
           endGame();
@@ -68,152 +80,258 @@ const S6: Component = () => {
     }, 1000);
   };
 
-  // 게임 종료
   const endGame = () => {
-    alert('시간이 종료되었습니다!');
-    window.location.href = 's7_sceneinfo.html';
+    if (istime == true){
+      alert("Time's up!");
+      setistime(false);
+    }
   };
 
-  // 아이템 추가
+  // Add items to bag
   const addItemToBag = () => {
     const item = selectedItem();
     if (!item) return;
 
-    const totalWeight = item.weight * quantity();
-    const totalVolume = item.volume * quantity();
+    const totalWeight = currentWeight() + item.weight * quantity();
+    const totalVolume = currentVolume() + item.volume * quantity();
 
-    if (currentWeight() + totalWeight > maxWeight || 
-        currentVolume() + totalVolume > maxVolume) {
-      alert('가방의 용량이나 무게 제한을 초과합니다!');
+    if (totalWeight > maxWeight || totalVolume > maxVolume) {
+      alert("가방에 더 이상 물건을 넣을 수 없습니다!");
       return;
     }
 
-    setCurrentWeight(prev => prev + totalWeight);
-    setCurrentVolume(prev => prev + totalVolume);
+    // Add the selected quantity of items to the queue
+    const newItems = Array(quantity()).fill(item);
+    setQ((prev) => [...prev, ...newItems]);
+    setCurrentWeight(totalWeight);
+    setCurrentVolume(totalVolume);
     setShowModal(false);
   };
 
-  // 컴포넌트 마운트 시 초기화
+  // Remove item from bag
+  const removeItemFromBag = (index: number) => {
+    const item = q()[index];
+    if (!item) return;
+
+    setQ((prev) => prev.filter((_, i) => i !== index)); // Remove item at the given index
+    setCurrentWeight((prev) => Number((prev - item.weight).toFixed(1)));
+    setCurrentVolume((prev) => Number((prev - item.volume).toFixed(1)));
+  };
+
+  // Generate bag contents summary
+  const getBagContents = async () => {
+    setIsDisabled(false);
+    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
+  
+    q().forEach((item) => {
+      const name = item.name;
+      if (!bagContents.items[name]) {
+        bagContents.items[name] = 0;
+      }
+      bagContents.items[name] += 1;
+    });
+    const flattenedBagContents = {
+      ...bagContents.items, // Flatten the items dictionary
+      totalWeight: bagContents.totalWeight,
+      totalVolume: bagContents.totalVolume,
+      bagID: selectedBag.id,
+    };
+    try {
+      // Make API call to submit bag contents
+      
+      console.log(bagContents.items)
+      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
+        json: flattenedBagContents,
+      }).json();
+  
+      console.log("API Response:", response);
+      alert(response.message || "Bag contents submitted successfully!");
+      setistime(false);
+      // Navigate to the next scene
+      navigate("/sceneinfo", {
+        state: {
+          roomCode,
+          teamName: teamName,
+          selectedBag, // Pass the selected bag object
+          bagContents: bagContents,
+        },
+      });
+    } catch (error) {
+      console.error("Error submitting bag contents:", error);
+      alert("Failed to submit bag contents. Please try again.");
+    }
+  
+    console.log("Bag Contents:", bagContents);
+  };
+  
+  const getAutoBagContents = async () => {
+    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
+  
+    q().forEach((item) => {
+      const name = item.name;
+      if (!bagContents.items[name]) {
+        bagContents.items[name] = 0;
+      }
+      bagContents.items[name] += 1;
+    });
+    const flattenedBagContents = {
+      ...bagContents.items, // Flatten the items dictionary
+      totalWeight: bagContents.totalWeight,
+      totalVolume: bagContents.totalVolume,
+      bagID: 100,
+    };
+    try {
+      // Make API call to submit bag contents
+      
+      console.log(bagContents.items)
+      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
+        json: flattenedBagContents,
+      }).json();
+  
+      console.log("API Response:", response);
+    } catch (error) {
+      console.error("Error auto saving bag contents:", error);
+      alert("Failed to auto save bag contents. Please try again.");
+    }
+  
+    console.log("Bag Contents:", bagContents);
+  };
+  // Filtered items based on search
+  const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
+
   onMount(() => {
     readItemsFromExcel();
     startTimer();
+    if (isDisabled()) {
+      getAutoBagContents();
+    }
   });
 
   return (
-    <div class="max-w-[1500px] mx-auto p-5 text-white">
+    <div class="max-w-[1500px] mx-auto p-5 text-white bg-neutral-950 font-sans">
       {/* Header */}
-      <header class="flex justify-between items-center mb-5">
-        <div class="team-info">
-          <h1 class="text-2xl text-white">{teamName()}</h1>
-        </div>
-        
-        <div class="timer">
-          <div class="w-[50px] h-[50px] bg-green-500 rounded-full flex items-center justify-center text-xl font-bold">
-            <span>{timer()}</span>
-          </div>
+      <div class="flex justify-center items-center">
+        <img
+          src="../../resource/logo_horizon.png"
+          alt="Disaster.io Logo"
+          class="h-20 w-auto"
+        />
+      </div>  
+      <header class="flex justify-between items-center mx-1 mb-5">
+        <h1 class="text-2xl">{teamName()}</h1>
+        <div class="timer bg-green-500 w-12 h-12 rounded-full flex justify-center items-center text-xl font-sans">
+          {timer()}
         </div>
       </header>
 
       {/* Main Content */}
       <main class="grid grid-cols-[300px_1fr] gap-5">
         {/* Inventory Section */}
-        <section class="inventory-section">
-          <div class="mb-5">
-            <input 
-              type="text" 
-              placeholder="아이템 검색..." 
-              class="w-full p-2 border-none rounded bg-neutral-700 text-white"
-            />
-          </div>
-
-          <div class="bg-neutral-800 rounded-lg p-4">
-            <div class="category">
-              <div class="grid grid-cols-3 gap-2.5">
-                {/* Items will be dynamically populated here */}
+        <section>
+          <input
+            type="text"
+            placeholder="Search items..."
+            class="w-full p-2 rounded bg-gray-700"
+            onInput={(e) => setSearchTerm((e.target as HTMLInputElement).value.toLowerCase())}
+          />
+          <div class="grid grid-cols-3 gap-2 mt-4">
+            {filteredItems().map((item) => (
+              <div
+                class="flex flex-col item items-center text-center bg-gray-800 p-2 rounded cursor-pointer"
+                onClick={() => {
+                  setSelectedItem(item);
+                  setQuantity(1);
+                  setShowModal(true);
+                }}
+              >
+                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <span>{item.korName}</span>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 
         {/* Bag Section */}
-        <section class="bg-neutral-800 rounded-lg p-4 h-fit min-w-[800px]">
-          <div class="mb-5">
-            <div class="space-y-2.5">
-              {/* Weight Bar */}
-              <div>
-                <div>무게</div>
-                <div class="h-5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500 w-0 transition-width duration-300"></div>
-                </div>
-                <span>0/100</span>
-              </div>
-
-              {/* Volume Bar */}
-              <div>
-                <div>부피</div>
-                <div class="h-5 bg-neutral-700 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-500 w-0 transition-width duration-300"></div>
-                </div>
-                <span>0/100</span>
-              </div>
+        <section class="bg-gray-700 rounded-lg p-4">
+          <div class="text-lg flex gap-4">
+            <div>Weight: {currentWeight()} / {maxWeight}</div>
+            <div class="mt-1 w-[30%] ml-1 h-3 mr-2 bg-gray-600 rounded-full overflow-hidden">
+              <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
+            </div>
+            <div>Volume: {currentVolume()} / {maxVolume}</div>
+            <div class="mt-1 w-[30%] ml-1 h-3 bg-gray-600 rounded-full overflow-hidden">
+              <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
             </div>
           </div>
-
-          {/* Bag Grid */}
-          <div class="bg-neutral-700 rounded w-full h-[400px] grid grid-cols-[repeat(8,100px)] gap-[1.25%] p-[2.5%] overflow-auto">
-            {/* Bag items will be added here */}
+          <div class="grid grid-cols-8 gap-2 mt-4">
+            {q().map((item, index) => (
+              <div class="item bg-gray-800 p-2 rounded flex flex-col items-center relative">
+                <button
+                  class="text-xl absolute top-1 right-3 text-red-500"
+                  onClick={() => removeItemFromBag(index)}
+                >
+                  ×
+                </button>
+                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <span>{item.korName}</span>
+              </div>
+            ))}
           </div>
         </section>
       </main>
 
-      {/* Modal */}
-      <div class="hidden fixed inset-0 bg-black/70 z-50">
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-neutral-800 p-5 rounded-lg w-[90%] max-w-[400px]">
-          <div class="text-right">×</div>
-
-          <div class="text-center mb-5">
-            <img src="" alt="item" class="w-20 h-20 mx-auto mb-2.5" />
-            <h3 class="text-green-500"></h3>
-          </div>
-
-          <table class="mb-5 w-full">
-            <tbody>
-            <tr>
-              <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">무게:</td>
-              <td class="p-1.5"></td>
-            </tr>
-            <tr>
-              <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">부피:</td>
-              <td class="p-1.5"></td>
-            </tr>
-            <tr>
-              <td class="min-w-[80px] whitespace-nowrap pr-2.5 p-1.5">상세정보:</td>
-              <td class="p-1.5 break-words"></td>
-            </tr>
-            </tbody>
-          </table>
-
-          <div class="mb-5">
-            수량:
-            <div class="flex items-center gap-2.5 mt-1.5">
-              <input 
-                type="range" 
-                min="1" 
-                max="10" 
-                value="1"
-                class="flex-grow h-1 bg-neutral-700 rounded appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:cursor-pointer"
-              />
-              <span class="min-w-[30px] text-center">1</span>
-            </div>
-          </div>
-
-          <button class="w-full py-3 bg-green-500 rounded text-white font-bold hover:bg-green-600 transition-colors">
-            가방에 넣기
-          </button>
-        </div>
+      {/* Log Bag Contents Button */}
+      <div class="flex justify-center mt-4">
+        <button
+          class="mt-5 px-5 py-2.5 bg-orange-400 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-500 transition-colors font-sans"
+          onClick={getBagContents}
+        >
+          가방 제출하기
+        </button>
       </div>
+
+      {/* Modal */}
+      {showModal() && (
+        <div class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center">
+          <div class="bg-gray-800 p-5 rounded font-sans relative">
+            <button
+              class="text-2xl font-bold absolute top-2 right-4"
+              onClick={() => setShowModal(false)}
+            >
+              ×
+            </button>
+            <div class="text-center flex flex-col items-center">
+              <img src={selectedItem()?.imgsource} alt="" class="my-2 w-32 h-32" />
+              <div class="text-xl mb-2">
+                {selectedItem()?.korName}         
+              </div>
+              <div class="text-lg">Weight: {selectedItem()?.weight}kg</div>
+              <div class="text-lg">Volume: {selectedItem()?.volume}m³</div>
+            </div>
+            <div class="w-full flex justify-between items-center gap-4 mt-4">
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={quantity()}
+                onInput={(e) =>
+                  setQuantity(parseInt((e.target as HTMLInputElement).value))
+                }
+              />
+              <span>{quantity()}</span>
+            </div>
+            <button
+              onClick={addItemToBag}
+              class="text-lg mt-4 bg-green-500 px-5 py-2 rounded text-white font-sans"
+            >
+              가방에 추가하기
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
 
-export default S6; 
+export default S6;

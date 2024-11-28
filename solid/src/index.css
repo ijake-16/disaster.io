@@ -17,3 +17,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@keyframes rise-up {
+  0% {
+    transform: translateY(100%); /* Start below the view */
+    opacity: 0; /* Start invisible */
+  }
+  100% {
+    transform: translateY(0); /* End at original position */
+    opacity: 1; /* End fully visible */
+  }
+}
+
+.animate-rise-up {
+  animation: rise-up 0.5s ease-out forwards; /* Adjust duration and easing as needed */
+}

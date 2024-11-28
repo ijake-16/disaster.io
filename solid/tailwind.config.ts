@@ -23,7 +23,10 @@ const config: Config = {
           src: 'url("/resource/neodgm.woff") format("woff")',
           fontWeight: 'normal',
           fontStyle: 'normal'
-        }
+        },
+        'html, body': {
+          fontFamily: 'NeoDunggeunmo, sans-serif',
+        },
       });
     }
   ],

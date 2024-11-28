@@ -143,122 +143,18 @@
     <div class="content">
         <!-- Situation Section -->
         <div class="situation">
-            <img src="resource/earthquake.png" alt="Situation Icon" id="situation-image">
+            <img src="resource/ebrush.png" alt="Situation Icon" id="situation-image">
             <p class="description" id="situation-description">Situation: 진도 7.0의 대지진</p>
-            <button class="modify-button" onclick="openModal('situation')">상황 설정 변경하기</button>
         </div>
         
         <!-- Goal Section -->
         <div class="goal">
-            <img src="resource/evacuation.png" alt="Goal Icon" id="goal-image">
+            <img src="resource/snacks.png" alt="Goal Icon" id="goal-image">
             <p class="description" id="goal-description">Goal: 무사히 대피소로 이동하기</p>
-            <button class="modify-button" onclick="openModal('goal')">목표 설정 변경하기</button>
         </div>
     </div>
 
     <button class="main-button" onclick="window.location.href='h7_simulresult.html'">시뮬레이션 시작!</button>
-
-    <!-- Modal for Selection -->
-    <div class="modal" id="edit-modal">
-        <div class="modal-content">
-            <h3 id="modal-title">정보 설정 변경</h3>
-            <div class="custom-dropdown">
-                <div class="dropdown-selected" onclick="toggleDropdown()">Select an option</div>
-                <div class="dropdown-options" id="dropdown-options">
-                    <!-- Options will be added dynamically -->
-                </div>
-            </div>
-            <button class="save-button" onclick="saveChanges()">저장</button>
-        </div>
-    </div>
-
-    <script>
-        let currentEdit = '';
-        let selectedOption = null;
-
-        const situationOptions = [
-            { text: "진도 7.0의 대지진", image: "resource/cigs.png" },
-            { text: "카테고리 5 허리케인 접근 중", image: "resource/ebrush.png" },
-            { text: "폭우로 인한 홍수 위험", image: "resource/milkbottle.png" },
-            { text: "화산 폭발 경보 발령", image: "resource/wallet.png" }
-        ];
-
-        const goalOptions = [
-            { text: "무사히 대피소로 이동하기", image: "resource/water.png" },
-            { text: "구조대 도착까지 생존하기", image: "resource/snacks.png" },
-            { text: "안전한 고지대로 이동하기", image: "resource/cigs.png" },
-            { text: "식수와 식량 확보하기", image: "resource/zipbags.png" }
-        ];
-
-        function openModal(type) {
-            currentEdit = type; // Set the current editing type (situation or goal)
-            selectedOption = null; // Reset selectedOption to prevent data carryover
-
-            const options = type === 'situation' ? situationOptions : goalOptions;
-            const dropdownOptions = document.getElementById("dropdown-options");
-            dropdownOptions.innerHTML = ""; // Clear previous options
-
-            // Set the placeholder text dynamically based on the type
-            const placeholderText = type === 'situation' ? "Select a Situation" : "Select a Goal";
-            document.querySelector(".dropdown-selected").textContent = placeholderText; // Reset the dropdown display text
-
-            options.forEach(option => {
-                const optionElement = document.createElement("div");
-                optionElement.className = "dropdown-option";
-                optionElement.onclick = () => selectOption(option);
-
-                const img = document.createElement("img");
-                img.src = option.image;
-                optionElement.appendChild(img);
-
-                const text = document.createElement("span");
-                text.textContent = option.text;
-                optionElement.appendChild(text);
-
-                dropdownOptions.appendChild(optionElement);
-            });
-
-            document.getElementById("modal-title").textContent = type === 'situation' ? "상황 선택" : "목표 선택";
-            document.getElementById("edit-modal").style.display = "flex";
-        }
-
-        function toggleDropdown() {
-            const dropdown = document.getElementById("dropdown-options");
-            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-        }
-
-        function selectOption(option) {
-            selectedOption = option;
-            document.querySelector(".dropdown-selected").textContent = option.text;
-            toggleDropdown();
-        }
-
-        function closeModal() {
-            document.getElementById("edit-modal").style.display = "none";
-        }
-
-        function saveChanges() {
-            // Only update if a new option was selected
-            if (selectedOption) {
-                if (currentEdit === 'situation') {
-                    document.getElementById("situation-description").textContent = `Situation: ${selectedOption.text}`;
-                    document.getElementById("situation-image").src = selectedOption.image;
-                } else if (currentEdit === 'goal') {
-                    document.getElementById("goal-description").textContent = `Goal: ${selectedOption.text}`;
-                    document.getElementById("goal-image").src = selectedOption.image;
-                }
-            }
-            
-            closeModal(); // Close the modal after saving
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById("edit-modal");
-            if (event.target === modal) {
-                closeModal();
-            }
-        };
-    </script>
 
 </body>
 </html>

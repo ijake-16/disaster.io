@@ -131,3 +131,21 @@ async def submit_bag_contents(room_code: str, team_name: str, bag_contents: Dict
     team = room.teams[team_name]
     team.bag_contents = bag_contents
     return {"message": f"{team_name} 팀의 가방 내용물이 저장되었습니다"}
+
+#h9
+@router.get("/room/{room_code}/game_start_confirmed")
+async def check_game_start_confirmed(room_code: str):
+    """
+    게임 시뮬레이션이 시작되었는지 확인합니다.
+    """
+    if room_code not in game_rooms:
+        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
+    
+    room = game_rooms[room_code]
+    if room.current_phase != "simulation":
+        raise HTTPException(status_code=400, detail="게임 시뮬레이션이 시작되지 않았습니다")
+        
+    return {
+        "message": "게임 시뮬레이션이 시작되었습니다",
+        "current_phase": room.current_phase
+    }

@@ -20,6 +20,10 @@
             font-size: 36px;
             margin: 10px 0 30px;
         }
+        h2 {
+            font-size: 20px;
+            margin: 15px 10px 0px 0px;
+        }
         .result-container {
             display: flex;
             justify-content: space-around;
@@ -31,31 +35,72 @@
             padding: 20px;
             border-radius: 10px;
         }
-        .status-box {
-            background-color: #f0f0f0;
-            padding: 20px;
+        .event {
+            flex-direction: column;
+            font-size: 16px;
             border-radius: 8px;
-            width: 30%;
-            text-align: center;
+            background-color: #f0f0f0;
+            padding: 10px;
+            height: ;
+            width: 400px;
+            margin: 0 10px;
         }
-        .status-box img {
+        .event img {
             width: 100px;
             height: auto;
-        }
-        .status-info {
-            margin-top: 10px;
-            font-size: 16px;
-        }
-        .action {
-            font-size: 16px;
-            margin: 0 20px;
+            margin: 50px 0;
             text-align: center;
+            align-items: center;
+        }    
+        .teams {
+            flex-direction: column;
+            width: 600px;
+        }    
+        .team-box {
+            background-color: #f0f0f0;
+            display: flex;
+            text-align: start;
+            flex-direction: column;
+            padding: 0 10px 10px 20px;
+            border-radius: 8px;
+            margin: 10px
         }
-        .action img {
-            width: 50px;
+        .team-result {
+            display: flex;
+            flex-direction: row;
+        }
+        .team-box img {
             height: auto;
-            margin: 10px 0;
         }
+
+        .status-bars {
+            width: 400px;
+            padding: 10px;
+        }
+
+        .status-bar {
+            margin-bottom: 5px;
+        }
+
+        .status-bar label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .bar-container {
+            height: 10px;
+            background-color: #444;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         .timeline {
             display: flex;
             align-items: center;
@@ -63,36 +108,24 @@
             margin-top: 20px;
         }
         .timeline-bar {
-            width: 70%;
             max-width: 800px;
-            height: 10px;
             background-color: #444;
-            border-radius: 5px;
+            border-radius: 15px;
             position: relative;
             display: flex;
-            align-items: center;
+            padding: 2px;
         }
         .timeline-event {
             width: 15px;
             height: 15px;
             border-radius: 50%;
-            position: absolute;
             bottom: -4px;
+            margin: 5px;
         }
-        .event-start { background-color: blue; left: 0; }
-        .event-green { background-color: green; left: 25%; }
-        .event-red { background-color: red; left: 50%; }
-        .event-yellow { background-color: yellow; left: 75%; }
+        .event-now { background-color: #ff9900; left: 0; }
+        .event-others { background-color: #ddd; left: 25%; }
         .button-container {
             margin-top: 20px;
-        }
-        .send-button {
-            background-color: #888;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
         .main-button {
             background-color: #ff9900;
@@ -112,49 +145,126 @@
     <h1>시뮬레이션 결과</h1>
 
     <div class="result-container">
-        <!-- Left Status -->
-        <div class="status-box">
-            <img src="resource/wallet.png" alt="Backpack">
-            <div class="status-info">상태 - 배고픔</div>
-            <div class="inventory">
-                <img src="resource/snacks.png" alt="Food" width="40"> 2
-                <img src="resource/water.png" alt="Water" width="40"> 4
-            </div>
-        </div>
-
         <!-- Action Section -->
-        <div class="action">
+        <div class="event">
+            <h2>3번째 이벤트 발생</h2>
+            
             <img src="resource/snacks.png" alt="Action Icon">
-            <p>배고파서 식량을 하나 섭취하였다.</p>
-            <p>포만감 +50</p>
-        </div>
+            <p>배가 고프다!</p>
 
-        <!-- Right Status -->
-        <div class="status-box">
-            <img src="resource/wallet.png" alt="Backpack">
-            <div class="status-info">상태 - 든든함</div>
-            <div class="inventory">
-                <img src="resource/snacks.png" alt="Food" width="40"> 1
-                <img src="resource/water.png" alt="Water" width="40"> 4
-            </div>
+        </div>
+        
+        <div class="teams">
+            
+            <!-- 1st Team -->
+            <div class="team-box">
+                <h2>지민핑</h2>
+                <div class="team-result">
+                    <img src="resource/wallet.png" alt="Backpack">
+                    <div class="status-bars">
+                        <div class="status-bar">
+                            배고픔
+                            <span id="hunger-info-team1">0/100</span>
+                            <div class="bar-container">
+                                <div id="hunger-bar-team1" class="bar-fill"></div>
+                            </div>
+                        </div>
+                        <div class="status-bar">
+                            목마름
+                            <span id="thist-info-team1">0/100</span>
+                            <div class="bar-container">
+                                <div id="thirst-bar-team1" class="bar-fill"></div>
+                            </div>
+                        </div>
+                        <div class="status-bar">
+                            스트레스
+                            <span id="stress-info-team1">0/100</span>
+                            <div class="bar-container">
+                                <div id="stress-bar-team1" class="bar-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+            <!-- 2nd Team -->
+            <div class="team-box">
+                <h2>지민핑</h2>
+                <div class="team-result">
+                    <img src="resource/wallet.png" alt="Backpack">
+                    <div class="status-bars">
+                        <div class="status-bar">
+                            배고픔
+                            <span id="hunger-info-team1">0/100</span>
+                            <div class="bar-container">
+                                <div id="hunger-bar-team1" class="bar-fill"></div>
+                            </div>
+                        </div>
+                        <div class="status-bar">
+                            목마름
+                            <span id="thist-info-team1">0/100</span>
+                            <div class="bar-container">
+                                <div id="thirst-bar-team1" class="bar-fill"></div>
+                            </div>
+                        </div>
+                        <div class="status-bar">
+                            스트레스
+                            <span id="stress-info-team1">0/100</span>
+                            <div class="bar-container">
+                                <div id="stress-bar-team1" class="bar-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
         </div>
     </div>
 
     <!-- Timeline -->
     <div class="timeline">
         <div class="timeline-bar">
-            <div class="timeline-event event-start"></div>
-            <div class="timeline-event event-green"></div>
-            <div class="timeline-event event-red"></div>
-            <div class="timeline-event event-yellow"></div>
+            <div class="timeline-event event-others" data-index="1"></div>
+            <div class="timeline-event event-others" data-index="2"></div>
+            <div class="timeline-event event-now" data-index="3"></div>
+            <div class="timeline-event event-others" data-index="4"></div>
+            <div class="timeline-event event-others" data-index="5"></div>
         </div>
     </div>
 
     <!-- Buttons -->
     <div class="button-container">
-        <button class="send-button">결과 내보내기</button>
-        <button class="main-button">시뮬레이션 시작!</button>
+        <button class="main-button">다음 이벤트</button>
     </div>
+    <script>
+        // Timeline 동그라미에 클릭 이벤트 추가
+        document.querySelectorAll('.timeline-event').forEach(event => {
+            event.addEventListener('click', (e) => {
+                // 클릭된 동그라미의 data-index 속성 값 가져오기
+                const index = e.target.getAttribute('data-index');
+                
+                // 해당 index에 맞는 URL로 이동
+                if (index) {
+                    window.location.href = `h7-${index}_simulresult.html`;
+                }
+            });
+        });
+
+        // 상태 업데이트 함수
+        function updateStatusBars(team, hunger, thirst, stress) {
+            document.getElementById(`hunger-info-${team}`).innerText = `${hunger}/100`;
+            document.getElementById(`hunger-bar-${team}`).style.width = `${hunger}%`;
+            document.getElementById(`thirst-info-${team}`).innerText = `${thirst}/100`;
+            document.getElementById(`thirst-bar-${team}`).style.width = `${thirst}%`;
+            document.getElementById(`stress-info-${team}`).innerText = `${stress}/100`;
+            document.getElementById(`stress-bar-${team}`).style.width = `${stress}%`;
+        }
+
+        // 초기 값 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusBars('team1', 0, 0, 0);
+            updateStatusBars('team2', 0, 0, 0);
+        });
+    </script>
 
 </body>
 </html>

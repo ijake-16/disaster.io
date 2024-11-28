@@ -3,8 +3,11 @@ fast/venv/
 *.pyc
 **/__pycache__/
 
+pnpm-lock.yaml
+
 .idea/
 .vscode/
 **/.DS_Store
 node_modules
+solid/node_modules
 x
