@@ -38,6 +38,7 @@ const RoomBuild: Component = () => {
       setSelectedDisaster(index);
     }
   };
+  const family_info = ["../../resource/family2.png","../../resource/family3.png","../../resource/family4.png","../../resource/familydog.png"];
 
   return (
     <div class="min-h-screen bg-neutral-950 text-gray-200 flex flex-col mx-auto justify-center items-center font-sans">
@@ -91,9 +92,10 @@ const RoomBuild: Component = () => {
               <div class="grid grid-cols-2 gap-2 w-full rounded-lg overflow-hidden p-1">
                 {[1, 2].map((imgIndex) => {
                   const index = (gridIndex - 1) * 4 + imgIndex - 1;
+                  console.log(imgIndex,gridIndex);
                   return (
                     <img
-                      src="../../resource/tsunami.png"
+                      src={family_info[(gridIndex - 1)*2 + imgIndex - 1]}
                       class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
                         ${selectedPreInfo() === index ? "border-orange-400" : "border-transparent"} 
                         hover:border-orange-600`}
