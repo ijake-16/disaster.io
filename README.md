@@ -58,9 +58,10 @@ There is a negative perception of disaster safety education in Korea, and effect
         - 기존 솔루션
             
             생존가방 키트: 실제 재난 상황이 발생했을 때, 필요한 물품들을 빠르게 챙겨보는 연습. 교육자와 참여자가 함께 참여해서 몰입도를 높일 수 있다.
+            <br>
             <img src="bagkit_img.png" alt="설명" style="width:50%; height:auto;">
 
-            
+
         - 참고: 교육자가 게임을 호스팅하여 진행하고 피드백을 수집하는 방식
             - https://kahoot.com/
             - https://www.slido.com/
