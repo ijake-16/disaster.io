@@ -144,8 +144,8 @@ const H8: Component = () => {
 
       <main class="flex flex-1">
         {/* 랭킹 섹션 */}
-        <div class="w-[30%] bg-gray-600 p-5">
-          <h2 class="text-2xl text-center mb-4">팀 랭킹</h2>
+        <div class="w-[30%] rounded bg-gray-800 p-5 mt-4">
+          <h2 class="text-2xl text-center mt-2 mb-6">팀 랭킹</h2>
           <div class="space-y-2">
             {sortedTeamResults.map((result, index) => (
               <div
@@ -155,10 +155,10 @@ const H8: Component = () => {
                 }}
                 class={`flex items-center p-3 rounded cursor-pointer transition-colors
                   ${selectedTeam() === result.team 
-                    ? 'bg-orange-500 hover:bg-orange-600 text-lg text-black font-bold' 
+                    ? 'bg-orange-400 hover:bg-orange-500 text-lg text-black font-bold' 
                     : 'bg-gray-200 hover:bg-gray-400 text-lg text-black font-bold'}`}
               >
-                <span class="mr-3">{index + 1}</span>
+                <span class="ml-2 mr-3">{index + 1}</span>
                 <span class="flex-1">{result.team}</span>
                 <span class="bg-gray-200 text-green-700 px-2 py-1 rounded text-lg font-bold">
                   {getSuccessCount(result)}
@@ -169,7 +169,7 @@ const H8: Component = () => {
         </div>
 
         {/* 상세 정보 섹션 */}
-        <div class="flex-1 bg-gray-800 p-5">
+        <div class="flex-1 bg-neutral-950 p-5">
           {selectedTeam() ? (
             <>
               {/* 이벤트 상태 표시 */}
@@ -196,7 +196,7 @@ const H8: Component = () => {
 
               {/* 이벤트 상세 정보 */}
               {selectedTeam() && selectedEvent() !== null && (
-                <div class="bg-gray-600 p-5 rounded-lg max-w-2xl mx-auto">
+                <div class="bg-gray-800 p-5 rounded-lg max-w-2xl mx-auto">
                   <h3 class="text-xl mb-4">이벤트 {selectedEvent()! + 1} 상세 정보</h3>
                   
                   {/* 스탯 바들 */}
@@ -303,7 +303,7 @@ const H8: Component = () => {
               )}
             </>
           ) : (
-            <p class="text-center text-xl">팀을 선택하면 상세 정보가 표시됩니다.</p>
+            <p class="text-center text-gray-400 text-xl">팀을 선택하면 상세 정보가 표시됩니다.</p>
           )}
         </div>
       </main>

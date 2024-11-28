@@ -248,7 +248,7 @@ const S6: Component = () => {
       {/* Log Bag Contents Button */}
       <div class="flex justify-center mt-4">
         <button
-          class="mt-5 px-5 py-2.5 bg-orange-500 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-600 transition-colors font-sans"
+          class="mt-5 px-5 py-2.5 bg-orange-400 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-500 transition-colors font-sans"
           onClick={getBagContents}
         >
           가방 제출하기

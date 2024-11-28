@@ -48,7 +48,7 @@ const S1: Component = () => {
           onInput={(e) => setRoomCode(e.currentTarget.value)}
         />
         <button
-          class="main-button bg-orange-500 text-black py-2.5 px-10 mt-5 rounded font-bold hover:bg-orange-600 transition-colors font-sans"
+          class="main-button bg-orange-400 text-black py-2.5 px-10 mt-5 rounded font-bold hover:bg-orange-500 transition-colors font-sans"
           onClick={handleNext}
         >
           {'>'}

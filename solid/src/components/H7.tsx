@@ -382,7 +382,7 @@ const SimulationResult: Component = () => {
       {/* Event&Teams Section */}
       <div class="w-[70%] flex mx-auto gap-x-6 items-stretch">
         {/* Event Section */}
-        <div class="w-[40%] flex-1 bg-gray-200 shadow-md rounded-lg pt-2 pb-4 px-4 mb-2 flex flex-col">
+        <div class="w-[40%] flex-1 bg-gray-800 shadow-md rounded-lg pt-2 pb-4 px-4 mb-2 flex flex-col">
           <h2 class="text-xl font-bold mt-2 mb-2">{currentEventIndex() + 1}번째 이벤트 발생</h2>
           
           <div class="flex flex-col justify-center items-center">
@@ -509,7 +509,7 @@ const SimulationResult: Component = () => {
                 absolute w-5 h-5 rounded-full border-1.5 transition-all duration-300
                 ${index === (currentEventIndex() + 1)
                   ? 'bg-orange-400 border-orange-400 scale-125' 
-                  : 'bg-gray-300 border-gray-300 hover:bg-orange-600'}
+                  : 'bg-gray-300 border-gray-300 hover:bg-orange-500'}
               `}
               style={{ 
                 left: `${(index - 1) * 20}%`, 
@@ -527,7 +527,7 @@ const SimulationResult: Component = () => {
         fallback={
           <div class="text-center">
             <button 
-              class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-600 transition"
+              class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-500 transition"
               onClick={() => navigate('/host/finalresult')}
             >
               최종 결과 확인
@@ -537,7 +537,7 @@ const SimulationResult: Component = () => {
       >
         <div class="text-center">
           <button 
-            class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-600 transition"
+            class="bg-orange-400 text-black px-10 py-2.5 text-xl rounded-lg font-bold mt-4 hover:bg-orange-500 transition"
             onClick={nextEvent}
           >
             다음 이벤트
