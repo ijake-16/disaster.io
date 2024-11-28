@@ -67,7 +67,7 @@ const BagSelect: Component = () => {
         .post(`http://localhost:8000/player/room/${roomCode}/team/${currentTeamName}/select_bag?bag_number=${selectedBagId()}`).json<{message: string}>();
   
       console.log("API Response:", response);
-      alert("Bag selected successfully!");
+      alert("가방이 성공적으로 선택되었습니다!");
   
       // Navigate to the bag creation screen
       navigate("/bagmake", {
