@@ -37,12 +37,12 @@ interface Result {
 
 const csvData = `
 name,img_path,description,tag,require_item,success,failure
-hunger,../../resource/events/hunger.png,배가 고프다.,hunger,food,-20,0
-thirst,../../resource/events/thirst.png,목이 마르다.,thirst,drink,-20,0
-information,../../resource/events/information.png,재난 정보가 있으면 더 수월하게 대처할 수 있겠지.,stress,info,-10,10
-floor_is_lava,../../resource/events/floor_is_lava.png,슬리퍼를 신고 나왔는데 길가에 잔해가 너무 많아.,stress,shoes,-10,10
-ouch,../../resource/events/ouch.png,가족 중 누군가가 다쳤어.,stress,medical,0,20
-rainy,../../resource/events/rainy.png,비가 많이 오네.,stress,waterproof,0,20
+hunger,../../resource/events/Hunger.png,배가 고프다.,hunger,food,-20,0
+thirst,../../resource/events/Water.png,목이 마르다.,thirst,drink,-20,0
+information,../../resource/events/Information.png,재난 정보가 있으면 더 수월하게 대처할 수 있겠지.,stress,info,-10,10
+floor_is_lava,../../resource/events/Floorislava.png,슬리퍼를 신고 나왔는데 길가에 잔해가 너무 많아.,stress,shoes,-10,10
+ouch,../../resource/events/Ouch.png,가족 중 누군가가 다쳤어.,stress,medical,0,20
+rainy,../../resource/events/rain.png,비가 많이 오네.,stress,waterproof,0,20
 `.trim();
 
 // CSV 데이터를 파싱하고 정리하는 함수
