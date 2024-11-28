@@ -159,9 +159,11 @@ const SceneInfo: Component = () => {
               </div>
 
               <div class="mt-4">
-                <img src={team.backpackImage} alt="Backpack" class="w-15 h-auto mx-auto" />
+                <img src={team.backpackImage} alt="Backpack" class="w-40 h-40 mx-auto" />
               </div>
 
+              <div class="mt-4"></div>
+              
               <div class="flex gap-2">
                 <div class="w-[45%] h-3 bg-gray-500 rounded overflow-hidden mb-2">
                   <div class="h-full bg-green-500 transition-all duration-300" style={`width: ${team.volumePercent}%`}></div>

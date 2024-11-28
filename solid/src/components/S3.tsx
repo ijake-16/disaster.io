@@ -71,11 +71,11 @@ const S3: Component = () => {
           class="h-36 w-auto"
         />
       </div>
-        <div class="text-base text-orange-500 mb-2.5 font-sans">{roomCode}</div>
+        <div class="text-base text-orange-400 mb-2.5 font-sans">{roomCode}</div>
 
         <div class="text-base text-gray-400 mb-5 font-sans">입장 대기 중 ...</div>
 
-        <div class="w-full bg-orange-500 text-black p-2.5 rounded font-bold mb-4 font-sans">
+        <div class="w-full bg-orange-400 text-black p-2.5 rounded font-bold mb-4 font-sans">
           YOU : {currentTeamName}
         </div>
 
