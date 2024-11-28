@@ -88,8 +88,8 @@ const S7: Component = () => {
         }));
   
         // Calculate percentages
-        const weightPercent = Math.min((totalWeight / (10 * selectedBag.weightLimit)) * 100, 100);
-        const volumePercent = Math.min((totalVolume / (10 * selectedBag.volumeLimit)) * 100, 100);
+        const weightPercent = Math.min((totalWeight / (selectedBag.weightLimit)) * 100, 100);
+        const volumePercent = Math.min((totalVolume / (selectedBag.volumeLimit)) * 100, 100);
   
         return {
           name: teamName,
