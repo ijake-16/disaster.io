@@ -19,7 +19,6 @@ const H4PreInfo: Component = () => {
     { role: '아버지', age: 50, gender: '남성' },
     { role: '어머니', age: 45, gender: '여성' },
     { role: '나', age: 15, gender: '남성' },
-    { role: '동생', age: 7, gender: '여성' },
   ];
 
   const regionInfo: RegionInfo = {
@@ -59,11 +58,13 @@ const H4PreInfo: Component = () => {
         {/* Family Info Box */}
         <div class="w-full md:w-64">
           <div class="bg-gray-200 rounded-lg p-5 h-full text-black">
-            <img 
-              src="resource/cigs.png" 
-              alt="Family Icon" 
-              class="w-full rounded-lg"
-            />
+            <div class="w-full h-[150px] rounded-lg bg-black flex items-center justify-center">
+              <img 
+                src="../../resource/family3.png" 
+                alt="Region Icon" 
+                class="max-w-full max-h-full rounded-lg object-scale-down"
+              />
+            </div>
             <div class="mt-3 text-base leading-relaxed">
               <p>당신의 가족 구성원은 다음과 같습니다.</p>
               <div class="mt-2">
@@ -72,6 +73,7 @@ const H4PreInfo: Component = () => {
                     {member.role} ... {member.age}세, {member.gender}
                   </p>
                 ))}
+                <p> </p>
               </div>
             </div>
           </div>
@@ -80,11 +82,13 @@ const H4PreInfo: Component = () => {
         {/* Region Info Box */}
         <div class="w-full md:w-64">
           <div class="bg-gray-200 rounded-lg p-5 h-full text-black">
+          <div class="w-full h-[150px] rounded-lg bg-black flex items-center justify-center">
             <img 
-              src="resource/map.png" 
+              src="../../resource/map.png" 
               alt="Region Icon" 
-              class="w-full rounded-lg"
+              class="max-w-full max-h-full rounded-lg object-scale-down"
             />
+          </div>
             <div class="mt-3 text-base leading-relaxed">
               <p>당신의 거주 지역은 다음과 같습니다.</p>
               <div class="mt-2">
