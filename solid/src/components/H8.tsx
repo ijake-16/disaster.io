@@ -21,6 +21,7 @@ const H8: Component = () => {
   const navigate = useNavigate();
   const [selectedTeam, setSelectedTeam] = createSignal<string | null>(null);
   const [selectedEvent, setSelectedEvent] = createSignal<number | null>(null);
+  const [isLoading, setIsLoading] = createSignal(true);
 
   // 아이템 이름을 반환하는 함수 추가
   const getItemName = (itemId: string): string => {
@@ -77,6 +78,7 @@ const H8: Component = () => {
   // Items.xlsx에서 데이터를 로드하는 함수 수정
   const loadItemsData = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch("../../Items.xlsx");
       const arrayBuffer = await response.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: "array" });
@@ -98,24 +100,28 @@ const H8: Component = () => {
         'waterproof': []
       };
 
-      // 아이템 상세 정보 저장
       const details: Record<string, { name: string; korName: string; description: string }> = {};
 
-      data.forEach((item) => {
+      // 각 아이템마다 약간의 딜레이를 주면서 처리
+      for (const item of data) {
+        await new Promise(resolve => setTimeout(resolve, 50)); // 50ms 딜레이
         if (taggedItems[item.tag]) {
           taggedItems[item.tag].push(item.name);
         }
+        // itemDetails에 아이템 설명 추가
         details[item.name] = {
           name: item.name,
           korName: item.korName,
-          description: item.description
+          description: item.description || "설명이 없습니다." // 설명이 없을 경우 기본값 설정
         };
-      });
+      }
 
       setItemTagMapping(taggedItems);
       setItemDetails(details);
     } catch (error) {
       console.error("Failed to load items data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -255,7 +261,10 @@ const H8: Component = () => {
                   <div class="mt-4">
                     <h4 class="text-lg mb-2">필요했던 아이템:</h4>
                     <div class="space-y-3">
-                      {selectedTeam() && selectedEvent() !== null && 
+                      {isLoading() ? (
+                        <div class="bg-gray-400 p-3 rounded">로딩 중...</div>
+                      ) : (
+                        selectedTeam() && selectedEvent() !== null && 
                         (() => {
                           const requiredTag = teamResults.find(r => r.team === selectedTeam())!.required_item[selectedEvent()!];
                           const matchingItems = itemTagMapping()[requiredTag] || [];
@@ -287,7 +296,7 @@ const H8: Component = () => {
                             <div class="bg-gray-400 p-3 rounded">없음</div>
                           );
                         })()
-                      }
+                      )}
                     </div>
                   </div>
                 </div>
