@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount } from "solid-js";
+import { Component, createSignal, createEffect, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { roomCode } from '../store';
 import logoImage from '../../resource/logo_horizon.png';
@@ -24,7 +24,7 @@ const ReadyInfo: Component = () => {
   const currentroomCode = roomCode()
 
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
-
+  const [isDisabled, setIsDisabled] = createSignal(true);
   const fetchTeamData = async () => {
     try {
       const bagOptions: BagOption[] = [
@@ -68,8 +68,8 @@ const ReadyInfo: Component = () => {
         const { bagID } = bagContents;
   
         // Check if the bag is ready based on bagID
-        const ready = bagOptions.some((bag) => bag.id === bagID);
-  
+        const ready = [1, 2, 3].includes(bagID);
+
         return {
           name: teamName,
           ready,
@@ -81,6 +81,10 @@ const ReadyInfo: Component = () => {
       console.error("Failed to fetch team data:", error);
     }
   };
+  createEffect(() => {
+    const allReady = teams().every((team) => team.ready); // 모든 팀이 준비되었는지 확인
+    setIsDisabled(!allReady); // 모든 팀이 준비된 경우 버튼 활성화
+  });
   const fetchTeams = async () => {
     try {
       const response = await ky.get(`http://localhost:8000/host/room/${currentroomCode}/info`).json<{ room_code: string, host_nickname: string,players: string[] }>();
@@ -127,7 +131,10 @@ const ReadyInfo: Component = () => {
       <div class="mt-5">
         <button 
           onClick={() => navigate('/host/sceneinfo')}
-          class="bg-orange-500 text-black px-10 py-2.5 text-xl font-bold rounded-md hover:bg-orange-600"
+          class={`bg-orange-500 text-black px-10 py-2.5 text-xl font-bold rounded-md ${
+            isDisabled() ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-orange-600'
+          }`}
+          disabled={isDisabled()}
         >
           게임 완료
         </button>
