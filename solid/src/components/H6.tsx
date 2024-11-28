@@ -17,32 +17,36 @@ const SimulationInfo: Component = () => {
         <h1 class="text-2xl mb-4">시뮬레이션 설명</h1>
       </div>
 
-      {/* Content */}
-      <div class="flex justify-center items-center bg-gray-800 text-gray-200 p-8 rounded-lg max-w-3xl w-4/5 mb-4">
+      <div class="flex justify-center items-stretch bg-gray-800 text-gray-200 p-8 rounded-lg max-w-3xl w-4/5 mb-4 gap-4">
         {/* Situation Section */}
-        <div class="flex flex-col items-center">
-          <img 
-            src="../../resource/earthquake.png" 
-            alt="Situation Icon" 
-            class="w-100 h-auto"
-          />
+        <div class="flex flex-col items-center w-1/2">
+          <div class="flex items-center justify-center h-full w-full">
+            <img 
+              src="../../resource/earthquake.png" 
+              alt="Situation Icon" 
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
           <p class="text-xl mt-2.5">
             Situation: 진도 7.0의 대지진
           </p>
         </div>
         
         {/* Goal Section */}
-        <div class="flex flex-col items-center">
-          <img 
-            src="../../resource/earthquake.png" 
-            alt="Goal Icon" 
-            class="w-100 h-auto"
-          />
+        <div class="flex flex-col items-center w-1/2">
+          <div class="flex items-center justify-center h-full w-full">
+            <img 
+              src="../../resource/map.png" 
+              alt="Goal Icon" 
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
           <p class="text-xl mt-2.5">
             Goal: 무사히 대피소로 이동하기
           </p>
         </div>
       </div>
+
 
       {/* Start Button */}
       <button
