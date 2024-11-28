@@ -156,8 +156,6 @@ const SceneInfo: Component = () => {
                     </div>
                   </div>
                 ))}
-                <div class="bg-gray-500 p-2"></div>
-                <div class="bg-gray-500 p-2"></div>
               </div>
 
               <div class="mt-4">
