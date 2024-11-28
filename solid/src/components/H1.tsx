@@ -39,7 +39,7 @@ const RoomBuild: Component = () => {
     }
   };
   const family_info = ["../../resource/family2.png","../../resource/family3.png","../../resource/family4.png","../../resource/familydog.png"];
-
+  const disaster_info = ["../../resource/tsunami.png","../../resource/rain.png","../../resource/earthquake.png","../../resource/volcano.png"];
   return (
     <div class="min-h-screen bg-neutral-950 text-gray-200 flex flex-col mx-auto justify-center items-center font-sans">
       {/* Header Section */}
@@ -118,7 +118,7 @@ const RoomBuild: Component = () => {
                   const index = (gridIndex - 1) * 4 + imgIndex - 1;
                   return (
                     <img
-                      src="../../resource/earthquake.png"
+                      src={disaster_info[(gridIndex - 1)*2 + imgIndex - 1]}
                       class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
                         ${selectedDisaster() === index ? "border-yellow-400" : "border-transparent"} 
                         hover:border-orange-600`}
