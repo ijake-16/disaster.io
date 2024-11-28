@@ -37,11 +37,11 @@ interface Result {
 
 const csvData = `
 name,img_path,description,tag,require_item,success,failure
-hunger,../../resource/events/Hunger.png,배가 고프다.,hunger,food,-20,0
+hunger,../../resource/events/hunger.png,배가 고프다.,hunger,food,-20,0
 thirst,../../resource/events/Water.png,목이 마르다.,thirst,drink,-20,0
-information,../../resource/events/Information.png,재난 정보가 있으면 더 수월하게 대처할 수 있겠지.,stress,info,-10,10
+information,../../resource/events/information.png,재난 정보가 있으면 더 수월하게 대처할 수 있겠지.,stress,info,-10,10
 floor_is_lava,../../resource/events/Floorislava.png,슬리퍼를 신고 나왔는데 길가에 잔해가 너무 많아.,stress,shoes,-10,10
-ouch,../../resource/events/Ouch.png,가족 중 누군가가 다쳤어.,stress,medical,0,20
+ouch,../../resource/events/ouch.png,가족 중 누군가가 다쳤어.,stress,medical,0,20
 rainy,../../resource/events/rain.png,비가 많이 오네.,stress,waterproof,0,20
 `.trim();
 
@@ -148,12 +148,12 @@ interface TeamBoxProps {
 }
 
 // 인벤토리 체크 함수
-const checkInventory = (index: number, inventory: Record<string, number>, requiredItem: string, itemsData: Record<string, string>) => {
-  const matchedItems: string[] = [];
+const checkInventory = (index: number, inventory: Record<string, number>, requiredItem: string, itemsData: Record<string, string[]>) => {
+  const matchedItems: string[][] = [];
   console.log("required item: ", requiredItem, " inventory: ", inventory);
   Object.entries(inventory).forEach(([item, count]) => {
-    if (count > 0 && itemsData[item] === requiredItem) {
-      matchedItems.push(item);
+    if (count > 0 && itemsData[item][0] === requiredItem) {
+      matchedItems.push([item, itemsData[item][1]]);
       console.log("matched!! ", matchedItems);
     }
   });
@@ -165,10 +165,11 @@ const updateTeamResult = (
   index: number,
   team_number: number,
   event: EventData,
-  matchedItems: string[],
+  matchedItems: string[][],
   inventory: Record<string, number>
 ) => {
-  const usedItem = matchedItems.length > 0 ? matchedItems[0] : null;
+  const usedItem = matchedItems.length > 0 ? matchedItems[0][0] : null;
+  const usedItem_kor = matchedItems.length > 0 ? matchedItems[0][1] : null;
   const success = !!usedItem;
   console.log(`Updating team result for team ${team_number}`);
 
@@ -208,7 +209,7 @@ const updateTeamResult = (
     return {
       ...prevResult,
       used_item: prevResult.used_item.map((item, idx) =>
-        idx === index ? (usedItem || "None") : item
+        idx === index ? (usedItem_kor || "None") : item
       ),
       item_path: prevResult.item_path.map((path, idx) =>
         idx === index ? (usedItem ? `../../resource/${usedItem}.png` : "") : path
@@ -338,11 +339,11 @@ const SimulationResult: Component = () => {
       const arrayBuffer = await response.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: "array" });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(sheet) as Array<{ name: string; tag: string }>;
+      const data = XLSX.utils.sheet_to_json(sheet) as Array<{ name: string; tag: string; korName: string}>;
 
-      const organizedData: Record<string, string> = {};
+      const organizedData: Record<string, string[]> = {};
       data.forEach((row) => {
-        organizedData[row.name] = row.tag;
+        organizedData[row.name] = [row.tag, row.korName];
       });
 
       setItemsData(organizedData);
@@ -368,7 +369,7 @@ const SimulationResult: Component = () => {
   };
 
   return (
-    <div class="min-h-screen bg-neutral-950 container mx-auto p-4 font-sans">
+    <div class="min-h-screen bg-neutral-950 container flex flex-col mx-auto p-4 font-sans">
       {/* Header */}
       <div class="flex justify-center flex-col items-center mt-2">
         <img

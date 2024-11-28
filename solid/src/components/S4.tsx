@@ -34,7 +34,7 @@ const WaitingScreen: Component = () => {
   return (
     <div class="flex flex-col justify-center items-center h-screen bg-neutral-950 text-white font-sans">
       <div class="text-center mb-8">
-        <p class="text-lg text-orange-500 font-sans mb-2">Room : {roomCode}</p>
+        <p class="text-lg text-orange-400 font-sans mb-2">Room : {roomCode}</p>
         <div class="flex justify-center items-center mb-8">
         <img
           src="resource/logo.png"
@@ -44,7 +44,7 @@ const WaitingScreen: Component = () => {
       </div>
         <h2 class="text-gray-200 text-2xl font-sans">호스트의 가족 정보와 지역 정보 안내를 듣고</h2>
         <h2 class="text-gray-200 text-2xl font-sans">재난에 대비하세요.</h2>
-        <p class="text-orange-500 mt-5 text-xl font-sans">YOU : {currentTeamName}</p>
+        <p class="text-orange-400 mt-5 text-xl font-sans">YOU : {currentTeamName}</p>
       </div>
     </div>
   );
