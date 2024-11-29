@@ -31,6 +31,7 @@ Disaster.io is an interactive disaster education game platform designed to facil
     - 참고(Reference Models): 교육자가 게임을 호스팅하여 진행하고 피드백을 수집하는 방식
         - [Kahoot](https://kahoot.com/)
         - [Slido](https://www.slido.com/)
+        - KLMS (KAIST LMS)
 - **주요 기능**
     1. **방 생성 및 참여**: 사용자는 방을 생성하고, 방 코드로 다른 팀원들이 참여할 수 있습니다.
     2. **가방 선택**: 각 팀은 생존 가방을 선택하고, 필요한 아이템을 추가할 수 있습니다.
@@ -51,7 +52,7 @@ Disaster.io is an interactive disaster education game platform designed to facil
 ## 프로젝트 결과 (Project Outcomes)
 
 ### 데모 영상 (Demo Video)
-[Demo Video 링크](#)  
+[Demo Video 링크](https://youtu.be/4FyygyfjGLw)  
 
 ### 특징 및 장점 (Features & Benefits)
 - **실시간 피드백 및 상호작용:**  
