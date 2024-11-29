@@ -294,7 +294,7 @@ const SimulationResult: Component = () => {
       processAllEvents();
       setCurrentEventIndex(0);
       }, 
-      200);
+      2000);
   });
   
   const processAllEvents = () => {
