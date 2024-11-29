@@ -95,6 +95,9 @@ Disaster.io is an interactive disaster education game platform designed to facil
 
 ## 설치 및 실행 방법 (Installation & Execution)
 
+### Service is now deployed and hosted on https://disaster.buttercrab.net/
+If you want to run the program in your local environment, follow the instruction.
+
 **1. Check if the Docker Daemon is running**
 If the Docker Daemon is not installed, please download it from 🖥️[Download Docker](https://docs.docker.com/engine/install/).
 
