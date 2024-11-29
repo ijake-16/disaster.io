@@ -1,4 +1,4 @@
-import { Component, createSignal, Show, onMount } from 'solid-js';
+import { Component, createSignal, createEffect, Show, onMount } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { team1Result, team2Result, setTeam1Result, setTeam2Result} from "../store";
 import * as XLSX from "xlsx"; // Items.xlsx 처리를 위해 사용
@@ -249,10 +249,17 @@ const SimulationResult: Component = () => {
   // 팀별 인벤토리 상태 관리
   const [team1Inventory, setTeam1Inventory] = createSignal({});
   const [team2Inventory, setTeam2Inventory] = createSignal({});
+  const [generate_done, setgenerate_done] = createSignal(false);
 
   const [itemsData, setItemsData] = createSignal<Record<string, string>>({});
   
 
+  createEffect(() => {
+    if (generate_done()) {
+      processAllEvents();
+      setCurrentEventIndex(0);
+    } // 모든 팀이 준비된 경우 버튼 활성화
+  });
 
   const fetchTeamData = async () => {
     try {
@@ -292,10 +299,10 @@ const SimulationResult: Component = () => {
     
           // 2. generateEvents 실행
           await generateEvents();
-    
+          
           // 3. 모든 비동기 작업이 완료된 후 processAllEvents 실행
-          processAllEvents();
-          setCurrentEventIndex(0);
+
+ 
     
           // 4. 데이터 확인 로그
           console.log(selectedEvents());
@@ -367,6 +374,7 @@ const SimulationResult: Component = () => {
       const randomCount = 4;
       const randomEvents = await selectRandomEvents(data, fixedEvents, randomCount);
       await setSelectedEvents(randomEvents);
+      setgenerate_done(true);
     } catch (error) {console.error("Filed to generate events", error);}
   };
 
@@ -398,7 +406,7 @@ const SimulationResult: Component = () => {
           
           <div class="flex flex-col justify-center items-center">
           <img 
-              src={selectedEvents()[currentEventIndex()]?.img_path || "../../resource/snacks.png"}
+              src={selectedEvents()[currentEventIndex()]?.img_path || "../../resource/logo.png"}
               alt="Action Icon" 
               class="h-50 my-6" 
             />
