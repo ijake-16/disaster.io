@@ -283,19 +283,27 @@ const SimulationResult: Component = () => {
       console.error("Failed to fetch team data:", error);
     }}
 
-  onMount(() => {
-    fetchTeamData();
-    generateEvents();
-    loadItemsData();
-    console.log(selectedEvents())
-  
-    // 자동으로 모든 이벤트를 순차적으로 처리
-    setTimeout(() => {
-      processAllEvents();
-      setCurrentEventIndex(0);
-      }, 
-      2000);
-  });
+    onMount(() => {
+      (async () => {
+        try {
+          // 1. fetchTeamData와 loadItemsData를 순차적으로 실행
+          await fetchTeamData();
+          await loadItemsData();
+    
+          // 2. generateEvents 실행
+          await generateEvents();
+    
+          // 3. 모든 비동기 작업이 완료된 후 processAllEvents 실행
+          processAllEvents();
+          setCurrentEventIndex(0);
+    
+          // 4. 데이터 확인 로그
+          console.log(selectedEvents());
+        } catch (error) {
+          console.error("Error during initialization:", error);
+        }
+      })();
+    });
   
   const processAllEvents = () => {
     const totalEvents = selectedEvents().length;
@@ -352,12 +360,14 @@ const SimulationResult: Component = () => {
     }
   };
 
-  const generateEvents = () => {
-    const data = parseCSV(csvData);
-    const fixedEvents = ["hunger", "thirst"];
-    const randomCount = 4;
-    const randomEvents = selectRandomEvents(data, fixedEvents, randomCount);
-    setSelectedEvents(randomEvents);
+  const generateEvents = async () => {
+    try {
+      const data = await parseCSV(csvData);
+      const fixedEvents = ["hunger", "thirst"];
+      const randomCount = 4;
+      const randomEvents = await selectRandomEvents(data, fixedEvents, randomCount);
+      await setSelectedEvents(randomEvents);
+    } catch (error) {console.error("Filed to generate events", error);}
   };
 
   // "다음 이벤트" 버튼 클릭 시 동작 수정
