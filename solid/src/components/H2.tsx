@@ -1,12 +1,37 @@
-import { Component } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { Component, onMount } from 'solid-js';
+import { useNavigate, useLocation } from '@solidjs/router';
 import { roomCode } from '../store'; // 글로벌 상태 임포트
+import { socket, setSocket } from "../store";
 import logoImage from '../../resource/logo.png';
 
 const NoticeRoom: Component = () => {
   const navigate = useNavigate();
   const currentRoomCode = roomCode(); // 배열 구조 분해 할당으로 방 코드 가져오기
-
+  const location = useLocation();
+  const state = location.state as {
+    hostNickname: string;
+  };
+  onMount(() => {
+    const ws = socket();
+    if (!ws) {
+      console.warn("WebSocket not connected");
+      if (state.hostNickname){
+        const ws = new WebSocket(`ws://${window.location.host}/host/ws/${currentRoomCode}/${state.hostNickname}`);
+        
+        ws.onopen = () => {
+          console.log("WebSocket connected");
+          setSocket(ws);  
+          navigate("/host/notice");  
+        };
+      }
+    }
+  
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      console.log("받은 메시지:", msg);
+      // 메시지 처리 로직
+    };
+  });
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex justify-center items-center font-sans">
       <div class="flex flex-col justify-center items-center w-[90%] max-w-[435px] py-8 bg-gray-800 rounded-lg shadow-lg">

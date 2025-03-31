@@ -1,37 +1,46 @@
-import { Component, createSignal, onMount } from 'solid-js';
+import { Component, createSignal, onMount, onCleanup } from 'solid-js';
 import { roomCode, setRoomCode } from "../store";
+import { socket , setSocket } from "../store";
 import ky from "ky";
 import logoImage from '../../resource/logo.png';
 
 const H3Waiting: Component = () => {
-  const [teams, setTeams] = createSignal<string[]>([]);
   const currentRoomCode = roomCode();
-
-  const fetchTeams = async () => {
-    try {
-      const response = await ky.get(`http://localhost:8000/host/room/${currentRoomCode}/info`).json<{ players: string[] }>();
-      setTeams(response.players);
-    } catch (error) {
-      console.error("Failed to fetch teams:", error);
-    }
-  };
+  const ws = socket(); // 전역에서 불러온 WebSocket 인스턴스
+  const [teams, setTeams] = createSignal<string[]>([]);
 
   onMount(() => {
-    fetchTeams();
-    const interval = setInterval(fetchTeams, 3000);
+    if (!ws) {
+      console.warn("WebSocket not connected");
+      return;
+    }
 
-    return () => clearInterval(interval);
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.action === "update_users") {
+        const userList = msg.data.map((user: any) => user.username);
+        setTeams(userList);
+      }
+    };
+
+    // 선택 사항: 연결 끊길 경우 처리
+    ws.onclose = () => {
+      console.warn("WebSocket closed");
+    };
   });
 
-  const handleGameStart = async () => {
-    try {
-      await ky.post(`http://localhost:8000/host/room/${currentRoomCode}/join_confirm`);
-      setRoomCode(currentRoomCode);
-      console.log("Room code set to:", currentRoomCode);
-      window.location.href = '/host/preinfo';
-    } catch (error) {
-      console.error("Failed to start game:", error);
+  onCleanup(() => {
+    // 페이지 벗어날 때 메시지 핸들러 정리
+    if (ws) {
+      ws.onmessage = null;
+      ws.onclose = null;
     }
+  });
+
+  const handleGameStart = () => {
+    if (!ws) return;
+    ws.send(JSON.stringify({ action: "start_game" }));
+    window.location.href = '/host/preinfo';
   };
 
   return (

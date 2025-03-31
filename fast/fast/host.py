@@ -44,8 +44,10 @@ async def list_rooms():
         })
 
     return room_list
+
 @router.websocket("/ws/{room_id}/{username}")
 async def host_websocket(websocket: WebSocket, room_id: str, username: str):
+    print(room_id,username)
     room = room_manager.get_room(room_id)
     if not room:
         await websocket.close(code=4000)
