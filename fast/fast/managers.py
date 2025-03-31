@@ -1,4 +1,5 @@
 from fastapi import WebSocket
+from typing import Optional
 import json
 
 class ConnectionManager:
@@ -32,20 +33,35 @@ class ConnectionManager:
         for conn in self.active_connections:
             await conn.send_text(text)
 
+class RoomData:
+    def __init__(self, connection_manager: ConnectionManager, host_nickname: str, pre_info: str, disaster: str):
+        self.manager = connection_manager
+        self.host_nickname = host_nickname
+        self.selected_pre_info = pre_info
+        self.selected_disaster = disaster
+
 
 class RoomManager:
     def __init__(self):
-        self.rooms: dict[str, ConnectionManager] = {}
+        self.rooms: dict[str, RoomData] = {}
 
-    def create_room(self, room_id: str, host_username: str) -> bool:
+    def create_room(self, room_id: str, host_nickname: str, pre_info: str, disaster: str) -> bool:
         if room_id in self.rooms:
-            return False  # 방이 이미 있음
-        self.rooms[room_id] = ConnectionManager(host_username)
+            return False
+
+        conn_manager = ConnectionManager(host=host_nickname)
+        self.rooms[room_id] = RoomData(conn_manager, host_nickname, pre_info, disaster)
         return True
 
-    def get_room(self, room_id: str) -> ConnectionManager | None:
+    def get_room(self, room_id: str) -> Optional[ConnectionManager]:
+        room = self.rooms.get(room_id)
+        return room.manager if room else None
+
+    def get_room_info(self, room_id: str) -> Optional[RoomData]:
         return self.rooms.get(room_id)
 
     def cleanup_room(self, room_id: str):
-        if room_id in self.rooms and not self.rooms[room_id].active_connections:
+        room = self.rooms.get(room_id)
+        if room and not room.manager.active_connections:
             del self.rooms[room_id]
+room_manager = RoomManager()

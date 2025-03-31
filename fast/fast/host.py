@@ -1,27 +1,28 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from fast.managers import RoomManager
-import json
 import uuid
+from fast.managers import room_manager
+import json
 
-app = FastAPI()
-room_manager = RoomManager()
-
+router = APIRouter(prefix="/host")
 class CreateRoomPayload(BaseModel):
     host_nickname: str
-    selected_pre_info: str
-    selected_disaster: str
+    selected_pre_info: int
+    selected_disaster: int
 
-@app.post("/create_room")
+
+@router.post("/create_room")
 async def create_room(payload: CreateRoomPayload):
     room_code = str(uuid.uuid4())[:6]
+
     success = room_manager.create_room(
         room_code,
         payload.host_nickname,
         payload.selected_pre_info,
         payload.selected_disaster
     )
+
     if not success:
         return JSONResponse(status_code=400, content={"detail": "Room already exists."})
 
@@ -30,7 +31,7 @@ async def create_room(payload: CreateRoomPayload):
         "host_nickname": payload.host_nickname
     }
 
-@app.get("/rooms")
+@router.get("/rooms")
 async def list_rooms():
     room_list = []
     for room_id, room in room_manager.rooms.items():
@@ -43,9 +44,8 @@ async def list_rooms():
         })
 
     return room_list
-
-@app.websocket("/ws/{room_id}/{username}")
-async def websocket_endpoint(websocket: WebSocket, room_id: str, username: str):
+@router.websocket("/ws/{room_id}/{username}")
+async def host_websocket(websocket: WebSocket, room_id: str, username: str):
     room = room_manager.get_room(room_id)
     if not room:
         await websocket.close(code=4000)
@@ -64,11 +64,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, username: str):
             action = data_json.get("action")
             user = room.user_data.get(websocket)
 
-            if action == "toggle_ready" and user:
-                user["ready"] = not user["ready"]
-                await room.broadcast_room()
-
-            elif action == "start_game" and user and user["is_host"]:
+            if action == "start_game" and user and user["is_host"]:
                 await room.broadcast_message({
                     "action": "start_game",
                     "data": f"Game is starting in room {room_id}!"

@@ -18,11 +18,12 @@ const RoomBuild: Component = () => {
         selected_disaster: selectedDisaster(),
       };
 
-      const response = await ky.post("http://localhost:8000/host/create_room", {
+      const response = await ky.post("/api/host/create_room", {
           json: payload,
         })
         .json<{ room_code: string; host_nickname: string }>();
 
+      console.log("Room creating:", payload);
       console.log("Room created successfully:", response);
       setRoomCode(response.room_code);
       navigate("/host/notice");
