@@ -1,8 +1,21 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fast.managers import room_manager
 import json
 
 router = APIRouter(prefix="/player")
+
+
+@router.get("/room/{room_id}")
+async def get_room_host(room_id: str):
+    room_data = room_manager.get_room_info(room_id)
+    if not room_data:
+        raise HTTPException(status_code=404, detail="Room not found")
+    
+    return {
+        "room_code": room_id,
+        "host_nickname": room_data.host_nickname
+    }
+
 
 @router.websocket("/ws/{room_id}/{username}")
 async def player_websocket(websocket: WebSocket, room_id: str, username: str):
