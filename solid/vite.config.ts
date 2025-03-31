@@ -17,7 +17,13 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        ws: true, // <- WebSocket 지원!
         rewrite: path => path.replace(/^\/api/, ''),
+      },
+      '/ws': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        ws: true, // <- 중요!
       },
     }
   },
