@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir poetry
 COPY pyproject.toml ./
 
 RUN poetry config virtualenvs.create false
-RUN poetry install --only main --no-interaction --no-ansi --no-cache
+RUN poetry install --only main --no-root --no-interaction --no-ansi --no-cache
 
 COPY fast ./fast
 

@@ -3,8 +3,9 @@ name = "fast"
 version = "0.1.0"
 description = ""
 authors = ["Jeongbin Kim <147483248+ijake-16@users.noreply.github.com>"]
-readme = "README.md"
-
+packages = [
+    { include = "fast" }
+]
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = { extras = ["standard"], version = "^0.112.2" }
