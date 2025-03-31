@@ -16,8 +16,7 @@ const NoticeRoom: Component = () => {
     if (!ws) {
       console.warn("WebSocket not connected");
       if (state.hostNickname){
-        const ws = new WebSocket(`ws://${window.location.host}/host/ws/${currentRoomCode}/${state.hostNickname}`);
-        
+        const ws = new WebSocket(`/host/ws/${currentRoomCode}/${state.hostNickname}`);
         ws.onopen = () => {
           console.log("WebSocket connected");
           setSocket(ws);  
