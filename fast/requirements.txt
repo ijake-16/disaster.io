@@ -1,0 +1,8 @@
+fastapi>=0
+pandas>=2
+sqlalchemy>=2
+asyncpg>=0
+alembic>=1
+fastapi-login>=1
+fastapi-sso>=0
+openpyxl>=3
