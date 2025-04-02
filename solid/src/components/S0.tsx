@@ -7,7 +7,7 @@ const DisasterIO = () => {
   const [activeButton, setActiveButton] = createSignal<string | null>(null);
 
   const handleHostNavigate = () => {
-    window.location.href = '/host/roombuild';
+    window.location.href = '/login';
   };
 
   const handlePlayerNavigate = () => {

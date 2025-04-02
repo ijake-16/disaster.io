@@ -1,6 +1,8 @@
 import { createSignal } from 'solid-js';
 
 const LOCAL_STORAGE_KEY = 'roomCode';
+const USER_STORAGE_KEY = 'userAuth';
+
 export const [socket, setSocket] = createSignal<WebSocket | null>(null);
 
 // Function to get room code from local storage
@@ -25,6 +27,54 @@ const updateRoomCode = (code: string | null) => {
   setRoomCode(code);
 };
 
+// User authentication
+interface UserAuth {
+  isAuthenticated: boolean;
+  provider: string | null; // 'kakao', 'normal', etc.
+  userId: string | null;
+  name: string | null;
+  profileImage: string | null;
+}
+
+// Get user authentication from local storage
+const getUserAuthFromStorage = (): UserAuth => {
+  const savedAuth = localStorage.getItem(USER_STORAGE_KEY);
+  if (savedAuth) {
+    return JSON.parse(savedAuth);
+  }
+  return {
+    isAuthenticated: false,
+    provider: null,
+    userId: null,
+    name: null,
+    profileImage: null
+  };
+};
+
+// Save user authentication to local storage
+const setUserAuthInStorage = (auth: UserAuth) => {
+  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(auth));
+};
+
+// Initialize user authentication from local storage
+const [userAuth, setUserAuth] = createSignal<UserAuth>(getUserAuthFromStorage());
+
+const updateUserAuth = (auth: UserAuth) => {
+  setUserAuthInStorage(auth);
+  setUserAuth(auth);
+};
+
+// Logout function
+const logout = () => {
+  updateUserAuth({
+    isAuthenticated: false,
+    provider: null,
+    userId: null,
+    name: null,
+    profileImage: null
+  });
+};
+
 interface Result1 {
   team: string;
   used_item: string[];
@@ -41,7 +91,7 @@ interface Result2 {
   used_item: string[];
   item_path: string[];
   event_result: string[];
-  required_item: string[]; //각 이벤트에서 필요한 아���템 태그 저장
+  required_item: string[]; //각 이벤트에서 필요한 아이템 태그 저장
   hunger: number[];
   thirst: number[];
   stress: number[];
@@ -72,7 +122,7 @@ const initialResult2: Result2 = {
 export const [team1Result, setTeam1Result] = createSignal<Result1>({ ...initialResult1 });
 export const [team2Result, setTeam2Result] = createSignal<Result2>({ ...initialResult2 });
 
-export { roomCode, updateRoomCode as setRoomCode };
+export { roomCode, updateRoomCode as setRoomCode, userAuth, updateUserAuth as setUserAuth, logout };
 
 // 아이템 정보 인터페이스 추가
 interface ItemInfo {
