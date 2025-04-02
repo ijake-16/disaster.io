@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir tomli
 # Extract dependencies from pyproject.toml to requirements.txt
 RUN python extract_deps.py
 
+
 # Show generated requirements.txt for debugging
 RUN cat requirements.txt
 

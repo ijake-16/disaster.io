@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js';
 
 const LOCAL_STORAGE_KEY = 'roomCode';
+export const [socket, setSocket] = createSignal<WebSocket | null>(null);
 
 // Function to get room code from local storage
 const getRoomCodeFromStorage = () => {

@@ -1,112 +1,78 @@
-from fastapi import APIRouter, HTTPException
-from .models import game_rooms, Room, generate_room_code, CreateRoomRequest
-from typing import Dict
-import logging
-
-logger = logging.getLogger(__name__)
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+import uuid
+from fast.managers import room_manager
+import json
 
 router = APIRouter(prefix="/host")
+class CreateRoomPayload(BaseModel):
+    host_nickname: str
+    selected_pre_info: int
+    selected_disaster: int
 
-#h1
+
 @router.post("/create_room")
-async def create_room(request: CreateRoomRequest):
-    logger.info(f"Received POST /create_room with payload: {request.model_dump()}")
-    room_code = generate_room_code()
-    while room_code in game_rooms:
-        room_code = generate_room_code()
-    
-    game_rooms[room_code] = Room(
-        code=room_code,
-        host_nickname=request.host_nickname
+async def create_room(payload: CreateRoomPayload):
+    room_code = str(uuid.uuid4())[:6]
+
+    success = room_manager.create_room(
+        room_code,
+        payload.host_nickname,
+        payload.selected_pre_info,
+        payload.selected_disaster
     )
-    
+
+    if not success:
+        return JSONResponse(status_code=400, content={"detail": "Room already exists."})
+
     return {
         "room_code": room_code,
-        "host_nickname": request.host_nickname
+        "host_nickname": payload.host_nickname
     }
 
-#h2
-@router.get("/room/{room_code}/info")
-async def get_room_info(room_code: str):
-    if room_code not in game_rooms:
-        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-    room = game_rooms[room_code]
-    return {
-        "room_code": room_code,
-        "host_nickname": room.host_nickname,
-        "players": [team.name for team in room.teams.values()]
-    }
+@router.get("/rooms")
+async def list_rooms():
+    room_list = []
+    for room_id, room in room_manager.rooms.items():
+        room_list.append({
+            "room_code": room_id,
+            "host_nickname": room.host_nickname,
+            "selected_pre_info": room.selected_pre_info,
+            "selected_disaster": room.selected_disaster,
+            "user_count": len(room.manager.active_connections),
+        })
 
-#h3
-@router.post("/room/{room_code}/join_confirm")
-async def confirm_to_start_game_info(room_code: str):
-    """
-    게임 참여가 완료되어 사전정보 안내를 시작합니다.
-    """
-    if room_code not in game_rooms:
-        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-    room = game_rooms[room_code]
-    room.current_phase = "game_info"
-    return {
-        "message": "사전정보 안내를 시작합니다",
-        "current_phase": room.current_phase
-    }
+    return room_list
 
-#h5
-@router.post("/room/{room_code}/game_info")
-async def set_game_info(room_code: str, game_info: Dict):
-    if room_code not in game_rooms:
-        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-    room = game_rooms[room_code]
-    room.game_info = game_info
-    return {"message": "게임 정보가 성공적으로 업로드되었습니다", "game_info": game_info} 
+@router.websocket("/ws/{room_id}/{username}")
+async def host_websocket(websocket: WebSocket, room_id: str, username: str):
+    print(room_id,username)
+    room = room_manager.get_room(room_id)
+    if not room:
+        await websocket.close(code=4000)
+        return
 
-#h6
-@router.post("/room/{room_code}/game_info_confirm")
-async def confirm_to_start_bag_selection(room_code: str):
-    """
-    사전정보 안내가 완료되어 가방 선택을 시작합니다.
-    """
-    if room_code not in game_rooms:
-        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-    room = game_rooms[room_code]
-    room.current_phase = "bag_selection"
-    return {
-        "message": "가방 선택을 시작합니다",
-        "current_phase": room.current_phase
-    }
+    await room.connect(websocket, username)
 
-#h7
-@router.get("/room/{room_code}/bag_contents")
-async def get_bag_contents(room_code: str):
-    if room_code not in game_rooms:
-        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-    room = game_rooms[room_code]
-    team_bags = {}
-    
-    for team_name, team in room.teams.items():
-        team_bags[team_name] = team.bag_contents
-    
-    return team_bags
+    try:
+        while True:
+            data = await websocket.receive_text()
+            try:
+                data_json = json.loads(data)
+            except json.JSONDecodeError:
+                continue
 
-#h8
-@router.post("/room/{room_code}/game_start_confirm")
-async def confirm_to_start_game_simulation(room_code: str):
-    """
-    게임 시뮬레이션을 시작합니다.
-    """
-    if room_code not in game_rooms:
-        raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-    room = game_rooms[room_code]
-    room.current_phase = "simulation"
-    return {
-        "message": "게임 시뮬레이션을 시작합니다",
-        "current_phase": room.current_phase
-    }
+            action = data_json.get("action")
+            user = room.user_data.get(websocket)
 
+            if action == "start_game" and user and user["is_host"]:
+                await room.broadcast_message({
+                    "action": "start_game",
+                    "data": f"Game is starting in room {room_id}!"
+                })
+
+    except WebSocketDisconnect:
+        room.disconnect(websocket)
+        await room.broadcast_room()
+        room_manager.cleanup_room(room_id)

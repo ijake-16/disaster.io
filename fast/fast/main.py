@@ -1,110 +1,80 @@
-# DEPRECATED -> host.py, player.py
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from fast.managers import RoomManager
+import json
+import uuid
 
-# from fastapi import APIRouter, HTTPException
-# from pydantic import BaseModel
-# import random
-# import string
-# from typing import Dict
+app = FastAPI()
+room_manager = RoomManager()
 
-# router = APIRouter()
+class CreateRoomPayload(BaseModel):
+    host_nickname: str
+    selected_pre_info: str
+    selected_disaster: str
 
-# game_rooms = {}
+@app.post("/create_room")
+async def create_room(payload: CreateRoomPayload):
+    room_code = str(uuid.uuid4())[:6]
+    success = room_manager.create_room(
+        room_code,
+        payload.host_nickname,
+        payload.selected_pre_info,
+        payload.selected_disaster
+    )
+    if not success:
+        return JSONResponse(status_code=400, content={"detail": "Room already exists."})
 
-# class Team(BaseModel):
-#     name: str
-#     selected_bag: int = None  # 선택한 가방 번호를 저장할 필드
+    return {
+        "room_code": room_code,
+        "host_nickname": payload.host_nickname
+    }
 
-# class Room(BaseModel):
-#     code: str
-#     teams: Dict[str, Team] = {}
-#     game_info: Dict = None  # 게임 사전 정보를 저장할 필드
+@app.get("/rooms")
+async def list_rooms():
+    room_list = []
+    for room_id, room in room_manager.rooms.items():
+        room_list.append({
+            "room_code": room_id,
+            "host_nickname": room.host_nickname,
+            "selected_pre_info": room.selected_pre_info,
+            "selected_disaster": room.selected_disaster,
+            "user_count": len(room.manager.active_connections),
+        })
 
-# class Participant(BaseModel):
-#     team_name: str
+    return room_list
 
-# def generate_room_code():
-#     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+@app.websocket("/ws/{room_id}/{username}")
+async def websocket_endpoint(websocket: WebSocket, room_id: str, username: str):
+    room = room_manager.get_room(room_id)
+    if not room:
+        await websocket.close(code=4000)
+        return
 
-# @router.get("/example")
-# async def example_api():
-#     return {"메시지": "이것은 예시 API 메서드입니다."}
+    await room.connect(websocket, username)
 
-# @router.post("/create_room")
-# async def create_room():
-#     room_code = generate_room_code()
-#     while room_code in game_rooms:
-#         room_code = generate_room_code()
-#     game_rooms[room_code] = Room(code=room_code)
-#     return {"room_code": room_code}
+    try:
+        while True:
+            data = await websocket.receive_text()
+            try:
+                data_json = json.loads(data)
+            except json.JSONDecodeError:
+                continue
 
-# @router.post("/join_room/{room_code}")
-# async def join_room(room_code: str, participant: Participant):
-#     if room_code not in game_rooms:
-#         raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-#     room = game_rooms[room_code]
-    
-#     if participant.team_name in room.teams:
-#         raise HTTPException(status_code=400, detail="이미 존재하는 팀 이름입니다")
-    
-#     room.teams[participant.team_name] = Team(name=participant.team_name)
-#     return {"message": f"{participant.team_name} 팀이 방에 참가했습니다", 
-#             "team": participant.team_name}
+            action = data_json.get("action")
+            user = room.user_data.get(websocket)
 
-# @router.get("/room/{room_code}")
-# async def get_room_info(room_code: str):
-#     if room_code not in game_rooms:
-#         raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-#     room = game_rooms[room_code]
-#     return {
-#         "room_code": room.code,
-#         "teams": [team.name for team in room.teams.values()]
-#     }
+            if action == "toggle_ready" and user:
+                user["ready"] = not user["ready"]
+                await room.broadcast_room()
 
-# @router.get("/rooms")
-# async def get_all_rooms():
-#     return {
-#         "rooms": [
-#             {
-#                 "room_code": room.code,
-#                 "teams_count": len(room.teams)
-#             } for room in game_rooms.values()
-#         ]
-#     }
+            elif action == "start_game" and user and user["is_host"]:
+                await room.broadcast_message({
+                    "action": "start_game",
+                    "data": f"Game is starting in room {room_id}!"
+                })
 
-# @router.post("/room/{room_code}/game_info")
-# async def set_game_info(room_code: str, game_info: Dict):
-#     if room_code not in game_rooms:
-#         raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-#     room = game_rooms[room_code]
-#     room.game_info = game_info
-#     return {"message": "게임 정보가 성공적으로 업로드되었습니다", "game_info": game_info}
-
-# @router.post("/room/{room_code}/team/{team_name}/select_bag")
-# async def select_bag(room_code: str, team_name: str, bag_number: int):
-#     if room_code not in game_rooms:
-#         raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-#     room = game_rooms[room_code]
-#     if team_name not in room.teams:
-#         raise HTTPException(status_code=404, detail="팀을 찾을 수 없습니다")
-    
-#     if bag_number not in [1, 2, 3]:
-#         raise HTTPException(status_code=400, detail="유효하지 않은 가방 번호입니다")
-    
-#     room.teams[team_name].selected_bag = bag_number
-#     return {"message": f"{team_name} 팀이 {bag_number}번 가방을 선택했습니다"}
-
-# @router.get("/room/{room_code}/team_selections")
-# async def get_team_selections(room_code: str):
-#     if room_code not in game_rooms:
-#         raise HTTPException(status_code=404, detail="방을 찾을 수 없습니다")
-    
-#     room = game_rooms[room_code]
-#     team_selections = {
-#         team_name: team.selected_bag 
-#         for team_name, team in room.teams.items()
-#     }
-#     return {"team_selections": team_selections}
-
-
+    except WebSocketDisconnect:
+        room.disconnect(websocket)
+        await room.broadcast_room()
+        room_manager.cleanup_room(room_id)

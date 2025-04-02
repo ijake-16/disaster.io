@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
-import ky from "ky";
+import { setSocket, setRoomCode } from "../store";
 
 const S2 = () => {
   const location = useLocation();
@@ -21,20 +21,31 @@ const S2 = () => {
       return;
     }
 
-    try {
-      const response = await ky
-        .post(`http://localhost:8000/player/room/${roomCode}/join`, {
-          json: { team_name: trimmedTeamName },
-        })
-        .json<{ message: string; room_code: string; player_name: string }>();
+    // const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    // const ws = new WebSocket(`${wsProtocol}://${window.location.host}/player/ws/${roomCode}/${trimmedName}`);
 
-      console.log("Join response:", response);
-      setErrorMessage("");
-      navigate("/waiting", { state: { roomCode, teamName: trimmedTeamName } });
-    } catch (error) {
-      console.error("Failed to join room:", error);
-      setErrorMessage("팀 이름이 이미 존재하거나 잘못된 요청입니다.");
-    }
+    const ws = new WebSocket(`/player/ws/${roomCode}/${trimmedTeamName}`);
+
+    ws.onopen = () => {
+      console.log("WebSocket 연결 성공!");
+      setSocket(ws);
+      setRoomCode(roomCode); // 혹시 store에도 저장하고 싶다면
+      navigate("/waiting", {
+        state: { roomCode, teamName: trimmedTeamName },
+      });
+    };
+
+    ws.onerror = () => {
+      setErrorMessage("연결에 실패했습니다. 방이 닫혔거나 닉네임이 중복됐을 수 있어요.");
+    };
+
+    ws.onclose = (e) => {
+      if (e.code === 4000) {
+        setErrorMessage("해당 방이 존재하지 않거나 입장할 수 없습니다.");
+      } else {
+        console.warn("소켓이 닫혔습니다:", e);
+      }
+    };
   };
 
   return (

@@ -16,7 +16,7 @@ const S1: Component = () => {
       }
 
       const response = await ky
-        .get(`http://localhost:8000/player/room/${code}/host`)
+        .get(`/api/player/room/${code}`)
         .json<{ room_code: string; host_nickname: string }>();
 
       console.log("Room found:", response);

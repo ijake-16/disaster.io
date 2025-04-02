@@ -11,3 +11,4 @@ pnpm-lock.yaml
 node_modules
 solid/node_modules
 x
+.tfi/
