@@ -1,4 +1,6 @@
-import { createSignal } from 'solid-js';
+import { createSignal, onMount } from 'solid-js';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const LOCAL_STORAGE_KEY = 'roomCode';
 const USER_STORAGE_KEY = 'userAuth';
@@ -141,4 +143,27 @@ export const [itemTagMapping, setItemTagMapping] = createSignal<Record<string, s
   'waterproof': []
 });
 
-export const [itemDetails, setItemDetails] = createSignal<Record<string, ItemInfo>>({}); 
+export const [itemDetails, setItemDetails] = createSignal<Record<string, ItemInfo>>({});
+
+// Initialize auth state
+onMount(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      updateUserAuth({
+        isAuthenticated: true,
+        provider: user.providerData[0]?.providerId || 'kakao',
+        userId: user.uid,
+        name: user.displayName || 'User',
+        profileImage: user.photoURL || null
+      });
+    } else {
+      updateUserAuth({
+        isAuthenticated: false,
+        provider: null,
+        userId: null,
+        name: null,
+        profileImage: null
+      });
+    }
+  });
+}); 

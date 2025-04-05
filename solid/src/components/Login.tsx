@@ -2,6 +2,9 @@ import { Component, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import logoImage from '../../resource/logo.png';
 import ky from 'ky';
+import { userAuth, setUserAuth } from '../store';
+import { auth } from '../firebase';
+import { signInWithCustomToken } from 'firebase/auth';
 
 const Login: Component = () => {
   const navigate = useNavigate();
@@ -9,8 +12,16 @@ const Login: Component = () => {
 
   const handleKakaoLogin = async () => {
     try {
-      // Redirect to Kakao OAuth authorization page
-      window.location.href = '/api/auth/kakao/login';
+      // Use popup approach for easier integration
+      // 1. First get authorization from Kakao
+      const KAKAO_CLIENT_ID = 'YOUR_KAKAO_CLIENT_ID';
+      const REDIRECT_URI = window.location.origin + '/auth-callback';
+      
+      // Store the current URL state for return after auth
+      localStorage.setItem('authRedirect', window.location.pathname);
+      
+      // Redirect to Kakao login
+      window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
     } catch (error) {
       console.error('Failed to initiate Kakao login:', error);
       setErrorMessage('카카오 로그인을 시작하는 중 오류가 발생했습니다.');

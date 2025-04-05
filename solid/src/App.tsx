@@ -18,6 +18,7 @@ import S6 from './components/S6.tsx';
 import S7 from './components/S7.tsx';
 import S8 from './components/S8.tsx';
 import Login from './components/Login.tsx';
+import AuthCallback from './components/AuthCallback.tsx';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
       <Route path="/bagmake" component={S6} />
       <Route path="/sceneinfo" component={S7} />
       <Route path="/simulinfo" component={S8} />
+      <Route path="/auth-callback" component={AuthCallback} />
     </Router>
   );
 }

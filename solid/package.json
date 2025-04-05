@@ -25,6 +25,7 @@
     "@solidjs/router": "^0.15.1",
     "@tanstack/solid-query": "^5.59.20",
     "d3": "^7.9.0",
+    "firebase": "^11.6.0",
     "ky": "^1.7.2",
     "solid-app-router": "^0.4.2",
     "solid-js": "^1.9.3",
