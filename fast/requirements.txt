@@ -6,3 +6,6 @@ alembic>=1
 fastapi-login>=1
 fastapi-sso>=0
 openpyxl>=3
+firebase-admin
+python-dotenv
+httpx

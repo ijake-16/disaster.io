@@ -17,6 +17,12 @@ import S5 from './components/S5.tsx';
 import S6 from './components/S6.tsx';
 import S7 from './components/S7.tsx';
 import S8 from './components/S8.tsx';
+import Login from './components/Login.tsx';
+import AuthCallback from './components/AuthCallback.tsx';
+import HostProfile from './components/HostProfile.tsx';
+import AdminPanel from './components/AdminPanel.tsx';
+import AdminPromotion from './components/AdminPromotion.tsx';
+
 function App() {
   return (
     <Router>
@@ -29,6 +35,11 @@ function App() {
       <Route path="/host/simulinfo" component={H6} />
       <Route path="/host/simulresult" component={H7} />
       <Route path="/host/finalresult" component={H8} />
+      <Route path="/login" component={Login} />
+      <Route path="/host-profile" component={HostProfile} />
+      <Route path="/admin-panel" component={AdminPanel} />
+      <Route path="/admin" component={AdminPanel} />
+      <Route path="/admin-promotion" component={AdminPromotion} />
       <Route path="/" component={S0} />
       <Route path="/start" component={S1} />
       <Route path="/teambuild" component={S2} />
@@ -38,8 +49,9 @@ function App() {
       <Route path="/bagmake" component={S6} />
       <Route path="/sceneinfo" component={S7} />
       <Route path="/simulinfo" component={S8} />
+      <Route path="/auth-callback" component={AuthCallback} />
     </Router>
   );
-};
+}
 
 export default App;

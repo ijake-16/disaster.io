@@ -3,21 +3,15 @@ import logoImage from '../../resource/logo.png';
 
 const DisasterIO = () => {
   const [destination, setDestination] = createSignal('');
+  
   const [activeButton, setActiveButton] = createSignal<string | null>(null);
 
-  const handleSetDestination = (page: string, buttonId: string) => {
-    setDestination(page);
-    setActiveButton(buttonId);
+  const handleHostNavigate = () => {
+    window.location.href = '/login';
   };
 
-  const handleNavigate = () => {
-    if (destination() === 'h1') {
-      window.location.href = '/host/roombuild';
-    } else if (destination() === 's1') {
-      window.location.href = '/start';
-    } else {
-      alert("먼저 '호스트' 또는 '플레이어'를 선택하세요.");
-    }
+  const handlePlayerNavigate = () => {
+    window.location.href = '/start';
   };
 
   return (
@@ -33,28 +27,25 @@ const DisasterIO = () => {
         <div class="text-gray-200 text-xl text-center mb-6 font-sans">한국형 생존 대비 시뮬레이션</div>
         
         <button
-          class={`w-full py-2.5 mb-2 text-xl text-black font-bold text-black rounded-lg ${
-            activeButton() === 'h1' ? 'bg-gray-400' : 'bg-gray-200'
-          } font-sans`}
-          onClick={() => handleSetDestination('h1', 'h1')}
+          class="w-full py-4 mb-5 text-black font-bold rounded-lg bg-gray-200 hover:bg-gray-400 font-sans flex flex-col items-center transition-colors"
+          onClick={handlePlayerNavigate}
         >
-        호스트
-        </button>   
-        <button
-          class={`w-full py-2.5 mb-2 text-xl text-black font-bold text-black rounded-lg ${
-            activeButton() === 's1' ? 'bg-gray-400' : 'bg-gray-200'
-          } font-sans`}
-          onClick={() => handleSetDestination('s1', 's1')}
-        >
-        플레이어
+          <span class="text-xl mb-1">플레이어 입장</span>
+          <span class="text-sm text-gray-600">강사님으로부터 코드를 부여받은 경우 클릭하세요.</span>
         </button>
         
-        <button
-          class="bg-orange-400 text-black text-xl font-bold py-2.5 mt-4 rounded-lg text-lg font-sans hover:bg-orange-500 transition-colors"
-          onClick={handleNavigate}
-        >
-        선택
-        </button>
+        <div class="mt-2 text-center">
+          <a 
+            href="#" 
+            class="text-blue-400 hover:text-blue-300 hover:underline text-sm"
+            onClick={(e) => {
+              e.preventDefault();
+              handleHostNavigate();
+            }}
+          >
+            게임을 호스트하는 강사님의 경우 여기를 클릭해 로그인하세요.
+          </a>
+        </div>
       </div>
     </div>
   );
