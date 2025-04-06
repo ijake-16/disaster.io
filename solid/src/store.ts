@@ -55,6 +55,7 @@ const getUserAuthFromStorage = (): UserAuth => {
 
 // Save user authentication to local storage
 const setUserAuthInStorage = (auth: UserAuth) => {
+  console.log('Saving auth to localStorage:', auth);
   localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(auth));
 };
 
@@ -62,8 +63,10 @@ const setUserAuthInStorage = (auth: UserAuth) => {
 const [userAuth, setUserAuth] = createSignal<UserAuth>(getUserAuthFromStorage());
 
 const updateUserAuth = (auth: UserAuth) => {
+  console.log('Updating user auth:', auth);
   setUserAuthInStorage(auth);
   setUserAuth(auth);
+  console.log('User auth updated, current state:', userAuth());
 };
 
 // Logout function
@@ -147,8 +150,18 @@ export const [itemDetails, setItemDetails] = createSignal<Record<string, ItemInf
 
 // Initialize auth state
 onMount(() => {
+  console.log('Setting up Firebase auth state listener');
+  
   onAuthStateChanged(auth, (user) => {
+    console.log('Firebase auth state changed:', user ? 'User logged in' : 'No user');
+    
     if (user) {
+      console.log('User details:', {
+        uid: user.uid,
+        displayName: user.displayName,
+        provider: user.providerData[0]?.providerId
+      });
+      
       updateUserAuth({
         isAuthenticated: true,
         provider: user.providerData[0]?.providerId || 'kakao',

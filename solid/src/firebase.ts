@@ -1,16 +1,22 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-// Replace with your Firebase config
+// Firebase configuration - update with the correct values from your Firebase console
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB7VC1nUk8AqlG-NK4ZkvJjqAmpC0fen8s",
+  authDomain: "disaster-io-e3848.firebaseapp.com",
+  projectId: "disaster-io-e3848",
+  storageBucket: "disaster-io-e3848.appspot.com",
+  messagingSenderId: "209003919230",
+  appId: "1:209003919230:web:a5b823ed9ebd6cb1ae6df3"
 };
 
 // Initialize Firebase
+console.log('Initializing Firebase app');
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// Add debug listener
+onAuthStateChanged(auth, (user) => {
+  console.log('Firebase.ts: Auth state changed:', user ? `User ${user.uid} logged in` : 'No user logged in');
+});

@@ -1,20 +1,83 @@
-import { Component, createSignal } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { Component, createSignal, onMount } from 'solid-js';
+import { useNavigate, useSearchParams } from '@solidjs/router';
 import logoImage from '../../resource/logo.png';
 import ky from 'ky';
 import { userAuth, setUserAuth } from '../store';
 import { auth } from '../firebase';
 import { signInWithCustomToken } from 'firebase/auth';
 
+interface AuthResponse {
+  token: string;
+  user: {
+    uid: string;
+    email: string | null;
+    display_name: string | null;
+  };
+}
+
 const Login: Component = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [errorMessage, setErrorMessage] = createSignal('');
+
+  onMount(async () => {
+    // Check if we're in the callback
+    const code = searchParams.code;
+    if (code) {
+      try {
+        console.log('Auth callback received with code:', code);
+        
+        // Small delay to ensure logs are visible
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Exchange code for Firebase token
+        const response = await ky.post('/api/auth/kakao/token', {
+          json: { code },
+          timeout: 10000 // Increase timeout
+        }).json<AuthResponse>();
+        
+        console.log('Authentication successful');
+        
+        // Sign in with Firebase
+        const userCredential = await signInWithCustomToken(auth, response.token);
+        
+        console.log('Firebase sign-in successful:', userCredential.user);
+        
+        // Update user auth state
+        setUserAuth({
+          isAuthenticated: true,
+          provider: 'kakao',
+          userId: userCredential.user.uid,
+          name: userCredential.user.displayName || '',
+          profileImage: userCredential.user.photoURL || '',
+        });
+        
+        // Verify state was updated
+        console.log('Auth state after update:', userAuth());
+        
+        // Wait to ensure state has updated
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('Redirecting to host profile, final auth state:', userAuth());
+        
+        // Redirect to host profile after successful login
+        navigate('/host-profile');
+      } catch (error) {
+        console.error('Authentication error:', error);
+        if (error instanceof Error) {
+          setErrorMessage('인증 중 오류가 발생했습니다: ' + error.message);
+        } else {
+          setErrorMessage('인증 중 오류가 발생했습니다.');
+        }
+      }
+    }
+  });
 
   const handleKakaoLogin = async () => {
     try {
       // Use popup approach for easier integration
       // 1. First get authorization from Kakao
-      const KAKAO_CLIENT_ID = 'YOUR_KAKAO_CLIENT_ID';
+      const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID;
       const REDIRECT_URI = window.location.origin + '/auth-callback';
       
       // Store the current URL state for return after auth

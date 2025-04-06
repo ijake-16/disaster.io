@@ -1,9 +1,18 @@
 import { Component, onMount } from 'solid-js';
 import { useNavigate, useSearchParams } from '@solidjs/router';
-import { setUserAuth } from '../store';
+import { setUserAuth, userAuth } from '../store';
 import { auth } from '../firebase';
 import { signInWithCustomToken } from 'firebase/auth';
 import ky from 'ky';
+
+interface AuthResponse {
+  token: string;
+  user: {
+    uid: string;
+    email: string | null;
+    display_name: string | null;
+  };
+}
 
 const AuthCallback: Component = () => {
   const navigate = useNavigate();
@@ -18,14 +27,21 @@ const AuthCallback: Component = () => {
         throw new Error('No authorization code received');
       }
       
+      console.log('Auth callback received with code:', code);
+      
       // Exchange code for Firebase custom token
       const response = await ky.post('/api/auth/kakao/token', {
-        json: { code }
-      }).json<{ customToken: string }>();
+        json: { code },
+        timeout: 10000
+      }).json<AuthResponse>();
+      
+      console.log('Authentication successful');
       
       // Sign in to Firebase with the custom token
-      const userCredential = await signInWithCustomToken(auth, response.customToken);
+      const userCredential = await signInWithCustomToken(auth, response.token);
       const user = userCredential.user;
+      
+      console.log('Firebase sign-in successful:', user);
       
       // Update application state
       setUserAuth({
@@ -36,10 +52,13 @@ const AuthCallback: Component = () => {
         profileImage: user.photoURL || null
       });
       
-      // Redirect back to the original page or home
-      const redirectPath = localStorage.getItem('authRedirect') || '/';
-      localStorage.removeItem('authRedirect');
-      navigate(redirectPath);
+      // Wait for state to update
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log('Redirecting to host-profile, auth state:', userAuth());
+      
+      // Redirect to host profile
+      navigate('/host-profile');
     } catch (error) {
       console.error('Authentication error:', error);
       navigate('/login', { state: { error: 'Authentication failed' } });

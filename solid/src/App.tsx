@@ -19,6 +19,7 @@ import S7 from './components/S7.tsx';
 import S8 from './components/S8.tsx';
 import Login from './components/Login.tsx';
 import AuthCallback from './components/AuthCallback.tsx';
+import HostProfile from './components/HostProfile.tsx';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
       <Route path="/host/simulresult" component={H7} />
       <Route path="/host/finalresult" component={H8} />
       <Route path="/login" component={Login} />
+      <Route path="/host-profile" component={HostProfile} />
       <Route path="/" component={S0} />
       <Route path="/start" component={S1} />
       <Route path="/teambuild" component={S2} />
