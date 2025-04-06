@@ -1,18 +1,23 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-// Firebase configuration - update with the correct values from your Firebase console
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyB7VC1nUk8AqlG-NK4ZkvJjqAmpC0fen8s",
-  authDomain: "disaster-io-e3848.firebaseapp.com",
-  projectId: "disaster-io-e3848",
-  storageBucket: "disaster-io-e3848.appspot.com",
-  messagingSenderId: "209003919230",
-  appId: "1:209003919230:web:a5b823ed9ebd6cb1ae6df3"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
-console.log('Initializing Firebase app');
+console.log('Initializing Firebase app with config:', 
+  { 
+    projectId: firebaseConfig.projectId,
+    authDomain: firebaseConfig.authDomain
+  }
+);
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 

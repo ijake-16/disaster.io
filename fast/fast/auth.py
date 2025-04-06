@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import logging
 import json
+import tempfile
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -36,22 +37,35 @@ class MasterPromotionRequest(BaseModel):
     secret_key: str
 
 # Initialize Firebase Admin
-cred = credentials.Certificate(os.getenv("FIREBASE_SERVICE_ACCOUNT", "path/to/your/firebase-service-account.json"))
+firebase_service_account = os.getenv("FIREBASE_SERVICE_ACCOUNT")
 try:
+    # Simply use the service account path
+    logger.info(f"Initializing Firebase with service account from: {firebase_service_account}")
+    cred = credentials.Certificate(firebase_service_account)
+    
+    # Initialize Firebase
     firebase_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
     logger.info("Firebase and Firestore initialized successfully")
-except ValueError:
+except ValueError as e:
     # App already initialized
-    firebase_app = firebase_admin.get_app()
-    db = firestore.client()
-    logger.info("Firebase app already initialized, using existing app")
+    logger.warning(f"Firebase initialization warning: {str(e)}")
+    try:
+        firebase_app = firebase_admin.get_app()
+        db = firestore.client()
+        logger.info("Firebase app already initialized, using existing app")
+    except Exception as e:
+        logger.error(f"Failed to get existing Firebase app: {str(e)}")
+        raise
+except Exception as e:
+    logger.error(f"Firebase initialization error: {str(e)}")
+    raise
 
 # User helper methods for Firestore
 def save_certification_request(request_data: Dict[str, Any]) -> str:
     """Save certification request to Firestore and return the document ID"""
     # Add request to Firestore with auto-generated ID
-    request_ref = db.collection('certificationRequests').document(request_data['userId'])
+    request_ref = db.collection('certification_requests').document(request_data['userId'])
     request_ref.set({
         **request_data,
         'status': 'pending',
@@ -60,28 +74,28 @@ def save_certification_request(request_data: Dict[str, Any]) -> str:
     return request_data['userId']
 
 def get_certification_requests(status: Optional[str] = None) -> list:
-    """Get all certification requests, optionally filtered by status"""
-    requests_ref = db.collection('certificationRequests')
+    """Get certification requests, optionally filtered by status"""
+    requests_ref = db.collection('certification_requests')
     
+    # Filter by status if provided
     if status:
-        query = requests_ref.where('status', '==', status)
-    else:
-        query = requests_ref
+        requests_ref = requests_ref.where('status', '==', status)
     
-    requests = []
-    for doc in query.stream():
-        data = doc.to_dict()
-        # Convert timestamp to ISO string format for JSON serialization
-        if 'requestDate' in data and data['requestDate']:
-            data['requestDate'] = data['requestDate'].isoformat()
-        data['id'] = doc.id
-        requests.append(data)
+    # Get the documents
+    requests = requests_ref.get()
     
-    return requests
+    # Convert to list of dictionaries
+    result = []
+    for request in requests:
+        data = request.to_dict()
+        data['id'] = request.id
+        result.append(data)
+    
+    return result
 
 def update_certification_status(user_id: str, status: str, approver_id: Optional[str] = None) -> bool:
     """Update certification request status in Firestore"""
-    request_ref = db.collection('certificationRequests').document(user_id)
+    request_ref = db.collection('certification_requests').document(user_id)
     
     update_data = {
         'status': status,
@@ -243,13 +257,13 @@ async def request_certification(request: CertificationRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/certification-requests")
-async def get_requests(status: Optional[str] = None):
+async def get_certification_requests_endpoint(status: Optional[str] = None):
     try:
-        # This endpoint would be called by master users to get all requests
-        logger.info(f"Getting certification requests with status: {status or 'all'}")
+        logger.info(f"Getting certification requests with status: {status}")
         
         # Get requests from Firestore
         requests = get_certification_requests(status)
+        logger.info(f"Found {len(requests)} certification requests")
         
         return JSONResponse({
             "success": True,
@@ -257,8 +271,8 @@ async def get_requests(status: Optional[str] = None):
         })
         
     except Exception as e:
-        logger.error(f"Failed to get certification requests: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"Error getting certification requests: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/approve-certification")
 async def approve_certification(request: CertificationRequest):

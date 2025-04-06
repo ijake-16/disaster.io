@@ -8,6 +8,12 @@ services:
       SQL_PASSWORD: 12341
       SQL_URL: "db:5432"
       SQL_DB: disaster_io
+      FIREBASE_SERVICE_ACCOUNT: "/app/firebase-service-account.json"
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      MASTER_PROMOTION_KEY: ${MASTER_PROMOTION_KEY}
+    volumes:
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
     depends_on:
       - db
 
@@ -24,6 +30,14 @@ services:
 
   web:
     build: ./solid
+    environment:
+      VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY}
+      VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN}
+      VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID}
+      VITE_FIREBASE_STORAGE_BUCKET: ${VITE_FIREBASE_STORAGE_BUCKET}
+      VITE_FIREBASE_MESSAGING_SENDER_ID: ${VITE_FIREBASE_MESSAGING_SENDER_ID}
+      VITE_FIREBASE_APP_ID: ${VITE_FIREBASE_APP_ID}
+      VITE_KAKAO_CLIENT_ID: ${VITE_KAKAO_CLIENT_ID}
     expose:
       - "3000"
   
