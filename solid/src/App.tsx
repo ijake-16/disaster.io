@@ -20,6 +20,8 @@ import S8 from './components/S8.tsx';
 import Login from './components/Login.tsx';
 import AuthCallback from './components/AuthCallback.tsx';
 import HostProfile from './components/HostProfile.tsx';
+import AdminPanel from './components/AdminPanel.tsx';
+import AdminPromotion from './components/AdminPromotion.tsx';
 
 function App() {
   return (
@@ -35,6 +37,9 @@ function App() {
       <Route path="/host/finalresult" component={H8} />
       <Route path="/login" component={Login} />
       <Route path="/host-profile" component={HostProfile} />
+      <Route path="/admin-panel" component={AdminPanel} />
+      <Route path="/admin" component={AdminPanel} />
+      <Route path="/admin-promotion" component={AdminPromotion} />
       <Route path="/" component={S0} />
       <Route path="/start" component={S1} />
       <Route path="/teambuild" component={S2} />

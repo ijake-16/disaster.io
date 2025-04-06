@@ -11,6 +11,9 @@ interface AuthResponse {
     uid: string;
     email: string | null;
     display_name: string | null;
+    role: 'user' | 'authorized_host' | 'master' | null;
+    certificationRequested: boolean;
+    certificationStatus: string | null;
   };
 }
 
@@ -35,7 +38,7 @@ const AuthCallback: Component = () => {
         timeout: 10000
       }).json<AuthResponse>();
       
-      console.log('Authentication successful');
+      console.log('Authentication successful, response:', response);
       
       // Sign in to Firebase with the custom token
       const userCredential = await signInWithCustomToken(auth, response.token);
@@ -43,14 +46,18 @@ const AuthCallback: Component = () => {
       
       console.log('Firebase sign-in successful:', user);
       
-      // Update application state
+      // Update application state with role information from the backend
       setUserAuth({
         isAuthenticated: true,
         provider: 'kakao',
         userId: user.uid,
         name: user.displayName || 'User',
-        profileImage: user.photoURL || null
+        profileImage: user.photoURL || null,
+        role: response.user.role || 'user', 
+        certificationRequested: response.user.certificationRequested || false
       });
+      
+      console.log('Updated auth state with role information:', userAuth());
       
       // Wait for state to update
       await new Promise(resolve => setTimeout(resolve, 500));

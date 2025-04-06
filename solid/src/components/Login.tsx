@@ -12,6 +12,9 @@ interface AuthResponse {
     uid: string;
     email: string | null;
     display_name: string | null;
+    role: 'user' | 'authorized_host' | 'master' | null;
+    certificationRequested: boolean;
+    certificationStatus: string | null;
   };
 }
 
@@ -36,20 +39,22 @@ const Login: Component = () => {
           timeout: 10000 // Increase timeout
         }).json<AuthResponse>();
         
-        console.log('Authentication successful');
+        console.log('Authentication successful, response:', response);
         
         // Sign in with Firebase
         const userCredential = await signInWithCustomToken(auth, response.token);
         
         console.log('Firebase sign-in successful:', userCredential.user);
         
-        // Update user auth state
+        // Update user auth state with role information from the backend
         setUserAuth({
           isAuthenticated: true,
           provider: 'kakao',
           userId: userCredential.user.uid,
           name: userCredential.user.displayName || '',
           profileImage: userCredential.user.photoURL || '',
+          role: response.user.role || 'user',
+          certificationRequested: response.user.certificationRequested || false
         });
         
         // Verify state was updated
@@ -179,7 +184,7 @@ const Login: Component = () => {
           class="w-full py-3 text-gray-300 font-medium rounded-lg bg-gray-700 hover:bg-gray-600 font-sans flex items-center justify-center transition-colors"
           onClick={handleSkipLogin}
         >
-          <span class="text-sm">로그인 없이 계속하기</span>
+          <span class="text-base">돌아가기</span>
         </button>
         
         {errorMessage() && (
