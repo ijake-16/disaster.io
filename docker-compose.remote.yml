@@ -15,7 +15,7 @@ services:
       - ./firebase-service-account.json:/app/firebase-service-account.json:ro
     labels:
       - traefik.enable=true
-      - traefik.http.routers.fast.rule=Host(`api.disaster`)
+      - traefik.http.routers.fast.rule=Host(`api.disaster.buttercrab.net`)
       - traefik.http.routers.fast.tls=true
       - traefik.http.routers.fast.tls.certresolver=le
       - traefik.http.routers.fast.entrypoints=websecured
@@ -37,7 +37,7 @@ services:
       VITE_KAKAO_CLIENT_ID: ${VITE_KAKAO_CLIENT_ID}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`disaster`)
+      - traefik.http.routers.web.rule=Host(`disaster.buttercrab.net`)
       - traefik.http.routers.web.tls=true
       - traefik.http.routers.web.tls.certresolver=le
       - traefik.http.routers.web.entrypoints=websecured
@@ -54,7 +54,7 @@ services:
       - fast
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nginx.rule=Host(`nginx.disaster`)
+      - traefik.http.routers.nginx.rule=Host(`nginx.disaster.buttercrab.net`)
       - traefik.http.routers.nginx.tls=true
       - traefik.http.routers.nginx.tls.certresolver=le
       - traefik.http.routers.nginx.entrypoints=websecured
