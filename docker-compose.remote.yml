@@ -15,12 +15,14 @@ services:
       - ./firebase-service-account.json:/app/firebase-service-account.json:ro
     labels:
       - traefik.enable=true
-      - traefik.http.routers.fast.rule=Host(`api.disaster.buttercrab.net`)
+      - traefik.http.routers.fast.rule=Host(`disaster.buttercrab.net`) && PathPrefix(`/api`)
       - traefik.http.routers.fast.tls=true
       - traefik.http.routers.fast.tls.certresolver=le
       - traefik.http.routers.fast.entrypoints=websecured
       - traefik.http.routers.fast.service=fast
       - traefik.http.services.fast.loadbalancer.server.port=8000
+      - traefik.http.middlewares.fast-strip.stripprefix.prefixes=/api
+      - traefik.http.routers.fast.middlewares=fast-strip
     networks:
       - traefik-proxy
 
