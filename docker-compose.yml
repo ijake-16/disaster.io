@@ -35,7 +35,7 @@ services:
       - web
       - fast
     ports:
-      - 8080:80
+      - 8081:80
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
 

@@ -46,6 +46,25 @@ services:
     networks:
       - traefik-proxy
 
+  nginx:
+    image: nginx:1.23-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+      - fast
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nginx.rule=Host(`nginx.disaster`)
+      - traefik.http.routers.nginx.tls=true
+      - traefik.http.routers.nginx.tls.certresolver=le
+      - traefik.http.routers.nginx.entrypoints=websecured
+      - traefik.http.routers.nginx.service=nginx
+      - traefik.http.services.nginx.loadbalancer.server.port=80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - traefik-proxy
+
 networks:
   traefik-proxy:
     external: true
