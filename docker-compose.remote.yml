@@ -17,7 +17,7 @@ services:
       - db
     labels:
       - traefik.enable=true
-      - traefik.http.routers.fast.rule=Host(`api.disaster.io`)
+      - traefik.http.routers.fast.rule=Host(`api.disaster`)
       - traefik.http.routers.fast.tls=true
       - traefik.http.routers.fast.tls.certresolver=le
       - traefik.http.routers.fast.entrypoints=websecured
@@ -53,7 +53,7 @@ services:
       VITE_KAKAO_CLIENT_ID: ${VITE_KAKAO_CLIENT_ID}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`disaster.io`)
+      - traefik.http.routers.web.rule=Host(`disaster`)
       - traefik.http.routers.web.tls=true
       - traefik.http.routers.web.tls.certresolver=le
       - traefik.http.routers.web.entrypoints=websecured
