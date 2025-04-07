@@ -1,0 +1,63 @@
+services:
+  fast:
+    build: ./fast
+    restart: unless-stopped
+    environment:
+      SQL_USER: admin1
+      SQL_PASSWORD: 12341
+      SQL_URL: "db:5432"
+      SQL_DB: disaster_io
+      FIREBASE_SERVICE_ACCOUNT: "/app/firebase-service-account.json"
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      MASTER_PROMOTION_KEY: ${MASTER_PROMOTION_KEY}
+    volumes:
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+    depends_on:
+      - db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fast.rule=Host(`api.disaster.io`)
+      - traefik.http.routers.fast.tls=true
+      - traefik.http.routers.fast.tls.certresolver=le
+      - traefik.http.routers.fast.entrypoints=websecured
+      - traefik.http.routers.fast.service=fast
+      - traefik.http.services.fast.loadbalancer.server.port=8000
+    networks:
+      - traefik-proxy
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin1
+      POSTGRES_PASSWORD: 12341
+      POSTGRES_DB: disaster_io
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    networks:
+      - traefik-proxy
+
+  web:
+    build: ./solid
+    restart: unless-stopped
+    environment:
+      VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY}
+      VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN}
+      VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID}
+      VITE_FIREBASE_STORAGE_BUCKET: ${VITE_FIREBASE_STORAGE_BUCKET}
+      VITE_FIREBASE_MESSAGING_SENDER_ID: ${VITE_FIREBASE_MESSAGING_SENDER_ID}
+      VITE_FIREBASE_APP_ID: ${VITE_FIREBASE_APP_ID}
+      VITE_KAKAO_CLIENT_ID: ${VITE_KAKAO_CLIENT_ID}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`disaster.io`)
+      - traefik.http.routers.web.tls=true
+      - traefik.http.routers.web.tls.certresolver=le
+      - traefik.http.routers.web.entrypoints=websecured
+      - traefik.http.routers.web.service=web
+      - traefik.http.services.web.loadbalancer.server.port=3000
+    networks:
+      - traefik-proxy
