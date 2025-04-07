@@ -1,8 +1,8 @@
 services:
   fast:
     build: ./fast
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       SQL_USER: admin1
       SQL_PASSWORD: 12341

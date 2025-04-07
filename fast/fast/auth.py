@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import logging
 import json
 import tempfile
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,6 +36,10 @@ class CertificationRequest(BaseModel):
 class MasterPromotionRequest(BaseModel):
     userId: str
     secret_key: str
+
+# Add this new model for approval/rejection requests
+class CertificationActionRequest(BaseModel):
+    userId: str
 
 # Initialize Firebase Admin
 firebase_service_account = os.getenv("FIREBASE_SERVICE_ACCOUNT")
@@ -235,47 +240,79 @@ async def kakao_token(request: KakaoCodeRequest):
 @router.post("/request-certification")
 async def request_certification(request: CertificationRequest):
     try:
-        logger.info(f"Certification request received for user: {request.userId}")
-        logger.info(f"Request details: {request.dict()}")
+        db = firestore.client()
+        
+        # Create request document
+        request_data = request.dict()
+        request_data['requestDate'] = firestore.SERVER_TIMESTAMP  # Use server timestamp
+        request_data['status'] = 'pending'
         
         # Save to Firestore
-        request_data = request.dict()
-        doc_id = save_certification_request(request_data)
-        logger.info(f"Certification request saved with ID: {doc_id}")
+        doc_ref = db.collection('certification_requests').document()
+        doc_ref.set(request_data)
         
-        # For a real app, you might want to send a notification to admin users
-        # e.g., using Firebase Cloud Messaging or another notification system
-        
-        return JSONResponse({
-            "success": True,
-            "message": "Certification request received. Awaiting approval.",
-            "id": doc_id
-        })
+        return {"success": True, "id": doc_ref.id}
         
     except Exception as e:
-        logger.error(f"Certification request error: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
+        logging.error(f"Error creating certification request: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": "Failed to create certification request",
+                "detail": str(e)
+            }
+        )
 
 @router.get("/certification-requests")
-async def get_certification_requests_endpoint(status: Optional[str] = None):
+async def get_certification_requests(status: str = None):
     try:
-        logger.info(f"Getting certification requests with status: {status}")
+        logging.info(f"Getting certification requests with status: {status}")
         
-        # Get requests from Firestore
-        requests = get_certification_requests(status)
-        logger.info(f"Found {len(requests)} certification requests")
+        db = firestore.client()
+        requests_ref = db.collection('certification_requests')
         
-        return JSONResponse({
+        # Apply status filter if provided
+        if status:
+            query = requests_ref.where('status', '==', status)
+        else:
+            query = requests_ref
+            
+        requests = query.get()
+        
+        # Convert Firestore documents to dict and handle timestamp
+        certification_requests = []
+        for req in requests:
+            req_dict = req.to_dict()
+            
+            # Convert Firestore timestamp to ISO format string
+            if 'requestDate' in req_dict:
+                req_dict['requestDate'] = req_dict['requestDate'].isoformat()
+            
+            # Add document ID to the response
+            req_dict['id'] = req.id
+            certification_requests.append(req_dict)
+            
+        logging.info(f"Found {len(certification_requests)} certification requests")
+        
+        return {
             "success": True,
-            "requests": requests
-        })
+            "requests": certification_requests
+        }
         
     except Exception as e:
-        logger.error(f"Error getting certification requests: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.error(f"Error getting certification requests: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": "Failed to fetch certification requests",
+                "detail": str(e)
+            }
+        )
 
 @router.post("/approve-certification")
-async def approve_certification(request: CertificationRequest):
+async def approve_certification(request: CertificationActionRequest):
     try:
         # This endpoint would be called by master users to approve certification
         logger.info(f"Approving certification for user: {request.userId}")
@@ -300,7 +337,7 @@ async def approve_certification(request: CertificationRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/reject-certification")
-async def reject_certification(request: CertificationRequest):
+async def reject_certification(request: CertificationActionRequest):
     try:
         # This endpoint would be called by master users to reject certification
         logger.info(f"Rejecting certification for user: {request.userId}")

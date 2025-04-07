@@ -152,6 +152,21 @@ const AdminPanel: Component = () => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      console.error('Error formatting date:', e);
+      return dateString; // Fallback to original string if parsing fails
+    }
+  };
+
   return (
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-2xl font-bold mb-6">관리자 패널 - 인증 요청 관리</h1>
@@ -188,7 +203,7 @@ const AdminPanel: Component = () => {
                       <td class="py-3 px-4">{request.organization}</td>
                       <td class="py-3 px-4">{request.email}</td>
                       <td class="py-3 px-4">
-                        {new Date(request.requestDate).toLocaleDateString('ko-KR')}
+                        {formatDate(request.requestDate)}
                       </td>
                       <td class="py-3 px-4">
                         <span class={
@@ -289,7 +304,9 @@ const AdminPanel: Component = () => {
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">요청일</p>
-                    <p class="font-medium">{new Date(selectedRequest()?.requestDate || '').toLocaleString('ko-KR')}</p>
+                    <p class="font-medium">
+                      {formatDate(selectedRequest()?.requestDate || '')}
+                    </p>
                   </div>
                 </div>
                 
