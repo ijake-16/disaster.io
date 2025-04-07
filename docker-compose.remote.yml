@@ -13,8 +13,6 @@ services:
       MASTER_PROMOTION_KEY: ${MASTER_PROMOTION_KEY}
     volumes:
       - ./firebase-service-account.json:/app/firebase-service-account.json:ro
-    depends_on:
-      - db
     labels:
       - traefik.enable=true
       - traefik.http.routers.fast.rule=Host(`api.disaster`)
@@ -23,20 +21,6 @@ services:
       - traefik.http.routers.fast.entrypoints=websecured
       - traefik.http.routers.fast.service=fast
       - traefik.http.services.fast.loadbalancer.server.port=8000
-    networks:
-      - traefik-proxy
-
-  db:
-    image: postgres:16
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: admin1
-      POSTGRES_PASSWORD: 12341
-      POSTGRES_DB: disaster_io
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    expose:
-      - "5432"
     networks:
       - traefik-proxy
 
@@ -61,3 +45,7 @@ services:
       - traefik.http.services.web.loadbalancer.server.port=3000
     networks:
       - traefik-proxy
+
+networks:
+  traefik-proxy:
+    external: true
