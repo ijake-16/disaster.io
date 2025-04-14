@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
-import ky from "ky";
+import { socket } from "../store";
 
 interface BagOption {
   id: number;
@@ -53,34 +53,37 @@ const BagSelect: Component = () => {
     setSelectedBagId(bagId);
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     const selectedBag = bagOptions[selectedBagId() - 1];
     if (!selectedBag) {
       alert("Please select a valid bag.");
       return;
     }
   
-    try {
-      // Make API call to select the bag
-      console.log(selectedBagId())
-      const response = await ky
-        .post(`http://localhost:8000/player/room/${roomCode}/team/${currentTeamName}/select_bag?bag_number=${selectedBagId()}`).json<{message: string}>();
-  
-      console.log("API Response:", response);
-      alert("가방이 성공적으로 선택되었습니다!");
-  
-      // Navigate to the bag creation screen
-      navigate("/bagmake", {
-        state: {
-          roomCode,
-          teamName: currentTeamName,
-          selectedBag, // Pass the selected bag object
-        },
-      });
-    } catch (error) {
-      console.error("Error selecting bag:", error);
-      alert("Failed to select bag. Please try again.");
+    const ws = socket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      alert("WebSocket이 연결되지 않았습니다.");
+      return;
     }
+  
+    const payload = {
+      action: "select_bag",
+      data: {
+        team: currentTeamName,
+        bagID: selectedBag.id
+      }
+    };
+  
+    ws.send(JSON.stringify(payload));
+  
+    // 다음 단계로 이동
+    navigate("/bagmake", {
+      state: {
+        roomCode,
+        teamName: currentTeamName,
+        selectedBag,
+      },
+    });
   };
   
 

@@ -1,6 +1,6 @@
 import { Component, createSignal, createEffect, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import { roomCode } from '../store';
+import { roomCode, socket } from '../store';
 import logoImage from '../../resource/logo_horizon.png';
 import ky from "ky";
 
@@ -16,52 +16,41 @@ const ReadyInfo: Component = () => {
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
   const [isDisabled, setIsDisabled] = createSignal(true);
 
-  const fetchTeamData = async () => {
-    try {
-      const teamBags = await ky
-        .get(`http://localhost:8000/host/room/${currentRoomCode}/bag_contents`)
-        .json<Record<string, Record<string, number>>>();
-
-      const teamStatuses = Object.entries(teamBags).map(([teamName, bagContents]) => {
-        const { bagID } = bagContents;
-        const ready = [1, 2, 3].includes(bagID); // 준비된 가방 id 기준
-        return { name: teamName, ready };
-      });
-
-      setTeams(teamStatuses);
-    } catch (error) {
-      console.error("Failed to fetch team data:", error);
-    }
-  };
-
-  const fetchTeams = async () => {
-    try {
-      const response = await ky
-        .get(`http://localhost:8000/host/room/${currentRoomCode}/info`)
-        .json<{ room_code: string; host_nickname: string; players: string[] }>();
-
-      const teamStatuses = response.players.map((player) => ({
-        name: player,
-        ready: false, // 초기값: 아직 준비 안 됨
-      }));
-
-      setTeams(teamStatuses);
-    } catch (error) {
-      console.error("Failed to fetch teams:", error);
-    }
-  };
-
-  createEffect(() => {
-    const allReady = teams().every((team) => team.ready);
-    setIsDisabled(!allReady);
-  });
-
   onMount(() => {
-    fetchTeams();
-    fetchTeamData();
+    const ws = socket();
 
-    const interval = setInterval(fetchTeamData, 5000);
-    return () => clearInterval(interval);
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      console.warn("WebSocket not connected");
+      return;
+    }
+
+    // 초기 팀 데이터 요청
+    ws.send(JSON.stringify({ action: "get_team_list" }));
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+
+      if (msg.action === "update_users") {
+        const newTeams = msg.data.map((user: any) => ({
+          name: user.username,
+          ready: false,
+        }));
+        setTeams(newTeams);
+      }
+
+      if (msg.action === "update_bag_status") {
+        const { team, status } = msg.data;
+        setTeams(prev =>
+          prev.map(t =>
+            t.name === team ? { ...t, ready: status === "submitted" } : t
+          )
+        );
+      }
+    };
+
+    onCleanup(() => {
+      ws.onmessage = null;
+    });
   });
 
   return (

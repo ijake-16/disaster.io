@@ -2,6 +2,7 @@ import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
 import * as XLSX from "xlsx";
 import ky from "ky";
+import { socket } from "../store"; 
 
 interface Item {
   id: number;
@@ -119,7 +120,7 @@ const S6: Component = () => {
   };
 
   // Generate bag contents summary
-  const getBagContents = async () => {
+  const getBagContents = () => {
     setIsDisabled(false);
     const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
   
@@ -130,38 +131,40 @@ const S6: Component = () => {
       }
       bagContents.items[name] += 1;
     });
+  
     const flattenedBagContents = {
-      ...bagContents.items, // Flatten the items dictionary
+      ...bagContents.items,
       totalWeight: bagContents.totalWeight,
       totalVolume: bagContents.totalVolume,
       bagID: selectedBag.id,
     };
-    try {
-      // Make API call to submit bag contents
-      
-      console.log(bagContents.items)
-      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
-        json: flattenedBagContents,
-      }).json();
   
-      console.log("API Response:", response);
-      alert(response.message || "Bag contents submitted successfully!");
-      setistime(false);
-      // Navigate to the next scene
-      navigate("/sceneinfo", {
-        state: {
-          roomCode,
-          teamName: teamName,
-          selectedBag, // Pass the selected bag object
-          bagContents: bagContents,
-        },
-      });
-    } catch (error) {
-      console.error("Error submitting bag contents:", error);
-      alert("Failed to submit bag contents. Please try again.");
+    const ws = socket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      alert("WebSocket 연결이 되어 있지 않습니다.");
+      return;
     }
   
-    console.log("Bag Contents:", bagContents);
+    const message = {
+      action: "submit_bag",
+      data: {
+        team: teamName,
+        contents: flattenedBagContents,
+      },
+    };
+  
+    ws.send(JSON.stringify(message));
+    setistime(false);
+  
+    // 이동
+    navigate("/sceneinfo", {
+      state: {
+        roomCode,
+        teamName,
+        selectedBag,
+        bagContents,
+      },
+    });
   };
   
   const getAutoBagContents = async () => {
