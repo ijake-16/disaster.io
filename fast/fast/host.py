@@ -71,6 +71,12 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
                     "action": "start_game",
                     "data": f"Game is starting in room {room_id}!"
                 })
+            
+            if action == "start_select" and user and user["is_host"]:
+                await room.broadcast_message({
+                    "action": "start_select"
+                })
+
 
     except WebSocketDisconnect:
         room.disconnect(websocket)
