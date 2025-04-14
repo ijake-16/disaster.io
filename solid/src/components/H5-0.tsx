@@ -9,100 +9,58 @@ interface TeamStatus {
   ready: boolean;
 }
 
-interface BagOption {
-  id: number;
-  image: string;
-  alt: string;
-  weightLimit: number;
-  volumeLimit: number;
-  bagWeight: number;
-  description: string;
-}
-
 const ReadyInfo: Component = () => {
   const navigate = useNavigate();
-  const currentroomCode = roomCode()
+  const currentRoomCode = roomCode();
 
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
   const [isDisabled, setIsDisabled] = createSignal(true);
+
   const fetchTeamData = async () => {
     try {
-      const bagOptions: BagOption[] = [
-        {
-          id: 1,
-          image: "../resource/militarybag.png",
-          alt: "Military Backpack",
-          weightLimit: 30,
-          volumeLimit: 30,
-          bagWeight: 5,
-          description: "튼튼 등산베낭",
-        },
-        {
-          id: 2,
-          image: "../resource/kidbag.png",
-          alt: "Cute Backpack",
-          weightLimit: 15,
-          volumeLimit: 15,
-          bagWeight: 1,
-          description: "아동용 책가방",
-        },
-        {
-          id: 3,
-          image: "../resource/ecobag.png",
-          alt: "Eco Tote Bag",
-          weightLimit: 10,
-          volumeLimit: 15,
-          bagWeight: 0.5,
-          description: "가벼운 에코백",
-        },
-      ];
-    
-      // Fetch team bags data from the API
       const teamBags = await ky
-        .get(`http://localhost:8000/host/room/${currentroomCode}/bag_contents`)
+        .get(`http://localhost:8000/host/room/${currentRoomCode}/bag_contents`)
         .json<Record<string, Record<string, number>>>();
-  
-      // Map the team data to create team statuses
-      const teamStatuses = Object.entries(teamBags).map(([teamName, bagContents]) => {
-        // Extract backpack details from the flattenedBagContents
-        const { bagID } = bagContents;
-  
-        // Check if the bag is ready based on bagID
-        const ready = [1, 2, 3].includes(bagID);
 
-        return {
-          name: teamName,
-          ready,
-        };
+      const teamStatuses = Object.entries(teamBags).map(([teamName, bagContents]) => {
+        const { bagID } = bagContents;
+        const ready = [1, 2, 3].includes(bagID); // 준비된 가방 id 기준
+        return { name: teamName, ready };
       });
-  
+
       setTeams(teamStatuses);
     } catch (error) {
       console.error("Failed to fetch team data:", error);
     }
   };
-  createEffect(() => {
-    const allReady = teams().every((team) => team.ready); // 모든 팀이 준비되었는지 확인
-    setIsDisabled(!allReady); // 모든 팀이 준비된 경우 버튼 활성화
-  });
+
   const fetchTeams = async () => {
     try {
-      const response = await ky.get(`http://localhost:8000/host/room/${currentroomCode}/info`).json<{ room_code: string, host_nickname: string,players: string[] }>();
+      const response = await ky
+        .get(`http://localhost:8000/host/room/${currentRoomCode}/info`)
+        .json<{ room_code: string; host_nickname: string; players: string[] }>();
+
       const teamStatuses = response.players.map((player) => ({
-        name: player, // 플레이어명을 name에 매핑
-        ready: null,  // ready는 항상 null 
+        name: player,
+        ready: false, // 초기값: 아직 준비 안 됨
       }));
+
       setTeams(teamStatuses);
     } catch (error) {
       console.error("Failed to fetch teams:", error);
     }
   };
-  // Fetch data on component mount
+
+  createEffect(() => {
+    const allReady = teams().every((team) => team.ready);
+    setIsDisabled(!allReady);
+  });
+
   onMount(() => {
     fetchTeams();
     fetchTeamData();
-    const interval = setInterval(fetchTeamData, 5000);
 
+    const interval = setInterval(fetchTeamData, 5000);
     return () => clearInterval(interval);
   });
 

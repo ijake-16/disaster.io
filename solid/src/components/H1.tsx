@@ -2,7 +2,7 @@ import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import ky from "ky";
 import { setRoomCode } from "../store";
-import { socket, setSocket } from "../store";
+import { socket, setSocket, initSocket } from "../store";
 import logoImage from '../../resource/logo_horizon.png';
 
 const RoomBuild: Component = () => {
@@ -29,16 +29,12 @@ const RoomBuild: Component = () => {
       console.log("Room created successfully:", response);
       setRoomCode(response.room_code);
 
-      const ws = new WebSocket(`/host/ws/${response.room_code}/${host_nickname}`);
-      ws.onopen = () => {
-        console.log("WebSocket connected");
-        setSocket(ws);  
+      initSocket(response.room_code, host_nickname, true, () => {
         navigate("/host/notice", {
-          state: {
-            hostNickname: host_nickname,
-          },
-        })  
-      };
+          state: { hostNickname: host_nickname }
+        });
+      });
+      
       
     } catch (error) {
       console.error("Failed to create room:", error);

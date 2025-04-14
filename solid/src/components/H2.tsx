@@ -13,16 +13,11 @@ const NoticeRoom: Component = () => {
   };
   onMount(() => {
     const ws = socket();
-    if (!ws) {
-      console.warn("WebSocket not connected");
-      if (state.hostNickname){
-        const ws = new WebSocket(`/host/ws/${currentRoomCode}/${state.hostNickname}`);
-        ws.onopen = () => {
-          console.log("WebSocket connected");
-          setSocket(ws);  
-          navigate("/host/notice");  
-        };
-      }
+
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      alert("⚠️ WebSocket 연결이 끊어졌습니다. 처음부터 다시 시작해주세요.");
+      navigate("/"); // 초기화면으로 보내버리기 (or RoomBuild)
+      return;
     }
   
     ws.onmessage = (event) => {
