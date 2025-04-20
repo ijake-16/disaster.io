@@ -73,6 +73,13 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
                         "status": "submitted"
                     }
                 })
+            elif action == "bag_update" and team:
+                snapshot = data_json["data"]["snapshot"]            # 전체 상태
+                room.bag_data[team] = snapshot                      # 메모리 업데이트
+                await room.broadcast_message({                      # 모두에게 push
+                    "action": "bag_sync",
+                    "data": { "team": team, "snapshot": snapshot }
+                })
 
 
     except WebSocketDisconnect:

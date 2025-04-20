@@ -1,7 +1,6 @@
 import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
 import * as XLSX from "xlsx";
-import ky from "ky";
 import { socket } from "../store"; 
 
 interface Item {
@@ -106,6 +105,7 @@ const S6: Component = () => {
     setQ((prev) => [...prev, ...newItems]);
     setCurrentWeight(totalWeight);
     setCurrentVolume(totalVolume);
+    sendBagSnapshot();
     setShowModal(false);
   };
 
@@ -117,8 +117,23 @@ const S6: Component = () => {
     setQ((prev) => prev.filter((_, i) => i !== index)); // Remove item at the given index
     setCurrentWeight((prev) => Number((prev - item.weight).toFixed(1)));
     setCurrentVolume((prev) => Number((prev - item.volume).toFixed(1)));
+    sendBagSnapshot();
   };
+  /** 현재 스냅샷을 서버에 전송 */
+  const sendBagSnapshot = () => {
+    const ws = socket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
+    const bag = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()), bagID: selectedBag.id };
+    q().forEach((i) => (bag.items[i.name] = (bag.items[i.name] || 0) + 1));
+
+    ws.send(
+      JSON.stringify({
+        action: "bag_update",
+        data: { team: teamName, snapshot: { ...bag.items, totalWeight: bag.totalWeight, totalVolume: bag.totalVolume, bagID: selectedBag.id } },
+      })
+    );
+  };
   // Generate bag contents summary
   const getBagContents = () => {
     setIsDisabled(false);
@@ -140,7 +155,7 @@ const S6: Component = () => {
     };
   
     const ws = socket();
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
+    if (!ws) {
       alert("WebSocket 연결이 되어 있지 않습니다.");
       return;
     }
@@ -167,47 +182,12 @@ const S6: Component = () => {
     });
   };
   
-  const getAutoBagContents = async () => {
-    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
-  
-    q().forEach((item) => {
-      const name = item.name;
-      if (!bagContents.items[name]) {
-        bagContents.items[name] = 0;
-      }
-      bagContents.items[name] += 1;
-    });
-    const flattenedBagContents = {
-      ...bagContents.items, // Flatten the items dictionary
-      totalWeight: bagContents.totalWeight,
-      totalVolume: bagContents.totalVolume,
-      bagID: 100,
-    };
-    try {
-      // Make API call to submit bag contents
-      
-      console.log(bagContents.items)
-      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
-        json: flattenedBagContents,
-      }).json();
-  
-      console.log("API Response:", response);
-    } catch (error) {
-      console.error("Error auto saving bag contents:", error);
-      alert("Failed to auto save bag contents. Please try again.");
-    }
-  
-    console.log("Bag Contents:", bagContents);
-  };
   // Filtered items based on search
   const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
 
   onMount(() => {
     readItemsFromExcel();
     startTimer();
-    if (isDisabled()) {
-      getAutoBagContents();
-    }
   });
 
   return (

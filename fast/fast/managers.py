@@ -7,6 +7,8 @@ class ConnectionManager:
         self.active_connections: list[WebSocket] = []
         self.user_data: dict[WebSocket, dict] = {}
         self.host_username = host
+        self.bag_data: dict[str, dict] = {}
+        self.bag_status: dict[str, str] = {}  
 
     async def connect(self, websocket: WebSocket, username: str):
         await websocket.accept()
