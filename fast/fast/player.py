@@ -73,6 +73,10 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
                         "status": "submitted"
                     }
                 })
+                await room.broadcast_message({
+                    "action": "bag_sync",
+                    "data": { "team": team_name, "snapshot": bag_contents }
+                })
             elif action == "bag_update" and user:
                 team = data_json["data"]["team"]
                 snapshot = data_json["data"]["snapshot"]

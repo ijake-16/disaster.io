@@ -52,8 +52,14 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
     if not room:
         await websocket.close(code=4000)
         return
-
     await room.connect(websocket, username)
+    await websocket.send_text(json.dumps({
+        "action": "initial_state",
+        "data": {
+            "bags": room.bag_data,
+            "status": room.bag_status
+        }
+    }))
 
     try:
         while True:

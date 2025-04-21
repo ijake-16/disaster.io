@@ -31,6 +31,9 @@ const SceneInfo: Component = () => {
   const navigate = useNavigate();
   const currentRoomCode = roomCode()!;      // store에 저장된 방 코드
   const hostName = "HOST";                  // 호스트 닉네임(원하는 값으로 교체)
+  const readyTeams = new Set<string>();
+  const ws = globalSocket();
+  if (!ws) return;
 
   // 팀별 상태(UI 용)
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
@@ -66,9 +69,7 @@ const SceneInfo: Component = () => {
   /* ---------------------- 마운트 시 소켓 연결 --------------------- */
   onMount(() => {
     initSocket(currentRoomCode, hostName, true, () => {
-      const ws = globalSocket();
-      if (!ws) return;
-
+      
       ws.onmessage = (e) => {
         const msg = JSON.parse(e.data);
         switch (msg.action) {
@@ -91,17 +92,18 @@ const SceneInfo: Component = () => {
           }
           case "update_bag_status":
             /* 제출 완료 표시 등 필요하면 처리 */
+            const { team, status } = msg.data;
+            if (status === "submitted") readyTeams.add(team); // readyTeams: Set<string>
+            rebuildTeams();  
             break;
         }
       };
     });
-
-    onCleanup(() => globalSocket()?.close());
   });
 
   /* ------------------- 시뮬레이션 시작(호스트용) ------------------ */
   const handleSimulStart = () => {
-    globalSocket()?.send(
+    ws.send(
       JSON.stringify({ action: "start_game", data: "confirm" }),
     );
     navigate("/host/simulinfo");
