@@ -17,7 +17,7 @@ const H3Waiting: Component = () => {
       navigate("/");
       return;
     }
-
+    ws.send(JSON.stringify({ action: "fetch_room" }));
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);

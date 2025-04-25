@@ -71,12 +71,14 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
 
             action = data_json.get("action")
             user = room.user_data.get(websocket)
-
+            if action == "fetch_room" and user and user["is_host"]:
+                await room.broadcast_room()
             if action == "start_game" and user and user["is_host"]:
                 await room.broadcast_message({
                     "action": "start_game",
                     "data": f"Game is starting in room {room_id}!"
                 })
+            
             
             if action == "start_select" and user and user["is_host"]:
                 await room.broadcast_message({
