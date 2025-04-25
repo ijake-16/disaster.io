@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount, onCleanup } from "solid-js";
+import { Component, createSignal, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import {
   roomCode,
@@ -6,7 +6,7 @@ import {
   socket as globalSocket,
 } from "../store";
 import logoImage from "../../resource/logo_horizon.png";
-import { bagOptions, BagOption } from "../data/bags"; 
+import { bagOptions } from "../data/bags";
 
 interface TeamItem {
   image: string;
@@ -19,41 +19,34 @@ interface TeamStatus {
   volumePercent: number;
   weightPercent: number;
 }
-
-type BagSnapshot = Record<string, number> & {
+type BagSnapshot = {
+  items: Record<string, number>;
   totalWeight: number;
   totalVolume: number;
   bagID: number;
 };
 
-/* ----------------------------- 컴포넌트 ---------------------------- */
 const SceneInfo: Component = () => {
   const navigate = useNavigate();
-  const currentRoomCode = roomCode()!;      // store에 저장된 방 코드
-  const hostName = "HOST";                  // 호스트 닉네임(원하는 값으로 교체)
-  const readyTeams = new Set<string>();
+  const currentRoomCode = roomCode()!;
   const ws = globalSocket();
-  if (!ws) return;
+  if (!ws) return null;
 
-  // 팀별 상태(UI 용)
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
-  // 내부 스냅샷 임시 저장
   const bagSnapshots = new Map<string, BagSnapshot>();
+  const [readyTeams, setReadyTeams] = createSignal<string[]>([]);
 
-  /* 스냅샷 → 화면 데이터 재구성 */
   const rebuildTeams = () => {
     const next = Array.from(bagSnapshots.entries()).map(
       ([teamName, snap]) => {
-        const { totalWeight, totalVolume, bagID, ...items } = snap;
+        const { totalWeight, totalVolume, bagID, items } = snap;
         const bag = bagOptions.find((b) => b.id === bagID) || bagOptions[0];
-
         const mappedItems: TeamItem[] = Object.entries(items).map(
           ([itemName, cnt]) => ({
             image: `../../resource/${itemName}.png`,
             count: cnt,
           }),
         );
-
         return {
           name: teamName,
           items: mappedItems,
@@ -66,14 +59,13 @@ const SceneInfo: Component = () => {
     setTeams(next);
   };
 
-  /* ---------------------- 마운트 시 소켓 연결 --------------------- */
   onMount(() => {
-    initSocket(currentRoomCode, hostName, true, () => {
-      
+    initSocket(currentRoomCode, "HOST", true, () => {
       ws.onmessage = (e) => {
         const msg = JSON.parse(e.data);
         switch (msg.action) {
-          case "initial_state": {
+          case "room_state": {
+            // 초기 방 상태 수신
             const bags: Record<string, BagSnapshot> = msg.data.bags;
             Object.entries(bags).forEach(([team, snap]) =>
               bagSnapshots.set(team, snap),
@@ -81,7 +73,8 @@ const SceneInfo: Component = () => {
             rebuildTeams();
             break;
           }
-          case "bag_sync": {
+          case "bag_updated": {
+            // 개별 팀 스냅샷만 갱신
             const { team, snapshot } = msg.data as {
               team: string;
               snapshot: BagSnapshot;
@@ -90,73 +83,86 @@ const SceneInfo: Component = () => {
             rebuildTeams();
             break;
           }
-          case "update_bag_status":
-            /* 제출 완료 표시 등 필요하면 처리 */
-            const { team, status } = msg.data;
-            if (status === "submitted") readyTeams.add(team); // readyTeams: Set<string>
-            rebuildTeams();  
+          case "submitted_bag": {
+            // 해당 팀이 제출 완료했을 때
+            const { team } = msg.data as { team: string };
+            setReadyTeams((prev) =>
+              prev.includes(team) ? prev : [...prev, team]
+            );
             break;
+          }
+          case "start_game": {
+            // 호스트가 시작 신호를 보냈음을 서버가 다시 브로드캐스트
+            navigate("/host/simulinfo");
+            break;
+          }
         }
       };
     });
   });
-
-  /* ------------------- 시뮬레이션 시작(호스트용) ------------------ */
+  const allReady = () => {
+    const names = teams().map((t) => t.name);
+    const ready  = readyTeams();
+    return names.length > 0 && names.every((n) => ready.includes(n));
+  };
   const handleSimulStart = () => {
-    ws.send(
-      JSON.stringify({ action: "start_game", data: "confirm" }),
-    );
-    navigate("/host/simulinfo");
+    // 호스트가 게임 시작
+    ws.send(JSON.stringify({ action: "start_game" }));
+    // (서버가 방 전체에 start_game 브로드캐스트)
   };
 
-  /* ------------------------------ UI ----------------------------- */
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center py-5 font-sans">
       <div class="max-w-screen-xl mx-auto mt-2 flex flex-col items-center">
-        <img src={logoImage} alt="Disaster.io Logo" class="h-16 w-auto mb-2" />
+        <img src={logoImage} alt="Logo" class="h-16 mb-2" />
         <h1 class="text-2xl mb-4">게임 플레이</h1>
       </div>
 
       <div class="flex justify-center bg-gray-800 gap-5 w-4/5 max-w-[1100px] p-5 rounded-lg">
-        {teams().map((team) => (
+        {teams().map((team) => {
+          const isReady = readyTeams().includes(team.name);
+          return (
           <div class="bg-gray-200 text-black p-4 rounded-lg w-[50%]">
             <h3 class="text-xl font-bold mb-3">{team.name} 팀 현황</h3>
-
             <div class="grid grid-cols-4 gap-1 p-2 bg-gray-700 rounded-lg">
               {team.items.map((item) => (
-                <div class="bg-gray-500 p-2 relative flex items-center justify-center">
-                  <img src={item.image} alt="Item" class="w-10 h-10" />
+                <div class="relative flex items-center justify-center bg-gray-500 p-2">
+                  <img src={item.image} class="w-10 h-10" />
                   <div class="absolute bottom-1 right-1 bg-orange-400 text-black px-1.5 rounded text-sm font-bold">
                     {item.count}
                   </div>
                 </div>
               ))}
             </div>
-
-            <div class="mt-4">
-              <img src={team.backpackImage} alt="Backpack" class="w-40 h-40 mx-auto" />
-            </div>
-
+            <img src={"../../"+team.backpackImage} class="w-40 h-40 mx-auto mt-4" />
             <div class="flex gap-2 mt-4">
               <div class="w-[45%] h-3 bg-gray-500 rounded overflow-hidden">
-                <div class="h-full bg-green-500" style={`width: ${team.volumePercent}%`} />
+                <div
+                  class="h-full bg-green-500"
+                  style={`width: ${team.volumePercent}%`}
+                />
               </div>
               <div class="w-[45%] h-3 bg-gray-500 rounded overflow-hidden">
-                <div class="h-full bg-green-500" style={`width: ${team.weightPercent}%`} />
+                <div
+                  class="h-full bg-green-500"
+                  style={`width: ${team.weightPercent}%`}
+                />
               </div>
             </div>
+            <div class="mt-2 text-center font-semibold">
+                {isReady ? "준비 완료!" : "가방 싸는중..."}
+              </div>
           </div>
-        ))}
+        )})}
       </div>
 
-      <div class="mt-5">
-        <button
-          onClick={handleSimulStart}
-          class="bg-orange-400 text-black px-10 py-2.5 text-xl font-bold rounded-md hover:bg-orange-500"
-        >
-          가방 싸기 완료
-        </button>
-      </div>
+      <button
+        onClick={handleSimulStart}
+        disabled={!allReady()}
+        class="mt-5 bg-orange-400 text-black px-10 py-2.5 text-xl font-bold rounded hover:bg-orange-500"
+      >
+        가방 싸기 완료
+      </button>
     </div>
   );
 };

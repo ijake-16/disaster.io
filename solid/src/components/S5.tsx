@@ -1,91 +1,73 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
 import { socket } from "../store";
-import { bagOptions, BagOption } from "../data/bags";  
+import { bagOptions } from "../data/bags";
 
 const BagSelect: Component = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
-  const currentTeamName = location.state?.teamName || "UNKNOWN_TEAM";
-  const [selectedBagId, setSelectedBagId] = createSignal<number>(1); 
+  const roomCode = location.state?.roomCode!;
+  const currentTeamName = location.state?.teamName!;
+  const [selectedBagId, setSelectedBagId] = createSignal<number>(bagOptions[0].id);
+
+  let ws: WebSocket | null = null;
+
+  onMount(() => {
+    ws = socket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      alert("⚠️ WebSocket 연결이 유효하지 않습니다.");
+      return;
+    }
+    // **초기 선택값 전송**
+    ws.send(
+      JSON.stringify({
+        action: "select_bag",
+        data: { team: currentTeamName, bagID: 1 },
+      })
+    );
+  });
 
   const handleBagSelect = (bagId: number) => {
     setSelectedBagId(bagId);
+    ws?.send(
+      JSON.stringify({
+        action: "select_bag",
+        data: { team: currentTeamName, bagID: bagId },
+      })
+    );
   };
 
   const handleContinue = () => {
-    const selectedBag = bagOptions[selectedBagId() - 1];
-    if (!selectedBag) {
-      alert("Please select a valid bag.");
-      return;
-    }
-  
-    const ws = socket();
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      alert("WebSocket이 연결되지 않았습니다.");
-      return;
-    }
-  
-    const payload = {
-      action: "select_bag",
-      data: {
-        team: currentTeamName,
-        bagID: selectedBag.id
-      }
-    };
-  
-    ws.send(JSON.stringify(payload));
-  
-    // 다음 단계로 이동
     navigate("/bagmake", {
-      state: {
-        roomCode,
-        teamName: currentTeamName,
-        selectedBag,
-      },
+      state: { roomCode, teamName: currentTeamName, selectedBag: bagOptions.find(b => b.id === selectedBagId())! },
     });
   };
-  
 
   return (
     <div class="flex justify-center items-center min-h-screen bg-neutral-950 text-white font-sans">
-      <div class="container text-center">
-        <div class="mb-8">
-          <p class="text-lg text-orange-400 font-sans">Room : {roomCode}</p>
-          <div class="flex justify-center items-center mb-4">
-            <img
-              src="../../resource/logo_horizon.png"
-              alt="Disaster.io Logo"
-              class="h-20 w-auto"
-            />
-          </div>
-          <h2 class="text-gray-200 text-2xl font-sans">생존 물품을 담을 가방을 선택해 주세요.</h2>
-          <p class="text-orange-400 text-xl font-sans">YOU : {currentTeamName}</p>
-        </div>
+      <div class="text-center">
+        <p class="text-lg text-orange-400 mb-4">Room: {roomCode}</p>
+        <h2 class="text-gray-200 text-2xl mb-2">생존 물품을 담을 가방을 선택해 주세요</h2>
+        <p class="text-orange-400 mb-6">YOU: {currentTeamName}</p>
 
-        <div class="flex flex-row items-center justify-center gap-5 text-lg">
+        <div class="flex gap-5">
           {bagOptions.map((bag) => (
             <div
               onClick={() => handleBagSelect(bag.id)}
-              class={`flex flex-col cursor-pointer px-4 pt-0 pb-4 ${
-                selectedBagId() === bag.id ? "ring-2 ring-white" : ""
-              }`}
+              class={`cursor-pointer p-4 rounded-lg ${selectedBagId() === bag.id ? "ring-2 ring-white" : ""}`}
             >
-              <div class="text-gray-100 text-center font-sans text-2xl">{bag.description}</div>
-              <img src={bag.image} alt={bag.alt} class="max-w-[200px] mb-3 mx-auto" />
-              <div class="text-gray-200 text-left font-sans">
-                <p class="mb font-sans">무게 한도 : {bag.weightLimit}kg</p>
-                <p class="mb font-sans">부피 한도 : {bag.volumeLimit}L</p>
-                <p class="mb font-sans">가방 무게 : {bag.bagWeight}kg</p>
-              </div>
+              <h3 class="text-2xl mb-2">{bag.description}</h3>
+              <img src={bag.image} alt={bag.alt} class="w-32 mx-auto mb-2"/>
+              <p>무게 한도: {bag.weightLimit}kg</p>
+              <p>부피 한도: {bag.volumeLimit}L</p>
+              <p>가방 무게: {bag.bagWeight}kg</p>
             </div>
           ))}
         </div>
 
         <button
           onClick={handleContinue}
-          class="mt-8 px-10 py-2.5 bg-orange-400 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-500 transition-colors font-sans"
+          class="mt-8 bg-orange-400 text-black px-8 py-2 text-lg font-bold rounded hover:bg-orange-500"
         >
           생존 가방 싸기
         </button>
