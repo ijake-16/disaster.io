@@ -29,6 +29,7 @@ const S6: Component = () => {
   const navigate = useNavigate();
   const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
   const teamName = location.state?.teamName || "UNKNOWN_TEAM";
+  const ws = socket();
   const selectedBag = location.state?.selectedBag || {
     id: 1,
     weightLimit: 10,
@@ -121,40 +122,32 @@ const S6: Component = () => {
   };
   /** 현재 스냅샷을 서버에 전송 */
   const sendBagSnapshot = () => {
-    const ws = socket();
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-
-    const bag = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()), bagID: selectedBag.id };
-    q().forEach((i) => (bag.items[i.name] = (bag.items[i.name] || 0) + 1));
-
-    ws.send(
-      JSON.stringify({
-        action: "bag_update",
-        data: { team: teamName, snapshot: { ...bag.items, totalWeight: bag.totalWeight, totalVolume: bag.totalVolume, bagID: selectedBag.id } },
-      })
-    );
-  };
-  // Generate bag contents summary
-  const getBagContents = () => {
-    setIsDisabled(false);
-    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
-  
-    q().forEach((item) => {
-      const name = item.name;
-      if (!bagContents.items[name]) {
-        bagContents.items[name] = 0;
-      }
-      bagContents.items[name] += 1;
-    });
-  
-    const flattenedBagContents = {
-      ...bagContents.items,
-      totalWeight: bagContents.totalWeight,
-      totalVolume: bagContents.totalVolume,
+    const bagContents: Record<string, number> = {};
+    q().forEach((it) => (bagContents[it.name] = (bagContents[it.name] || 0) + 1));
+    const snapshot = {
+      items: bagContents,
+      totalWeight: Math.round(currentWeight()),
+      totalVolume: Math.round(currentVolume()),
       bagID: selectedBag.id,
     };
-  
-    const ws = socket();
+    ws.send(
+      JSON.stringify({ action: "update_bag", data: { team: teamName, snapshot } })
+    );
+    console.log("update_bag")
+  };
+  // Generate bag contents summary
+  const submitBagContents = () => {
+    setIsDisabled(false);
+    const bagContents: Record<string, number> = {};
+    q().forEach((it) => (bagContents[it.name] = (bagContents[it.name] || 0) + 1));
+    const snapshot = {
+      items: bagContents,
+      totalWeight: Math.round(currentWeight()),
+      totalVolume: Math.round(currentVolume()),
+      bagID: selectedBag.id,
+    };
+
     if (!ws) {
       alert("WebSocket 연결이 되어 있지 않습니다.");
       return;
@@ -164,11 +157,12 @@ const S6: Component = () => {
       action: "submit_bag",
       data: {
         team: teamName,
-        contents: flattenedBagContents,
+        snapshot,
       },
     };
   
     ws.send(JSON.stringify(message));
+    console.log("submitted bag!")
     setistime(false);
   
     // 이동
@@ -267,7 +261,7 @@ const S6: Component = () => {
       <div class="flex justify-center mt-4">
         <button
           class="mt-5 px-5 py-2.5 bg-orange-400 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-500 transition-colors font-sans"
-          onClick={getBagContents}
+          onClick={submitBagContents}
         >
           가방 제출하기
         </button>

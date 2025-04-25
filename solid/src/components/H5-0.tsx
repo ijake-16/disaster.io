@@ -1,9 +1,8 @@
-import { Component, createSignal, onMount } from "solid-js";
+import { Component, createSignal, onMount, For } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import {
   roomCode,
-  initSocket,
-  socket as globalSocket,
+  socket,
 } from "../store";
 import logoImage from "../../resource/logo_horizon.png";
 import { bagOptions } from "../data/bags";
@@ -29,7 +28,7 @@ type BagSnapshot = {
 const SceneInfo: Component = () => {
   const navigate = useNavigate();
   const currentRoomCode = roomCode()!;
-  const ws = globalSocket();
+  const ws = socket();
   if (!ws) return null;
 
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
@@ -60,9 +59,9 @@ const SceneInfo: Component = () => {
   };
 
   onMount(() => {
-    initSocket(currentRoomCode, "HOST", true, () => {
       ws.onmessage = (e) => {
         const msg = JSON.parse(e.data);
+        console.log(msg)
         switch (msg.action) {
           case "room_state": {
             // 초기 방 상태 수신
@@ -85,10 +84,14 @@ const SceneInfo: Component = () => {
           }
           case "submitted_bag": {
             // 해당 팀이 제출 완료했을 때
-            const { team } = msg.data as { team: string };
+            const { team, status } = msg.data as {
+              team: string;
+              status: string;
+            };
             setReadyTeams((prev) =>
               prev.includes(team) ? prev : [...prev, team]
             );
+            rebuildTeams();
             break;
           }
           case "start_game": {
@@ -98,7 +101,6 @@ const SceneInfo: Component = () => {
           }
         }
       };
-    });
   });
   const allReady = () => {
     const names = teams().map((t) => t.name);
@@ -119,8 +121,10 @@ const SceneInfo: Component = () => {
       </div>
 
       <div class="flex justify-center bg-gray-800 gap-5 w-4/5 max-w-[1100px] p-5 rounded-lg">
-        {teams().map((team) => {
+        <For each={teams()}>
+        {team => {
           const isReady = readyTeams().includes(team.name);
+          console.log(readyTeams());
           return (
           <div class="bg-gray-200 text-black p-4 rounded-lg w-[50%]">
             <h3 class="text-xl font-bold mb-3">{team.name} 팀 현황</h3>
@@ -153,7 +157,8 @@ const SceneInfo: Component = () => {
                 {isReady ? "준비 완료!" : "가방 싸는중..."}
               </div>
           </div>
-        )})}
+        )}}
+      </For>
       </div>
 
       <button
