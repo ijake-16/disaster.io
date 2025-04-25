@@ -22,8 +22,12 @@ const H3Waiting: Component = () => {
       try {
         const msg = JSON.parse(event.data);
         if (msg.action === "update_users") {
-          const userList = msg.data.map((user: any) => user.username);
-          setTeams(userList);
+          const playersOnly = msg.data
+            .filter((u: any) => !u.is_host)
+            // 2. …then pluck the usernames
+            .map((u: any) => u.username);
+
+          setTeams(playersOnly);
         }
       } catch (err) {
         console.warn("[WS] 메시지 파싱 실패:", err);

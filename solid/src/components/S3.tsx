@@ -22,7 +22,7 @@ const S3: Component = () => {
         const msg = JSON.parse(event.data);
 
         if (msg.action === "update_users") {
-          const allUsers = msg.data;
+          const allUsers = msg.data.filter((u: any) => !u.is_host);
           const others = allUsers
             .map((user: any) => user.username)
             .filter((name: string) => name !== currentTeamName);
