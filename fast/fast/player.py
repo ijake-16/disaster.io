@@ -40,6 +40,23 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
             if action == "toggle_ready" and user:
                 user["ready"] = not user["ready"]
                 await room.broadcast_room()
+            
+            elif action =="fetch_room_bags" and user:
+                await room.broadcast_message({
+                   "action": "room_state",
+                   "data": { "bags": room.bag_data }
+                })
+                await room.broadcast_message({
+                    "action": "ready_state",
+                    "data" :{"readys" :
+                    [
+                        info["username"]
+                        for info in room.user_data.values()
+                        if info.get("ready")
+                    ]}
+                })
+                
+
 
             elif action == "select_bag" and user:
                 team_name = data_json["data"].get("team")
@@ -62,6 +79,7 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
             elif action == "submit_bag" and user:
                 team = data_json["data"]["team"]
                 snapshot = data_json["data"]["snapshot"]
+                user['ready'] = True
 
                 # 메모리에 저장
                 room.bag_data[team] = snapshot
@@ -75,7 +93,7 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
                 await room.broadcast_message({
                     "action": "submitted_bag",
                     "data": {
-                        "team": team_name,
+                        "team": team,
                         "status": "submitted"
                     }
                 })

@@ -4,11 +4,11 @@ import {
   createSignal,
   onMount,
   onCleanup,
+  For
 } from "solid-js";
 import { useNavigate, useLocation } from "@solidjs/router";
 import {
-  initSocket,
-  socket as globalSocket,
+  socket 
 } from "../store";
 import { bagOptions } from "../data/bags";
 
@@ -23,12 +23,12 @@ interface TeamStatus {
   volumePercent: number;
   weightPercent: number;
 }
-type BagSnapshot = Record<string, number> & {
+type BagSnapshot = {
+  items: Record<string, number>;
   totalWeight: number;
   totalVolume: number;
   bagID: number;
 };
-
 const S7: Component = () => {
   /* ------------ 라우팅 파라미터 ------------ */
   const nav = useNavigate();
@@ -37,13 +37,14 @@ const S7: Component = () => {
   const teamName = loc.state?.teamName || "PLAYER";
 
   /* ------------ 상태 ------------ */
-  const bagMap = new Map<string, BagSnapshot>();
+  const bagSnapshots = new Map<string, BagSnapshot>();
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
-  const readyTeams = new Set<string>();
+  const [readyTeams, setReadyTeams] = createSignal<string[]>([]);
+  const ws = socket();
 
   const rebuildTeams = () => {
-    const next = Array.from(bagMap.entries()).map(([name, snap]) => {
-      const { totalWeight, totalVolume, bagID, ...items } = snap;
+    const next = Array.from(bagSnapshots.entries()).map(([name, snap]) => {
+      const { totalWeight, totalVolume, bagID, items } = snap;
       const bag = bagOptions.find((b) => b.id === bagID) || bagOptions[0];
 
       const mapped: TeamItem[] = Object.entries(items).map(
@@ -66,48 +67,62 @@ const S7: Component = () => {
 
   /* ------------ WebSocket 연결 ------------ */
   onMount(() => {
-    initSocket(roomCode, teamName, false, () => {
-      const ws = globalSocket();
       if (!ws) return;
-
+      ws.send(JSON.stringify({ action: "fetch_room_bags" }));
       ws.onmessage = (e) => {
         const msg = JSON.parse(e.data);
-
+        setReadyTeams((prev) =>
+          prev.includes(teamName) ? prev : [...prev, teamName]
+        );
         switch (msg.action) {
-          case "initial_state": {
-            Object.entries(msg.data.bags as Record<string, BagSnapshot>).forEach(
-              ([t, snap]) => bagMap.set(t, snap),
+          case "room_state": {
+            // 초기 방 상태 수신
+            const bags: Record<string, BagSnapshot> = msg.data.bags;
+            Object.entries(bags).forEach(([team, snap]) =>
+              bagSnapshots.set(team, snap),
             );
             rebuildTeams();
             break;
           }
-          case "bag_sync": {
-            console.log("bag_sync message requested")
+          case "bag_updated": {
+            // 개별 팀 스냅샷만 갱신
             const { team, snapshot } = msg.data as {
               team: string;
               snapshot: BagSnapshot;
             };
-            bagMap.set(team, snapshot);
+            bagSnapshots.set(team, snapshot);
             rebuildTeams();
             break;
           }
-          case "update_bag_status":
-            /* 준비 상태 텍스트 등 표시하고 싶으면 여기서 */
-            console.log("update_bag_status message requested")
-            const { team, status } = msg.data;
-            if (status === "submitted") readyTeams.add(team); // readyTeams: Set<string>
-            rebuildTeams(); 
+          case "submitted_bag": {
+            // 해당 팀이 제출 완료했을 때
+            const { team, status } = msg.data as {
+              team: string;
+              status: string;
+            };
+            setReadyTeams((prev) =>
+              prev.includes(team) ? prev : [...prev, team]
+            );
+            rebuildTeams();
             break;
+          }
+          case "ready_state": {
+            // 해당 팀이 제출 완료했을 때
+            const { readys } = msg.data as { readys: string[] };
+            setReadyTeams(readys);
+            rebuildTeams();
+            break;
+          }
           case "start_game":
             console.log("start_game message requested")
             nav("/simulinfo", { replace: true });
             break;
         }
       };
-    });
+
   });
 
-  onCleanup(() => globalSocket()?.close());
+  onCleanup(() => ws?.close());
 
   /* ------------ UI ------------ */
   return (
@@ -124,14 +139,17 @@ const S7: Component = () => {
         </div>
 
         <div class="flex justify-center gap-5 bg-gray-800 p-5 rounded-lg mb-8">
-          {teams().map((team) => (
+        <For each={teams()}>
+        {team => {
+          const isReady = readyTeams().includes(team.name);
+          return (
             <div class="w-1/2 bg-gray-100 text-black p-4 rounded-lg">
               <h3 class="text-lg font-bold mb-4">{team.name}</h3>
 
               <div class="grid grid-cols-4 gap-1 bg-gray-800 p-2 rounded-lg mb-3">
                 {team.items.map((it) => (
                   <div class="relative bg-gray-700 p-2 flex justify-center">
-                    <img src={it.image} alt="Item" class="w-10 h-10" />
+                    <img src={"../../"+it.image} alt="Item" class="w-10 h-10" />
                     <span class="absolute bottom-0.5 right-1 bg-orange-400 text-black text-xs px-1 rounded">
                       {it.count}
                     </span>
@@ -159,8 +177,12 @@ const S7: Component = () => {
                   />
                 </div>
               </div>
+              <div class="mt-2 text-center font-semibold">
+                {isReady ? "준비 완료!" : "가방 싸는중..."}
+              </div>
             </div>
-          ))}
+          )}}
+          </For>
         </div>
 
         <div class="text-center">
