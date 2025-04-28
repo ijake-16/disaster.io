@@ -1,36 +1,35 @@
 import { Component, createSignal, onMount, onCleanup, For } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
-import ky from "ky";
+import { socket } from "../store";
 
 const WaitingScreen: Component = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const roomCode = location.state?.roomCode;
     const currentTeamName = location.state?.teamName;
-    const checkPreInfoConfirmed = async () => {
-        try {
-          if (!roomCode) return;
     
-          const response = await ky
-            .get(`http://localhost:8000/player/room/${roomCode}/game_info_confirmed`)
-            .json<{ message: string; current_phase: string }>();
+    onMount(() => {
+      const ws = socket(); // 전역 WebSocket 인스턴스 가져오기
+      if (!ws) return;
     
-          if (response.current_phase === "bag_selection") {
-            navigate("/bagselect", {
-              state: { roomCode, teamName: currentTeamName },
-            });
-          }
-        } catch (error) {
-          console.error("Error checking pre info confirmed:", error);
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+    
+        if (msg.action === "start_select") {
+          navigate("/bagselect", {
+            state: { roomCode, teamName: currentTeamName },
+          });
         }
       };
-      onMount(() => {
-        const checkPreInfoConfirmedInterval = setInterval(checkPreInfoConfirmed, 3000);
     
-        onCleanup(() => {
-          clearInterval(checkPreInfoConfirmedInterval);
-        });
+      // 필요하면 연결 해제 처리
+      onCleanup(() => {
+        if (ws) {
+          ws.onmessage = null;
+        }
       });
+    });
+      
   return (
     <div class="flex flex-col justify-center items-center h-screen bg-neutral-950 text-white font-sans">
       <div class="text-center mb-8">

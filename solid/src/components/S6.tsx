@@ -1,7 +1,7 @@
 import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
 import * as XLSX from "xlsx";
-import ky from "ky";
+import { socket } from "../store"; 
 
 interface Item {
   id: number;
@@ -29,6 +29,7 @@ const S6: Component = () => {
   const navigate = useNavigate();
   const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
   const teamName = location.state?.teamName || "UNKNOWN_TEAM";
+  const ws = socket();
   const selectedBag = location.state?.selectedBag || {
     id: 1,
     weightLimit: 10,
@@ -105,6 +106,7 @@ const S6: Component = () => {
     setQ((prev) => [...prev, ...newItems]);
     setCurrentWeight(totalWeight);
     setCurrentVolume(totalVolume);
+    sendBagSnapshot();
     setShowModal(false);
   };
 
@@ -116,95 +118,70 @@ const S6: Component = () => {
     setQ((prev) => prev.filter((_, i) => i !== index)); // Remove item at the given index
     setCurrentWeight((prev) => Number((prev - item.weight).toFixed(1)));
     setCurrentVolume((prev) => Number((prev - item.volume).toFixed(1)));
+    sendBagSnapshot();
   };
-
-  // Generate bag contents summary
-  const getBagContents = async () => {
-    setIsDisabled(false);
-    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
-  
-    q().forEach((item) => {
-      const name = item.name;
-      if (!bagContents.items[name]) {
-        bagContents.items[name] = 0;
-      }
-      bagContents.items[name] += 1;
-    });
-    const flattenedBagContents = {
-      ...bagContents.items, // Flatten the items dictionary
-      totalWeight: bagContents.totalWeight,
-      totalVolume: bagContents.totalVolume,
+  /** 현재 스냅샷을 서버에 전송 */
+  const sendBagSnapshot = () => {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    const bagContents: Record<string, number> = {};
+    q().forEach((it) => (bagContents[it.name] = (bagContents[it.name] || 0) + 1));
+    const snapshot = {
+      items: bagContents,
+      totalWeight: Math.round(currentWeight()),
+      totalVolume: Math.round(currentVolume()),
       bagID: selectedBag.id,
     };
-    try {
-      // Make API call to submit bag contents
-      
-      console.log(bagContents.items)
-      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
-        json: flattenedBagContents,
-      }).json();
-  
-      console.log("API Response:", response);
-      alert(response.message || "Bag contents submitted successfully!");
-      setistime(false);
-      // Navigate to the next scene
-      navigate("/sceneinfo", {
-        state: {
-          roomCode,
-          teamName: teamName,
-          selectedBag, // Pass the selected bag object
-          bagContents: bagContents,
-        },
-      });
-    } catch (error) {
-      console.error("Error submitting bag contents:", error);
-      alert("Failed to submit bag contents. Please try again.");
-    }
-  
-    console.log("Bag Contents:", bagContents);
+    ws.send(
+      JSON.stringify({ action: "update_bag", data: { team: teamName, snapshot } })
+    );
+    console.log("update_bag")
   };
-  
-  const getAutoBagContents = async () => {
-    const bagContents = { items: {}, totalWeight: Math.round(currentWeight()), totalVolume: Math.round(currentVolume()) };
-  
-    q().forEach((item) => {
-      const name = item.name;
-      if (!bagContents.items[name]) {
-        bagContents.items[name] = 0;
-      }
-      bagContents.items[name] += 1;
-    });
-    const flattenedBagContents = {
-      ...bagContents.items, // Flatten the items dictionary
-      totalWeight: bagContents.totalWeight,
-      totalVolume: bagContents.totalVolume,
-      bagID: 100,
+  // Generate bag contents summary
+  const submitBagContents = () => {
+    setIsDisabled(false);
+    const bagContents: Record<string, number> = {};
+    q().forEach((it) => (bagContents[it.name] = (bagContents[it.name] || 0) + 1));
+    const snapshot = {
+      items: bagContents,
+      totalWeight: Math.round(currentWeight()),
+      totalVolume: Math.round(currentVolume()),
+      bagID: selectedBag.id,
     };
-    try {
-      // Make API call to submit bag contents
-      
-      console.log(bagContents.items)
-      const response = await ky.post(`http://localhost:8000/player/room/${roomCode}/team/${teamName}/submit_bag`, {
-        json: flattenedBagContents,
-      }).json();
-  
-      console.log("API Response:", response);
-    } catch (error) {
-      console.error("Error auto saving bag contents:", error);
-      alert("Failed to auto save bag contents. Please try again.");
+
+    if (!ws) {
+      alert("WebSocket 연결이 되어 있지 않습니다.");
+      return;
     }
   
-    console.log("Bag Contents:", bagContents);
+    const message = {
+      action: "submit_bag",
+      data: {
+        team: teamName,
+        snapshot,
+      },
+    };
+  
+    ws.send(JSON.stringify(message));
+    console.log("submitted bag!")
+    setistime(false);
+  
+    // 이동
+    navigate("/sceneinfo", {
+      state: {
+        roomCode,
+        teamName,
+        selectedBag,
+        bagContents,
+      },
+    });
   };
+  
   // Filtered items based on search
   const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
 
   onMount(() => {
     readItemsFromExcel();
     startTimer();
-    if (isDisabled()) {
-      getAutoBagContents();
-    }
   });
 
   return (
@@ -284,7 +261,7 @@ const S6: Component = () => {
       <div class="flex justify-center mt-4">
         <button
           class="mt-5 px-5 py-2.5 bg-orange-400 text-xl font-bold text-black rounded cursor-pointer hover:bg-orange-500 transition-colors font-sans"
-          onClick={getBagContents}
+          onClick={submitBagContents}
         >
           가방 제출하기
         </button>

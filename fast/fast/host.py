@@ -52,8 +52,14 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
     if not room:
         await websocket.close(code=4000)
         return
-
     await room.connect(websocket, username)
+    await websocket.send_text(json.dumps({
+        "action": "initial_state",
+        "data": {
+            "bags": room.bag_data,
+            "status": room.bag_status
+        }
+    }))
 
     try:
         while True:
@@ -65,12 +71,20 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
 
             action = data_json.get("action")
             user = room.user_data.get(websocket)
-
+            if action == "fetch_room" and user and user["is_host"]:
+                await room.broadcast_room()
             if action == "start_game" and user and user["is_host"]:
                 await room.broadcast_message({
                     "action": "start_game",
                     "data": f"Game is starting in room {room_id}!"
                 })
+            
+            
+            if action == "start_select" and user and user["is_host"]:
+                await room.broadcast_message({
+                    "action": "start_select"
+                })
+
 
     except WebSocketDisconnect:
         room.disconnect(websocket)

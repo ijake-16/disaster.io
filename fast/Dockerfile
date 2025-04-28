@@ -9,8 +9,7 @@ RUN apt-get update \
 RUN pip install --upgrade --no-cache-dir pip
 RUN pip install --no-cache-dir uv
 
-# Explicitly install core dependencies to ensure they're available
-RUN pip install fastapi uvicorn python-dotenv firebase-admin
+RUN pip install fastapi uvicorn[standard] python-dotenv firebase-admin
 
 # Copy pyproject.toml and extraction script
 COPY pyproject.toml ./

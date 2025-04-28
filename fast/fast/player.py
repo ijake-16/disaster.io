@@ -40,6 +40,77 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
             if action == "toggle_ready" and user:
                 user["ready"] = not user["ready"]
                 await room.broadcast_room()
+            
+            elif action =="fetch_room_bags" and user:
+                await room.broadcast_message({
+                   "action": "room_state",
+                   "data": { "bags": room.bag_data }
+                })
+                await room.broadcast_message({
+                    "action": "ready_state",
+                    "data" :{"readys" :
+                    [
+                        info["username"]
+                        for info in room.user_data.values()
+                        if info.get("ready")
+                    ]}
+                })
+                
+
+
+            elif action == "select_bag" and user:
+                team_name = data_json["data"].get("team")
+                bag_id = data_json["data"].get("bagID")
+
+                if team_name and bag_id:
+                    room.bag_data[team_name] = {
+                        "items": {},
+                        "totalWeight": 0,
+                        "totalVolume": 0,
+                        "bagID": bag_id
+                    }
+
+                    # 브로드캐스트: 가방 상태 업데이트
+                    await room.broadcast_message({
+                        "action": "room_state",
+                        "data": { "bags": room.bag_data }
+                    })
+                    print(f"[INFO] {team_name} selected bag {bag_id}")
+            elif action == "submit_bag" and user:
+                team = data_json["data"]["team"]
+                snapshot = data_json["data"]["snapshot"]
+                user['ready'] = True
+
+                # 메모리에 저장
+                room.bag_data[team] = snapshot
+
+                # 전체 클라이언트(호스트 포함)에 브로드캐스트
+                await room.broadcast_message({
+                    "action": "bag_updated",
+                    "data": { "team": team, "snapshot": snapshot }
+                })
+
+                await room.broadcast_message({
+                    "action": "submitted_bag",
+                    "data": {
+                        "team": team,
+                        "status": "submitted"
+                    }
+                })
+                
+            elif action == "update_bag" and user:
+                team = data_json["data"]["team"]
+                snapshot = data_json["data"]["snapshot"]
+
+                # 메모리에 저장
+                room.bag_data[team] = snapshot
+
+                # 전체 클라이언트(호스트 포함)에 브로드캐스트
+                await room.broadcast_message({
+                    "action": "bag_updated",
+                    "data": { "team": team, "snapshot": snapshot }
+                })
+
 
     except WebSocketDisconnect:
         room.disconnect(websocket)

@@ -1,6 +1,6 @@
-import { Component } from 'solid-js';
-import { roomCode } from '../store';
-import ky from "ky";
+import { Component, onMount } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+import { roomCode, socket } from '../store';
 import logoImage from '../../resource/logo_horizon.png';
 
 interface FamilyMember {
@@ -15,6 +15,7 @@ interface RegionInfo {
 }
 
 const H4PreInfo: Component = () => {
+  const navigate = useNavigate();
   const familyMembers: FamilyMember[] = [
     { role: '아버지', age: 50, gender: '남성' },
     { role: '어머니', age: 45, gender: '여성' },
@@ -25,17 +26,29 @@ const H4PreInfo: Component = () => {
     type: '도시',
     characteristics: ['해안가', '기후 변동 적용', '남부 지방'],
   };
-
-  const handleContinue = async () => {
-    try {
-      console.log("Using room code:", roomCode());
-      await ky.post(`http://localhost:8000/host/room/${roomCode()}/game_info_confirm`);
-      window.location.href = '/host/readyinfo'; 
-    } catch (error) {
-      console.error("Failed to confirm game info:", error);
+  onMount(() => {
+    const ws = socket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      console.warn("WebSocket is not connected or not open.");
+      return;
     }
-  };
+  
+    ws.onclose = () => {
+      console.warn("WebSocket closed");
+    };
+  });
+  
+  const handleContinue = () => {
+    const ws = socket();
+    if (!ws) {
+      console.error("WebSocket is not connected.");
+      return;
+    }
 
+    // ✅ start_game 메시지 전송
+    ws.send(JSON.stringify({ action: "start_select" }));
+    navigate('/host/readyinfo')
+  };
   return (
     <div class="min-h-screen bg-neutral-950 text-white font-sans">
       {/* Header Section */}

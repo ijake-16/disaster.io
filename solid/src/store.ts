@@ -8,6 +8,20 @@ const USER_STORAGE_KEY = 'userAuth';
 
 export const [socket, setSocket] = createSignal<WebSocket | null>(null);
 
+export function initSocket(roomCode: string, username: string, isHost: boolean, onOpen?: () => void) {
+  const role = isHost ? "host" : "player";
+  const ws = new WebSocket(`/${role}/ws/${roomCode}/${username}`);
+
+  ws.onopen = () => {
+    console.log("WebSocket 연결 완료");
+    setSocket(ws);
+    if (onOpen) onOpen(); // 연결 후 navigate 호출
+  };
+
+  ws.onclose = () => console.warn("WebSocket 연결 종료");
+  ws.onerror = (e) => console.error("WebSocket 오류", e);
+}
+
 // Function to get room code from local storage
 const getRoomCodeFromStorage = () => {
   return localStorage.getItem(LOCAL_STORAGE_KEY) || null;

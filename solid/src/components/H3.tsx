@@ -1,46 +1,54 @@
 import { Component, createSignal, onMount, onCleanup } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
 import { roomCode, setRoomCode } from "../store";
 import { socket , setSocket } from "../store";
 import ky from "ky";
 import logoImage from '../../resource/logo.png';
 
 const H3Waiting: Component = () => {
+  const navigate = useNavigate();
   const currentRoomCode = roomCode();
   const ws = socket(); // 전역에서 불러온 WebSocket 인스턴스
   const [teams, setTeams] = createSignal<string[]>([]);
 
   onMount(() => {
-    if (!ws) {
-      console.warn("WebSocket not connected");
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      alert("⚠️ WebSocket 연결이 유효하지 않습니다. 처음부터 다시 시작해주세요.");
+      navigate("/");
       return;
     }
-
+    ws.send(JSON.stringify({ action: "fetch_room" }));
     ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.action === "update_users") {
-        const userList = msg.data.map((user: any) => user.username);
-        setTeams(userList);
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.action === "update_users") {
+          const playersOnly = msg.data
+            .filter((u: any) => !u.is_host)
+            // 2. …then pluck the usernames
+            .map((u: any) => u.username);
+
+          setTeams(playersOnly);
+        }
+      } catch (err) {
+        console.warn("[WS] 메시지 파싱 실패:", err);
       }
     };
 
-    // 선택 사항: 연결 끊길 경우 처리
     ws.onclose = () => {
       console.warn("WebSocket closed");
+      alert("❌ 연결이 종료되었습니다. 다시 접속해주세요.");
+      navigate("/");
     };
   });
 
-  onCleanup(() => {
-    // 페이지 벗어날 때 메시지 핸들러 정리
-    if (ws) {
-      ws.onmessage = null;
-      ws.onclose = null;
-    }
-  });
-
   const handleGameStart = () => {
-    if (!ws) return;
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      alert("❌ WebSocket 연결이 종료되었습니다.");
+      return;
+    }
+
     ws.send(JSON.stringify({ action: "start_game" }));
-    window.location.href = '/host/preinfo';
+    navigate("/host/preinfo");
   };
 
   return (
