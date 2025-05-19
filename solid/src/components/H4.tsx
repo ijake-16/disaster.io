@@ -2,6 +2,7 @@ import { Component, onMount } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { roomCode, socket } from '../store';
 import logoImage from '../../resource/logo_horizon.png';
+import { selectedPreInfo, selectedDisaster, family_info, disaster_info } from '../store';
 
 interface FamilyMember {
   role: string;
@@ -16,11 +17,43 @@ interface RegionInfo {
 
 const H4PreInfo: Component = () => {
   const navigate = useNavigate();
-  const familyMembers: FamilyMember[] = [
-    { role: '아버지', age: 50, gender: '남성' },
-    { role: '어머니', age: 45, gender: '여성' },
-    { role: '나', age: 15, gender: '남성' },
+  const preIndex = selectedPreInfo;
+  const disIndex = selectedDisaster;
+
+  const familyScenarios: FamilyMember[][] = [
+    // 0: 나랑 와이프
+    [
+      { role: '나', age: 50, gender: '남성' },
+      { role: '아내', age: 45, gender: '여성' },
+    ],
+    // 1: 엄마, 아빠, 나
+    [
+      { role: '아버지', age: 50, gender: '남성' },
+      { role: '어머니', age: 45, gender: '여성' },
+      { role: '나', age: 15, gender: '남성' },
+    ],
+    // 2: 엄마, 아빠, 나, 여동생
+    [
+      { role: '아버지', age: 50, gender: '남성' },
+      { role: '어머니', age: 45, gender: '여성' },
+      { role: '나', age: 15, gender: '남성' },
+      { role: '여동생', age: 12, gender: '여성' },
+    ],
+    // 3: 엄마, 아빠, 나, 강아지
+    [
+      { role: '아버지', age: 50, gender: '남성' },
+      { role: '어머니', age: 45, gender: '여성' },
+      { role: '나', age: 15, gender: '남성' },
+      { role: '강아지', age: 3, gender: '기타' },
+    ],
   ];
+  const currentFamily = () => {
+    const idx = preIndex();
+    if (idx === null || idx < 0 || idx >= familyScenarios.length) {
+      return [] as FamilyMember[];
+    }
+    return familyScenarios[idx];
+  };
 
   const regionInfo: RegionInfo = {
     type: '도시',
@@ -72,20 +105,28 @@ const H4PreInfo: Component = () => {
         <div class="w-full md:w-64">
           <div class="bg-gray-200 rounded-lg p-5 h-full text-black">
             <div class="w-full h-[150px] rounded-lg bg-black flex items-center justify-center">
+            {preIndex() !== null ? (
+            <img
+              src={family_info[preIndex()!]}
+              alt="Selected Family Scenario"
+              class="max-w-full max-h-full rounded-lg object-scale-down"
+            />
+          ) : (
               <img 
                 src="../../resource/family3.png" 
                 alt="Region Icon" 
                 class="max-w-full max-h-full rounded-lg object-scale-down"
               />
+          )}
             </div>
             <div class="mt-3 text-base leading-relaxed">
               <p>당신의 가족 구성원은 다음과 같습니다.</p>
               <div class="mt-2">
-                {familyMembers.map((member) => (
-                  <p>
-                    {member.role} ... {member.age}세, {member.gender}
-                  </p>
-                ))}
+                {currentFamily().map((m) => (
+                <p>
+                  {m.role} – {m.age}세, {m.gender}
+                </p>
+              ))}
                 <p> </p>
               </div>
             </div>
