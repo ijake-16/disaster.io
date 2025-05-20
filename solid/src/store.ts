@@ -11,6 +11,7 @@ export const [selectedPreInfo, setSelectedPreInfo] = createSignal<number | null>
 export const [selectedDisaster, setSelectedDisaster] = createSignal<number | null>(null);
 export const family_info = ["../../resource/family2.png","../../resource/family3.png","../../resource/family4.png","../../resource/familydog.png"];
 export const disaster_info = ["../../resource/tsunami.png","../../resource/rain.png","../../resource/earthquake.png","../../resource/volcano.png"];
+export const disatser_comment = ["높이 200m 쓰나미", "시간당 1000mm의 대폭우", "진도 7.0의 대지진", "거대한 화산폭발발"];
 
 export function initSocket(roomCode: string, username: string, isHost: boolean, onOpen?: () => void) {
   const role = isHost ? "host" : "player";

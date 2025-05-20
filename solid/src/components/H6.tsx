@@ -1,10 +1,23 @@
 import { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import logoImage from '../../resource/logo_horizon.png';
+import { selectedPreInfo, selectedDisaster, family_info, disaster_info, disatser_comment } from '../store';
 
 const SimulationInfo: Component = () => {
   const navigate = useNavigate();
+  const disIndex = selectedDisaster;
 
+  const disasterImg = () => {
+    const idx = disIndex();
+    if (idx === null || idx < 0 || idx >= disaster_info.length) return "../../resource/earthquake.png";
+    return disaster_info[idx];
+  };
+
+  const disasterText = () => {
+    const idx = disIndex();
+    if (idx === null || idx < 0 || idx >= disatser_comment.length) return "진도 7.0의 대지진";
+    return disatser_comment[idx];
+  };
   return (
     <div class="min-h-screen bg-neutral-950 text-white flex flex-col items-center pt-5 font-sans">
       {/* Header */}
@@ -22,13 +35,13 @@ const SimulationInfo: Component = () => {
         <div class="flex flex-col items-center w-1/2">
           <div class="flex items-center justify-center h-full w-full">
             <img 
-              src="../../resource/earthquake.png" 
+              src={disasterImg()} 
               alt="Situation Icon" 
               class="max-w-full max-h-full object-contain"
             />
           </div>
           <p class="text-xl mt-2.5">
-            Situation: 진도 7.0의 대지진
+            Situation: {disasterText()}
           </p>
         </div>
         
