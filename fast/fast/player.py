@@ -10,10 +10,13 @@ async def get_room_host(room_id: str):
     room_data = room_manager.get_room_info(room_id)
     if not room_data:
         raise HTTPException(status_code=404, detail="Room not found")
-    
+    num_players = len(room_data.manager.active_connections)
+    max_players = room_data.room_settings.max_players
     return {
         "room_code": room_id,
-        "host_nickname": room_data.host_nickname
+        "host_nickname": room_data.host_nickname,
+        "num_players": num_players,
+        "max_players": max_players,
     }
 
 
@@ -23,9 +26,32 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
     if not room:
         await websocket.close(code=4000)
         return
+    room_data = room_manager.get_room_info(room_id)
+    num_players = len(room_data.manager.active_connections) -1 # 호스트 빼주기
+    max_players = room_data.room_settings.max_players
+    if num_players >= max_players:
+        await websocket.accept()
+        await websocket.send_text(json.dumps({
+            "action": "error",
+            "message": f"방이 가득 찼습니다. ({num_players}/{max_players})"
+        }))
+        await websocket.close(code=4001)
+        return
+    for ws, info in room.user_data.items():
+        if info["username"] == username:
+            await websocket.accept()
+            await websocket.send_text(json.dumps({
+                "action": "error",
+                "message": "이미 사용 중인 닉네임입니다."
+            }))
+            await websocket.close(code=4002)
+            return
 
     await room.connect(websocket, username)
-
+    await websocket.send_text(json.dumps({
+            "action": "room_join_confirmed",
+            "message": f"어서오세요"
+        }))
     try:
         while True:
             data = await websocket.receive_text()
