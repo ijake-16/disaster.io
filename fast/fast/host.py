@@ -1,26 +1,27 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import uuid
-from fast.managers import room_manager
+from fast.managers import room_manager, GameSettings
 import json
 
 router = APIRouter(prefix="/host")
+
 class CreateRoomPayload(BaseModel):
     host_nickname: str
     selected_pre_info: int
     selected_disaster: int
-
+    game_settings: GameSettings
 
 @router.post("/create_room")
 async def create_room(payload: CreateRoomPayload):
     room_code = str(uuid.uuid4())[:6].upper()
-
     success = room_manager.create_room(
         room_code,
         payload.host_nickname,
         payload.selected_pre_info,
-        payload.selected_disaster
+        payload.selected_disaster,
+        payload.game_settings 
     )
 
     if not success:
