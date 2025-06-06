@@ -5,10 +5,24 @@ import { eventOptions } from '../data/events';
 import type { EventOption } from '../data/events';
 import { roomCode } from '../store';
 import ky from 'ky';
+import { useNavigate } from '@solidjs/router';
 
 // Type Definitions
 type Item = ItemOption & { img_path: string };
 type InventoryItem = Item & { status: 'active' | 'used' };
+
+interface TeamHealthSnapshot {
+  teamName: string;
+  health: number;
+}
+type EventResult = {
+  eventId: number;
+  eventName: string;
+  eventDescription: string;
+  eventScore: number;
+  requirements: number[][];
+  teamResults: TeamHealthSnapshot[];
+};
 
 const RESCUE_EVENT: EventOption = {
     id: 999,
@@ -106,6 +120,9 @@ const SimulationResult: Component = () => {
   const [eventDeck, setEventDeck] = createSignal<EventOption[]>([]);
   const [drawnEvent, setDrawnEvent] = createSignal<EventOption | null>(null);
   const [gameEnded, setGameEnded] = createSignal(false);
+  const [history, setHistory] = createSignal<EventResult[]>([]);
+  const navigate = useNavigate();
+  const [deckReady, setDeckReady] = createSignal(false);
 
   const fetchTeamData = async () => {
     try {
@@ -157,6 +174,7 @@ const SimulationResult: Component = () => {
         normalEvents.length;
     normalEvents.splice(rescueIndex, 0, RESCUE_EVENT);
     setEventDeck(normalEvents);
+    setTimeout(() => setDeckReady(true), 100);
   }
 
   const drawEvent = () => {
@@ -171,34 +189,52 @@ const SimulationResult: Component = () => {
       return;
     }
 
-    setTeams(prevTeams => prevTeams.map(team => {
-        if (team.status === 'retired') return team;
+    setTeams(prevTeams => {
+        const updated = prevTeams.map(team => {
+            if (team.status === 'retired') return team;
 
-        const passingItemGroup = getPassingItems(team.inventory, nextEvent.requirements);
-        const success = passingItemGroup !== null;
-        
-        const healthChange = success 
-            ? nextEvent.score * (Math.random() * 0.2 + 0.9)
-            : -nextEvent.score * (Math.random() * 0.2 + 0.4);
+            const passingItemGroup = getPassingItems(team.inventory, nextEvent.requirements);
+            const success = passingItemGroup !== null;
+            
+            const healthChange = success 
+                ? nextEvent.score * (Math.random() * 0.2 + 0.9)
+                : -nextEvent.score * (Math.random() * 0.2 + 0.4);
 
-        const newHealth = Math.max(0, Math.min(200, team.health + healthChange));
+            const newHealth = Math.max(0, Math.min(200, team.health + healthChange));
 
-        let newInventory = team.inventory;
-        if (success && passingItemGroup) {
-            const consumedItemIds = new Set(passingItemGroup);
-            newInventory = team.inventory.map(item => 
-                consumedItemIds.has(item.id) ? { ...item, status: 'used' } : item
-            );
-        }
+            let newInventory = team.inventory;
+            if (success && passingItemGroup) {
+                const consumedItemIds = new Set(passingItemGroup);
+                newInventory = team.inventory.map(item => 
+                    consumedItemIds.has(item.id) ? { ...item, status: 'used' } : item
+                );
+            }
 
-        return {
-            ...team,
-            health: newHealth,
-            inventory: newInventory,
-            lastEventResult: success ? 'success' : 'failure',
-            status: newHealth === 0 ? 'retired' : team.status
-        };
-    }));
+            return {
+                ...team,
+                health: newHealth,
+                inventory: newInventory,
+                lastEventResult: success ? 'success' : 'failure',
+                status: newHealth === 0 ? 'retired' : team.status
+            };
+        });
+
+        setHistory(prev => [
+            ...prev,
+            {
+                eventId: nextEvent.id,
+                eventName: nextEvent.name,
+                eventDescription: nextEvent.description,
+                eventScore: nextEvent.score,
+                requirements: nextEvent.requirements,
+                teamResults: updated.map(t => ({
+                    teamName: t.name,
+                    health: t.health
+                }))
+            }
+        ]);
+        return updated;
+    });
   };
 
   onMount(async () => {
@@ -255,8 +291,14 @@ const SimulationResult: Component = () => {
             <div class="relative w-48 h-64">
                 <For each={eventDeck()}>
                     {(_, index) => (
-                        <div class="absolute w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 border-4 border-gray-900 rounded-lg shadow-2xl flex justify-center items-center"
-                             style={{transform: `translateX(${index() * 2}px) translateY(${index() * -1}px)`, "z-index": index()}}>
+                        <div class="absolute w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 border-4 border-gray-900 rounded-lg shadow-2xl flex justify-center items-center transition-transform duration-700 ease-out"
+                             style={{
+                                transform: deckReady()
+                                    ? `translateX(${index() * 2}px) translateY(${index() * -1}px)`
+                                    : 'translateX(60vw) rotate(30deg)',
+                                'transition-delay': `${index() * 30}ms`,
+                                "z-index": index()
+                             }}>
                             <img src="../../resource/logo.png" alt="Card Back" class="w-2/3 opacity-40" />
                         </div>
                     )}
@@ -274,9 +316,17 @@ const SimulationResult: Component = () => {
             )}
           </div>
           {gameEnded() && (
-            <div class="mt-4 text-2xl text-green-400 font-bold">
-                You have been rescued!
-            </div>
+            <>
+                <div class="mt-4 text-2xl text-green-400 font-bold">
+                    You have been rescued!
+                </div>
+                <button
+                class="mt-4 bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
+                onClick={() => navigate('/host/finalresult', { state: { history: history() } })}
+                >
+                최종 결과 보기
+                </button>
+            </>
           )}
       </div>
     </div>
