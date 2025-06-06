@@ -1,27 +1,28 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import uuid
-from fast.managers import room_manager
+from fast.managers import room_manager, GameSettings
 import json
 import logging
 
 router = APIRouter(prefix="/host")
+
 class CreateRoomPayload(BaseModel):
     host_nickname: str
     selected_pre_info: int
     selected_disaster: int
-
+    game_settings: GameSettings
 
 @router.post("/create_room")
 async def create_room(payload: CreateRoomPayload):
     room_code = str(uuid.uuid4())[:6].upper()
-
     success = room_manager.create_room(
         room_code,
         payload.host_nickname,
         payload.selected_pre_info,
-        payload.selected_disaster
+        payload.selected_disaster,
+        payload.game_settings 
     )
 
     if not success:
@@ -66,7 +67,8 @@ async def get_bag_contents(room_id: str):
 @router.websocket("/ws/{room_id}/{username}")
 async def host_websocket(websocket: WebSocket, room_id: str, username: str):
     print(room_id,username)
-    room = room_manager.get_room(room_id)
+    room        = room_manager.get_room(room_id)
+    room_data   = room_manager.get_room_info(room_id)
     if not room:
         await websocket.close(code=4000)
         return
@@ -92,6 +94,7 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
             if action == "fetch_room" and user and user["is_host"]:
                 await room.broadcast_room()
             if action == "start_game" and user and user["is_host"]:
+                room_data.started = True
                 await room.broadcast_message({
                     "action": "start_game",
                     "data": f"Game is starting in room {room_id}!"

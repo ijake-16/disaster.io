@@ -9,6 +9,9 @@ import logoImage from '../../resource/logo_horizon.png';
 const RoomBuild: Component = () => {
   const navigate = useNavigate();
   const [roomTitle, setRoomTitle] = createSignal("");
+  const [maxPlayer, setMaxPlayer] = createSignal(4);
+  const [bagTimer, setBagTimer] = createSignal(150);
+  
 
   const createRoom = async () => {
     try {
@@ -17,6 +20,10 @@ const RoomBuild: Component = () => {
         host_nickname: host_nickname,
         selected_pre_info: selectedPreInfo(),
         selected_disaster: selectedDisaster(),
+        game_settings: {
+          max_players: maxPlayer(),
+          time_limit_minutes: bagTimer(),
+        },
       };
 
       const response = await ky.post("/api/host/create_room", {
@@ -73,12 +80,30 @@ const RoomBuild: Component = () => {
 
           <div class="bg-gray-700 text-lg p-4 rounded flex justify-between items-center">
             <span>최대 팀 수</span>
-            <span>4</span>
+            <input
+              type="number"
+              min="1"
+              class="bg-gray-600 text-white w-16 p-1 rounded text-center"
+              value={maxPlayer()}
+              onInput={(e) => {
+                const v = parseInt(e.currentTarget.value);
+                setMaxPlayer(isNaN(v) ? 1 : v);
+              }}
+            />
           </div>
 
           <div class="bg-gray-700 text-lg p-4 rounded flex justify-between items-center">
             <span>가방 싸기 시간</span>
-            <span>150</span>
+            <input
+              type="number"
+              min="10"
+              class="bg-gray-600 text-white w-16 p-1 rounded text-center"
+              value={bagTimer()}
+              onInput={(e) => {
+                const v = parseInt(e.currentTarget.value);
+                setBagTimer(isNaN(v) ? 10 : v);
+              }}
+            />
           </div>
 
           <button

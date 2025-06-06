@@ -29,12 +29,20 @@ const S2 = () => {
     ws.onopen = () => {
       console.log("WebSocket 연결 성공!");
       setSocket(ws);
-      setRoomCode(roomCode); // 혹시 store에도 저장하고 싶다면
-      navigate("/waiting", {
-        state: { roomCode, teamName: trimmedTeamName },
-      });
     };
 
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.action === "room_join_confirmed") {
+        setRoomCode(roomCode);   
+        navigate("/waiting", {
+        state: { roomCode, teamName: trimmedTeamName },
+        });
+      }
+      else if (msg.action === "error") {
+        setErrorMessage(msg.message)
+      }
+    };
     ws.onerror = () => {
       setErrorMessage("연결에 실패했습니다. 방이 닫혔거나 닉네임이 중복됐을 수 있어요.");
     };
