@@ -1,26 +1,16 @@
 import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
-import * as XLSX from "xlsx";
 import { socket } from "../store"; 
-
-interface Item {
-  id: number;
-  korName: string;
-  name: string;
-  weight: number;
-  volume: number;
-  description: string;
-  imgsource: string;
-}
+import { itemOptions , ItemOption} from "../data/items";
 
 const S6: Component = () => {
-  const [items, setItems] = createSignal<Item[]>([]);
+  const [items, setItems] = createSignal<ItemOption[]>(itemOptions);
 
   const [timer, setTimer] = createSignal(150);
   const [currentWeight, setCurrentWeight] = createSignal(0);
   const [currentVolume, setCurrentVolume] = createSignal(0);
-  const [q, setQ] = createSignal<Item[]>([]); // Queue for bag items
-  const [selectedItem, setSelectedItem] = createSignal<Item | null>(null);
+  const [q, setQ] = createSignal<ItemOption[]>([]); // Queue for bag items
+  const [selectedItem, setSelectedItem] = createSignal<ItemOption | null>(null);
   const [quantity, setQuantity] = createSignal(1); // Number of items to add
   const [showModal, setShowModal] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal("");
@@ -40,30 +30,14 @@ const S6: Component = () => {
   const maxWeight = selectedBag.weightLimit;
   const maxVolume = selectedBag.volumeLimit;
   const [istime, setistime] = createSignal(true);
-  // Load items from Excel file
-  const readItemsFromExcel = async () => {
+  // Load items from JSON file
+  const readItemsFromJson = async () => {
     try {
-      const response = await fetch("Items.xlsx");
-      const arrayBuffer = await response.arrayBuffer();
-      const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: "array" });
-
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const data = XLSX.utils.sheet_to_json<Item>(worksheet);
-
-      const mappedItems = data.map((row, index) => ({
-        id: index + 1,
-        korName: row.korName || "",
-        name: row.name || "",
-        weight: parseFloat(row.weight) || 0,
-        volume: parseFloat(row.volume) || 0,
-        description: row.description || "",
-        imgsource: `resource/${row.name}.png`,
-      }));
-
-      setItems(mappedItems);
+      const response = await fetch("../data/item.json");
+      const data = await response.json();
+      setItems(data);
     } catch (error) {
-      console.error("Error reading Excel file:", error);
+      console.error("Error reading JSON file:", error);
     }
   };
 
@@ -95,8 +69,10 @@ const S6: Component = () => {
 
     const totalWeight = currentWeight() + item.weight * quantity();
     const totalVolume = currentVolume() + item.volume * quantity();
+    // 아이템 종류의 개수만 고려해서 인벤토리 제한
+    const totalItem = q().length;
 
-    if (totalWeight > maxWeight || totalVolume > maxVolume) {
+    if (totalWeight > maxWeight || totalVolume > maxVolume || totalItem >= selectedBag.itemLimit) {
       alert("가방에 더 이상 물건을 넣을 수 없습니다!");
       return;
     }
@@ -175,12 +151,25 @@ const S6: Component = () => {
       },
     });
   };
+  const sortItems = (type: string) => {
+    if (type === "name") {
+      // 1) 기존 items()를 복사([...items()]) → 2) 복사된 배열에 sort → 3) setItems(새 배열)
+      const newArr = [...items()].sort((a, b) => a.korName.localeCompare(b.korName));
+      setItems(newArr);
+    } else if (type === "weight") {
+      const newArr = [...items()].sort((a, b) => a.weight - b.weight);
+      setItems(newArr);
+    } else if (type === "volume") {
+      const newArr = [...items()].sort((a, b) => a.volume - b.volume);
+      setItems(newArr);
+    }
+  };
   
   // Filtered items based on search
   const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
 
   onMount(() => {
-    readItemsFromExcel();
+    readItemsFromJson();
     startTimer();
   });
 
@@ -205,12 +194,12 @@ const S6: Component = () => {
       <main class="grid grid-cols-[300px_1fr] gap-5">
         {/* Inventory Section */}
         <section>
-          <input
-            type="text"
-            placeholder="Search items..."
-            class="w-full p-2 rounded bg-gray-700"
-            onInput={(e) => setSearchTerm((e.target as HTMLInputElement).value.toLowerCase())}
-          />
+          {/* 이름, 무게, 부피 정렬버튼 가로로 세개 */}
+          <div class="flex justify-center items-center">
+            <button class="bg-gray-800 p-2 rounded" onClick={() => sortItems("name")}>이름</button>
+            <button class="bg-gray-800 p-2 rounded" onClick={() => sortItems("weight")}>무게</button>
+            <button class="bg-gray-800 p-2 rounded" onClick={() => sortItems("volume")}>부피</button>
+          </div>
           <div class="grid grid-cols-3 gap-2 mt-4">
             {filteredItems().map((item) => (
               <div
@@ -221,7 +210,7 @@ const S6: Component = () => {
                   setShowModal(true);
                 }}
               >
-                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
               </div>
             ))}
@@ -231,11 +220,11 @@ const S6: Component = () => {
         {/* Bag Section */}
         <section class="bg-gray-700 rounded-lg p-4">
           <div class="text-lg flex gap-4">
-            <div>Weight: {currentWeight()} / {maxWeight}</div>
+            <div>Weight: {currentWeight().toFixed(1)} / {maxWeight}</div>
             <div class="mt-1 w-[30%] ml-1 h-3 mr-2 bg-gray-600 rounded-full overflow-hidden">
               <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
             </div>
-            <div>Volume: {currentVolume()} / {maxVolume}</div>
+            <div>Volume: {currentVolume().toFixed(1)} / {maxVolume}</div>
             <div class="mt-1 w-[30%] ml-1 h-3 bg-gray-600 rounded-full overflow-hidden">
               <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
             </div>
@@ -249,8 +238,13 @@ const S6: Component = () => {
                 >
                   ×
                 </button>
-                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
+              </div>
+            ))}
+            {Array.from({ length: selectedBag.itemLimit - q().length }).map(() => (
+              <div class="item bg-gray-600 p-2 rounded flex flex-col items-center opacity-40">
+                {/* 빈 칸은 이미지 없이, slot만 표시 */}
               </div>
             ))}
           </div>
@@ -278,7 +272,7 @@ const S6: Component = () => {
               ×
             </button>
             <div class="text-center flex flex-col items-center">
-              <img src={selectedItem()?.imgsource} alt="" class="my-2 w-32 h-32" />
+              <img src={`resource/${selectedItem()?.name}.png`} alt="" class="my-2 w-32 h-32" />
               <div class="text-xl mb-2">
                 {selectedItem()?.korName}         
               </div>

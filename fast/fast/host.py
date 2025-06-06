@@ -14,7 +14,7 @@ class CreateRoomPayload(BaseModel):
 
 @router.post("/create_room")
 async def create_room(payload: CreateRoomPayload):
-    room_code = str(uuid.uuid4())[:6]
+    room_code = str(uuid.uuid4())[:6].upper()
 
     success = room_manager.create_room(
         room_code,
