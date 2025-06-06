@@ -23,6 +23,7 @@ router = APIRouter(prefix="/auth")
 
 class KakaoCodeRequest(BaseModel):
     code: str
+    redirect_uri: str
 
 class CertificationRequest(BaseModel):
     userId: str
@@ -115,14 +116,14 @@ async def kakao_token(request: KakaoCodeRequest):
         
         # Log environment variables (without sensitive values)
         logger.info(f"KAKAO_CLIENT_ID set: {'Yes' if os.getenv('KAKAO_CLIENT_ID') else 'No'}")
-        logger.info(f"KAKAO_REDIRECT_URI: {os.getenv('KAKAO_REDIRECT_URI')}")
+        logger.info(f"KAKAO_REDIRECT_URI from client: {request.redirect_uri}")
         
         # Exchange code for access token
         async with httpx.AsyncClient() as client:
             token_payload = {
                 "grant_type": "authorization_code",
                 "client_id": os.getenv("KAKAO_CLIENT_ID"),
-                "redirect_uri": os.getenv("KAKAO_REDIRECT_URI"),
+                "redirect_uri": request.redirect_uri,
                 "code": request.code
             }
             logger.info(f"Token request payload: {token_payload}")
