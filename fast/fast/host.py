@@ -49,7 +49,8 @@ async def list_rooms():
 @router.websocket("/ws/{room_id}/{username}")
 async def host_websocket(websocket: WebSocket, room_id: str, username: str):
     print(room_id,username)
-    room = room_manager.get_room(room_id)
+    room        = room_manager.get_room(room_id)
+    room_data   = room_manager.get_room_info(room_id)
     if not room:
         await websocket.close(code=4000)
         return
@@ -75,6 +76,7 @@ async def host_websocket(websocket: WebSocket, room_id: str, username: str):
             if action == "fetch_room" and user and user["is_host"]:
                 await room.broadcast_room()
             if action == "start_game" and user and user["is_host"]:
+                room_data.started = True
                 await room.broadcast_message({
                     "action": "start_game",
                     "data": f"Game is starting in room {room_id}!"

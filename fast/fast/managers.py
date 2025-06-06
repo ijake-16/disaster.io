@@ -51,6 +51,7 @@ class RoomData:
         self.selected_pre_info = pre_info
         self.selected_disaster = disaster
         self.room_settings = room_settings
+        self.started: bool = False
 
 
 class RoomManager:

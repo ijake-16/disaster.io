@@ -29,6 +29,14 @@ async def player_websocket(websocket: WebSocket, room_id: str, username: str):
     room_data = room_manager.get_room_info(room_id)
     num_players = len(room_data.manager.active_connections) -1 # 호스트 빼주기
     max_players = room_data.room_settings.max_players
+    if room_data.started:
+        await websocket.accept()
+        await websocket.send_text(json.dumps({
+            "action": "error",
+            "message": f"게임이 이미 시작되었습니다"
+        }))
+        await websocket.close(code=4001)
+        return
     if num_players >= max_players:
         await websocket.accept()
         await websocket.send_text(json.dumps({
