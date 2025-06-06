@@ -1,9 +1,10 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uuid
 from fast.managers import room_manager
 import json
+import logging
 
 router = APIRouter(prefix="/host")
 class CreateRoomPayload(BaseModel):
@@ -44,6 +45,23 @@ async def list_rooms():
         })
 
     return room_list
+
+@router.get("/room/{room_id}/bag_contents")
+async def get_bag_contents(room_id: str):
+    try:
+        logging.info(f"Fetching bag contents for room: {room_id}")
+        
+        room = room_manager.get_room(room_id)
+        if not room:
+            logging.warning(f"Room not found: {room_id}")
+            raise HTTPException(status_code=404, detail="Room not found")
+        
+        logging.info(f"Room found for {room_id}. Bag data: {room.bag_data}")
+        
+        return room.bag_data
+    except Exception as e:
+        logging.error(f"An unexpected error occurred in get_bag_contents: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="An internal error occurred.")
 
 @router.websocket("/ws/{room_id}/{username}")
 async def host_websocket(websocket: WebSocket, room_id: str, username: str):
