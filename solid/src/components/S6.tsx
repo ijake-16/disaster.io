@@ -2,6 +2,13 @@ import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
 import { socket } from "../store"; 
 import { itemOptions , ItemOption} from "../data/items";
+import { BagOption } from '../data/bags';
+
+interface LocationState {
+    roomCode: string;
+    teamName: string;
+    selectedBag: BagOption;
+}
 
 const S6: Component = () => {
   const [items, setItems] = createSignal<ItemOption[]>(itemOptions);
@@ -16,16 +23,20 @@ const S6: Component = () => {
   const [searchTerm, setSearchTerm] = createSignal("");
   const [isDisabled, setIsDisabled] = createSignal(true);
   const location = useLocation();
+  const state = location.state as LocationState;
   const navigate = useNavigate();
-  const roomCode = location.state?.roomCode || "UNKNOWN_ROOM";
-  const teamName = location.state?.teamName || "UNKNOWN_TEAM";
+  const roomCode = state?.roomCode || "UNKNOWN_ROOM";
+  const teamName = state?.teamName || "UNKNOWN_TEAM";
   const ws = socket();
-  const selectedBag = location.state?.selectedBag || {
+  const selectedBag = state?.selectedBag || {
     id: 1,
     weightLimit: 10,
     volumeLimit: 10,
     bagWeight: 0,
     description: "기본 가방 설명",
+    itemLimit: 10,
+    image: "",
+    alt: ""
   };
   const maxWeight = selectedBag.weightLimit;
   const maxVolume = selectedBag.volumeLimit;
@@ -56,7 +67,7 @@ const S6: Component = () => {
   };
 
   const endGame = () => {
-    if (istime == true){
+    if (istime() === true){
       alert("Time's up!");
       setistime(false);
     }
@@ -99,8 +110,8 @@ const S6: Component = () => {
   /** 현재 스냅샷을 서버에 전송 */
   const sendBagSnapshot = () => {
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    const bagContents: Record<string, number> = {};
-    q().forEach((it) => (bagContents[it.name] = (bagContents[it.name] || 0) + 1));
+    const bagContents: Record<number, number> = {};
+    q().forEach((it) => (bagContents[it.id] = (bagContents[it.id] || 0) + 1));
     const snapshot = {
       items: bagContents,
       totalWeight: Math.round(currentWeight()),
@@ -115,8 +126,8 @@ const S6: Component = () => {
   // Generate bag contents summary
   const submitBagContents = () => {
     setIsDisabled(false);
-    const bagContents: Record<string, number> = {};
-    q().forEach((it) => (bagContents[it.name] = (bagContents[it.name] || 0) + 1));
+    const bagContents: Record<number, number> = {};
+    q().forEach((it) => (bagContents[it.id] = (bagContents[it.id] || 0) + 1));
     const snapshot = {
       items: bagContents,
       totalWeight: Math.round(currentWeight()),
@@ -184,7 +195,7 @@ const S6: Component = () => {
         />
       </div>  
       <header class="flex justify-between items-center mx-1 mb-5">
-        <h1 class="text-2xl">{teamName()}</h1>
+        <h1 class="text-2xl">{teamName}</h1>
         <div class="timer bg-green-500 w-12 h-12 rounded-full flex justify-center items-center text-xl font-sans">
           {timer()}
         </div>
@@ -210,7 +221,7 @@ const S6: Component = () => {
                   setShowModal(true);
                 }}
               >
-                <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
+                <img src={`../../resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
               </div>
             ))}
@@ -238,7 +249,7 @@ const S6: Component = () => {
                 >
                   ×
                 </button>
-                <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
+                <img src={`../../resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
               </div>
             ))}
@@ -272,7 +283,7 @@ const S6: Component = () => {
               ×
             </button>
             <div class="text-center flex flex-col items-center">
-              <img src={`resource/${selectedItem()?.name}.png`} alt="" class="my-2 w-32 h-32" />
+              <img src={`../../resource/${selectedItem()?.name}.png`} alt="" class="my-2 w-32 h-32" />
               <div class="text-xl mb-2">
                 {selectedItem()?.korName}         
               </div>

@@ -6,6 +6,7 @@ import type { EventOption } from '../data/events';
 import { roomCode } from '../store';
 import ky from 'ky';
 
+// Type Definitions
 type Item = ItemOption & { img_path: string };
 type InventoryItem = Item & { status: 'active' | 'used' };
 
@@ -31,6 +32,7 @@ interface StatusBarProps {
     maxValue: number;
 }
 
+// Helper Functions & Components
 const StatusBar: Component<StatusBarProps> = (props) => {
     const getBarColor = (value: number, maxValue: number) => {
       const percentage = (value / maxValue) * 100;
@@ -55,7 +57,7 @@ const allItems: Item[] = itemOptions.map(item => ({...item, img_path: `../../res
 
 const generateRandomInventory = (): InventoryItem[] => {
     const inventory: InventoryItem[] = [];
-    const numItems = Math.floor(Math.random() * 5) + 3; // 3 to 7 items
+    const numItems = Math.floor(Math.random() * 5) + 3;
     for (let i = 0; i < numItems; i++) {
         const item = allItems[Math.floor(Math.random() * allItems.length)];
         if(!inventory.find(it => it.id === item.id)) {
@@ -85,10 +87,7 @@ const InventoryItemDisplay: Component<{item: InventoryItem}> = ({ item }) => {
             <img
                 src={item.img_path}
                 alt={item.name}
-                class={`
-                    h-10 w-10 object-contain bg-gray-700 rounded-md p-1 transition-all
-                    ${item.status === 'used' ? 'opacity-30' : ''}
-                `}
+                class={`h-10 w-10 object-contain bg-gray-700 rounded-md p-1 transition-all ${item.status === 'used' ? 'opacity-30' : ''}`}
             />
             {item.status === 'used' && (
                 <div class="absolute inset-0 flex items-center justify-center">
@@ -101,32 +100,27 @@ const InventoryItemDisplay: Component<{item: InventoryItem}> = ({ item }) => {
     );
 }
 
+// Main Component
 const SimulationResult: Component = () => {
   const [teams, setTeams] = createSignal<Team[]>([]);
-
   const [eventDeck, setEventDeck] = createSignal<EventOption[]>([]);
   const [drawnEvent, setDrawnEvent] = createSignal<EventOption | null>(null);
   const [gameEnded, setGameEnded] = createSignal(false);
-
-  onMount(async () => {
-    await fetchTeamData();
-    initializeEventDeck();
-  });
 
   const fetchTeamData = async () => {
     try {
         const teamBags = await ky
             .get(`/api/host/room/${roomCode()}/bag_contents`)
-            .json<Record<string, Record<string, number>>>();
+            .json<Record<string, { items: Record<string, number> }>>();
 
-        const allItemsMap = new Map(allItems.map(item => [item.name, item]));
+        const allItemsByIdMap = new Map(allItems.map(item => [item.id, item]));
 
         const teamArray = Object.entries(teamBags).map(([teamName, bagContents]) => {
             const inventory: InventoryItem[] = [];
-            for (const [itemName, count] of Object.entries(bagContents)) {
-                if (typeof count === 'number') {
-                    const itemInfo = allItemsMap.get(itemName);
-                    if (itemInfo) {
+            if (bagContents && bagContents.items) {
+                for (const [itemId, count] of Object.entries(bagContents.items)) {
+                    const itemInfo = allItemsByIdMap.get(parseInt(itemId, 10));
+                    if (itemInfo && typeof count === 'number') {
                         for(let i = 0; i < count; i++) {
                             inventory.push({ ...itemInfo, status: 'active' });
                         }
@@ -134,7 +128,7 @@ const SimulationResult: Component = () => {
                 }
             }
             return {
-                id: Math.random(), // Or a more stable ID if available
+                id: Math.random(),
                 name: teamName,
                 inventory,
                 health: 100,
@@ -142,35 +136,27 @@ const SimulationResult: Component = () => {
                 status: 'active' as const
             };
         });
-
         setTeams(teamArray);
     } catch (error) {
         console.error("Failed to fetch team data, using mock data as fallback:", error);
-        // Fallback to mock data if API fails
-        const mockTeams = Array.from({ length: 4 }, (_, i) => ({
+        setTeams(Array.from({ length: 4 }, (_, i) => ({
             id: i + 1,
             name: `Team ${i + 1}`,
             inventory: generateRandomInventory(),
             health: 100,
             lastEventResult: null,
             status: 'active' as const
-        }));
-        setTeams(mockTeams);
+        })));
     }
   };
 
   const initializeEventDeck = () => {
     const normalEvents = [...eventOptions].sort(() => Math.random() - 0.5);
-    
-    if (normalEvents.length >= 8) {
-        const first8Events = normalEvents.slice(0, 8);
-        const remainingEvents = normalEvents.slice(8);
-        const shuffledRemainingWithRescue = [...remainingEvents, RESCUE_EVENT].sort(() => Math.random() - 0.5);
-        setEventDeck([...first8Events, ...shuffledRemainingWithRescue]);
-    } else {
-        const shuffledAll = [...normalEvents, RESCUE_EVENT].sort(() => Math.random() - 0.5);
-        setEventDeck(shuffledAll);
-    }
+    const rescueIndex = normalEvents.length >= 8 ? 
+        Math.floor(Math.random() * (normalEvents.length - 8 + 1)) + 8 :
+        normalEvents.length;
+    normalEvents.splice(rescueIndex, 0, RESCUE_EVENT);
+    setEventDeck(normalEvents);
   }
 
   const drawEvent = () => {
@@ -186,33 +172,23 @@ const SimulationResult: Component = () => {
     }
 
     setTeams(prevTeams => prevTeams.map(team => {
-        if (team.status === 'retired') {
-            return team;
-        }
+        if (team.status === 'retired') return team;
 
         const passingItemGroup = getPassingItems(team.inventory, nextEvent.requirements);
         const success = passingItemGroup !== null;
         
-        let healthChange: number;
-        if (success) {
-            const randomFactor = Math.random() * 0.2 + 0.9; // 0.9 to 1.1
-            healthChange = nextEvent.score * randomFactor;
-        } else {
-            const randomFactor = Math.random() * 0.2 + 0.4; // 0.4 to 0.6
-            healthChange = -nextEvent.score * randomFactor;
-        }
+        const healthChange = success 
+            ? nextEvent.score * (Math.random() * 0.2 + 0.9)
+            : -nextEvent.score * (Math.random() * 0.2 + 0.4);
 
         const newHealth = Math.max(0, Math.min(200, team.health + healthChange));
 
         let newInventory = team.inventory;
         if (success && passingItemGroup) {
             const consumedItemIds = new Set(passingItemGroup);
-            newInventory = team.inventory.map(item => {
-                if (consumedItemIds.has(item.id)) {
-                    return { ...item, status: 'used' };
-                }
-                return item;
-            });
+            newInventory = team.inventory.map(item => 
+                consumedItemIds.has(item.id) ? { ...item, status: 'used' } : item
+            );
         }
 
         return {
@@ -225,63 +201,44 @@ const SimulationResult: Component = () => {
     }));
   };
 
+  onMount(async () => {
+    await fetchTeamData();
+    initializeEventDeck();
+  });
+
   return (
     <div class="min-h-screen bg-neutral-950 container flex flex-col mx-auto p-4 font-sans">
-      {/* Header */}
       <div class="flex justify-center flex-col items-center mt-2">
-        <img
-          src="../../resource/logo_horizon.png"
-          alt="Disaster.io Logo"
-          class="h-16 w-auto"
-        />
+        <img src="../../resource/logo_horizon.png" alt="Disaster.io Logo" class="h-16 w-auto" />
         <div class="mt-2 text-center text-white text-2xl mb-4">시뮬레이션 결과</div>
       </div>
 
-      {/* Teams Section */}
       <div class="w-[80%] mx-auto">
         <div class="grid grid-cols-2 gap-6">
             <For each={teams()}>
             {(team) => (
-                <div class={`
-                    bg-gray-800 rounded-lg p-4 font-sans flex flex-col justify-between min-h-48 border-4 transition-all
-                    ${team.lastEventResult === 'success' && team.status === 'active' ? 'border-green-500' :
-                      team.lastEventResult === 'failure' && team.status === 'active' ? 'border-red-500' :
-                      'border-transparent'
-                    }
-                    ${team.status === 'retired' ? 'filter blur-sm grayscale' : ''}
-                `}>
+                <div class={`bg-gray-800 rounded-lg p-4 font-sans flex flex-col justify-between min-h-48 border-4 transition-all ${team.lastEventResult === 'success' && team.status === 'active' ? 'border-green-500' : team.lastEventResult === 'failure' && team.status === 'active' ? 'border-red-500' : 'border-transparent'} ${team.status === 'retired' ? 'filter blur-sm grayscale' : ''}`}>
                     <div>
                         <div class="flex justify-between items-center">
                             <h2 class="text-xl text-gray-200 font-bold mb-2">{team.name}</h2>
                             {team.status === 'retired' ? (
                                 <span class="px-2 py-1 rounded-md text-sm font-bold bg-gray-600 text-white">Retired</span>
                             ) : team.lastEventResult && (
-                                <span class={`px-2 py-1 rounded-md text-sm font-bold ${
-                                    team.lastEventResult === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                                }`}>
+                                <span class={`px-2 py-1 rounded-md text-sm font-bold ${team.lastEventResult === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
                                     {team.lastEventResult.charAt(0).toUpperCase() + team.lastEventResult.slice(1)}
                                 </span>
                             )}
                         </div>
                     </div>
                     <div class="flex-grow space-y-2">
-                        {/* Food Row */}
                         <div class="flex flex-wrap gap-2">
-                            <For each={getFood(team.inventory)}>
-                                {(item) => <InventoryItemDisplay item={item} />}
-                            </For>
+                            <For each={getFood(team.inventory)}>{(item) => <InventoryItemDisplay item={item} />}</For>
                         </div>
-                        {/* Drink Row */}
                         <div class="flex flex-wrap gap-2">
-                            <For each={getDrinks(team.inventory)}>
-                                {(item) => <InventoryItemDisplay item={item} />}
-                            </For>
+                            <For each={getDrinks(team.inventory)}>{(item) => <InventoryItemDisplay item={item} />}</For>
                         </div>
-                        {/* Other Row */}
                         <div class="flex flex-wrap gap-2">
-                            <For each={getOthers(team.inventory)}>
-                                {(item) => <InventoryItemDisplay item={item} />}
-                            </For>
+                            <For each={getOthers(team.inventory)}>{(item) => <InventoryItemDisplay item={item} />}</For>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -293,27 +250,19 @@ const SimulationResult: Component = () => {
         </div>
       </div>
 
-      {/* Event Deck Section */}
       <div class="mt-8 flex flex-col items-center">
           <div class="flex items-center space-x-4">
             <div class="relative w-48 h-64">
                 <For each={eventDeck()}>
                     {(_, index) => (
                         <div class="absolute w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 border-4 border-gray-900 rounded-lg shadow-2xl flex justify-center items-center"
-                             style={{
-                                 transform: `translateX(${index() * 2}px) translateY(${index() * -1}px)`,
-                                 "z-index": index()
-                             }}>
+                             style={{transform: `translateX(${index() * 2}px) translateY(${index() * -1}px)`, "z-index": index()}}>
                             <img src="../../resource/logo.png" alt="Card Back" class="w-2/3 opacity-40" />
                         </div>
                     )}
                 </For>
             </div>
-            <button
-              onClick={drawEvent}
-              class="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-orange-600 disabled:bg-gray-500"
-              disabled={gameEnded() || eventDeck().length === 0}
-            >
+            <button onClick={drawEvent} class="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-orange-600 disabled:bg-gray-500" disabled={gameEnded() || eventDeck().length === 0}>
               Draw Event
             </button>
             {drawnEvent() && (
