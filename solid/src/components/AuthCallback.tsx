@@ -32,9 +32,11 @@ const AuthCallback: Component = () => {
       
       console.log('Auth callback received with code:', code);
       
+      const redirectUri = window.location.origin + window.location.pathname;
+
       // Exchange code for Firebase custom token
       const response = await ky.post('/api/auth/kakao/token', {
-        json: { code },
+        json: { code, redirect_uri: redirectUri },
         timeout: 10000
       }).json<AuthResponse>();
       

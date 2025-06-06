@@ -3,13 +3,12 @@ import { useNavigate } from "@solidjs/router";
 import ky from "ky";
 import { setRoomCode } from "../store";
 import { socket, setSocket, initSocket } from "../store";
+import { selectedPreInfo, setSelectedPreInfo, selectedDisaster, setSelectedDisaster, family_info, disaster_info } from '../store';
 import logoImage from '../../resource/logo_horizon.png';
 
 const RoomBuild: Component = () => {
   const navigate = useNavigate();
   const [roomTitle, setRoomTitle] = createSignal("");
-  const [selectedPreInfo, setSelectedPreInfo] = createSignal<number | null>(null);
-  const [selectedDisaster, setSelectedDisaster] = createSignal<number | null>(null);
 
   const createRoom = async () => {
     try {
@@ -48,8 +47,7 @@ const RoomBuild: Component = () => {
       setSelectedDisaster(index);
     }
   };
-  const family_info = ["../../resource/family2.png","../../resource/family3.png","../../resource/family4.png","../../resource/familydog.png"];
-  const disaster_info = ["../../resource/tsunami.png","../../resource/rain.png","../../resource/earthquake.png","../../resource/volcano.png"];
+
   return (
     <div class="min-h-screen bg-neutral-950 text-gray-200 flex flex-col mx-auto justify-center items-center font-sans">
       {/* Header Section */}
@@ -98,15 +96,15 @@ const RoomBuild: Component = () => {
           </div>
 
           <div class="flex flex-row gap-2">
-            {[1, 2].map((gridIndex) => (
+            {[0,1].map((row) => (
               <div class="grid grid-cols-2 gap-2 w-full rounded-lg overflow-hidden p-1">
-                {[1, 2].map((imgIndex) => {
-                  const index = (gridIndex - 1) * 4 + imgIndex - 1;
-                  console.log(imgIndex,gridIndex);
+                {
+                  [0,1].map((col) => {
+                  const index = row * 2 + col;
                   return (
                     <img
-                      src={family_info[(gridIndex - 1)*2 + imgIndex - 1]}
-                      class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
+                      src={family_info[index]}
+                      class={`cursor-pointer border-2 
                         ${selectedPreInfo() === index ? "border-orange-400" : "border-transparent"} 
                         hover:border-orange-500`}
                       onClick={toggleBorder("pre", index)}
@@ -122,15 +120,16 @@ const RoomBuild: Component = () => {
           </div>
 
           <div class="flex flex-row gap-2">
-            {[1, 2].map((gridIndex) => (
+            {[0,1].map((row) => (
               <div class="grid grid-cols-2 gap-2 w-full rounded-lg overflow-hidden p-1">
-                {[1, 2].map((imgIndex) => {
-                  const index = (gridIndex - 1) * 4 + imgIndex - 1;
+                {
+                  [0,1].map((col) => {
+                  const index = row * 2 + col;
                   return (
                     <img
-                      src={disaster_info[(gridIndex - 1)*2 + imgIndex - 1]}
-                      class={`w-full h-[115px] object-scale-down cursor-pointer border-2 
-                        ${selectedDisaster() === index ? "border-yellow-400" : "border-transparent"} 
+                      src={disaster_info[index]}
+                      class={`cursor-pointer border-2 
+                        ${selectedDisaster() === index ? "border-orange-400" : "border-transparent"} 
                         hover:border-orange-500`}
                       onClick={toggleBorder("disaster", index)}
                     />

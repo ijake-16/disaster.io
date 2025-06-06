@@ -1,20 +1,10 @@
 import { Component, createSignal, onMount } from "solid-js";
 import { useLocation, useNavigate } from "@solidjs/router";
-import * as XLSX from "xlsx";
 import { socket } from "../store"; 
-
-interface Item {
-  id: number;
-  korName: string;
-  name: string;
-  weight: number;
-  volume: number;
-  description: string;
-  imgsource: string;
-}
+import { itemOptions , ItemOption} from "../data/items";
 
 const S6: Component = () => {
-  const [items, setItems] = createSignal<Item[]>([]);
+  const [items, setItems] = createSignal<ItemOption[]>(itemOptions);
 
   const [timer, setTimer] = createSignal(150);
   const [currentWeight, setCurrentWeight] = createSignal(0);
@@ -40,30 +30,14 @@ const S6: Component = () => {
   const maxWeight = selectedBag.weightLimit;
   const maxVolume = selectedBag.volumeLimit;
   const [istime, setistime] = createSignal(true);
-  // Load items from Excel file
-  const readItemsFromExcel = async () => {
+  // Load items from JSON file
+  const readItemsFromJson = async () => {
     try {
-      const response = await fetch("Items.xlsx");
-      const arrayBuffer = await response.arrayBuffer();
-      const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: "array" });
-
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const data = XLSX.utils.sheet_to_json<Item>(worksheet);
-
-      const mappedItems = data.map((row, index) => ({
-        id: index + 1,
-        korName: row.korName || "",
-        name: row.name || "",
-        weight: parseFloat(row.weight) || 0,
-        volume: parseFloat(row.volume) || 0,
-        description: row.description || "",
-        imgsource: `resource/${row.name}.png`,
-      }));
-
-      setItems(mappedItems);
+      const response = await fetch("../data/item.json");
+      const data = await response.json();
+      setItems(data);
     } catch (error) {
-      console.error("Error reading Excel file:", error);
+      console.error("Error reading JSON file:", error);
     }
   };
 
@@ -175,12 +149,25 @@ const S6: Component = () => {
       },
     });
   };
+  const sortItems = (type: string) => {
+    if (type === "name") {
+      // 1) 기존 items()를 복사([...items()]) → 2) 복사된 배열에 sort → 3) setItems(새 배열)
+      const newArr = [...items()].sort((a, b) => a.korName.localeCompare(b.korName));
+      setItems(newArr);
+    } else if (type === "weight") {
+      const newArr = [...items()].sort((a, b) => a.weight - b.weight);
+      setItems(newArr);
+    } else if (type === "volume") {
+      const newArr = [...items()].sort((a, b) => a.volume - b.volume);
+      setItems(newArr);
+    }
+  };
   
   // Filtered items based on search
   const filteredItems = () => items().filter((item) => item.korName.toLowerCase().includes(searchTerm()));
 
   onMount(() => {
-    readItemsFromExcel();
+    readItemsFromJson();
     startTimer();
   });
 
@@ -205,12 +192,12 @@ const S6: Component = () => {
       <main class="grid grid-cols-[300px_1fr] gap-5">
         {/* Inventory Section */}
         <section>
-          <input
-            type="text"
-            placeholder="Search items..."
-            class="w-full p-2 rounded bg-gray-700"
-            onInput={(e) => setSearchTerm((e.target as HTMLInputElement).value.toLowerCase())}
-          />
+          {/* 이름, 무게, 부피 정렬버튼 가로로 세개 */}
+          <div class="flex justify-center items-center">
+            <button class="bg-gray-800 p-2 rounded" onClick={() => sortItems("name")}>이름</button>
+            <button class="bg-gray-800 p-2 rounded" onClick={() => sortItems("weight")}>무게</button>
+            <button class="bg-gray-800 p-2 rounded" onClick={() => sortItems("volume")}>부피</button>
+          </div>
           <div class="grid grid-cols-3 gap-2 mt-4">
             {filteredItems().map((item) => (
               <div
@@ -221,7 +208,7 @@ const S6: Component = () => {
                   setShowModal(true);
                 }}
               >
-                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
               </div>
             ))}
@@ -249,7 +236,7 @@ const S6: Component = () => {
                 >
                   ×
                 </button>
-                <img src={item.imgsource} alt={item.korName} class="w-16 h-16 mb-2" />
+                <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
               </div>
             ))}
@@ -278,7 +265,7 @@ const S6: Component = () => {
               ×
             </button>
             <div class="text-center flex flex-col items-center">
-              <img src={selectedItem()?.imgsource} alt="" class="my-2 w-32 h-32" />
+              <img src={`resource/${selectedItem()?.name}.png`} alt="" class="my-2 w-32 h-32" />
               <div class="text-xl mb-2">
                 {selectedItem()?.korName}         
               </div>
