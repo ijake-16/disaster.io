@@ -5,6 +5,7 @@ export interface BagOption {
     weightLimit: number;
     volumeLimit: number;
     bagWeight: number;
+    itemLimit: number;
     description: string;
   }
   
@@ -16,6 +17,7 @@ export interface BagOption {
       weightLimit: 30,
       volumeLimit: 30,
       bagWeight: 5,
+      itemLimit: 5,
       description: "튼튼 등산베낭",
     },
     {
@@ -25,6 +27,7 @@ export interface BagOption {
       weightLimit: 15,
       volumeLimit: 15,
       bagWeight: 1,
+      itemLimit: 10,
       description: "아동용 책가방",
     },
     {
@@ -34,6 +37,7 @@ export interface BagOption {
       weightLimit: 10,
       volumeLimit: 15,
       bagWeight: 0.5,
+      itemLimit: 15,
       description: "가벼운 에코백",
     },
   ];

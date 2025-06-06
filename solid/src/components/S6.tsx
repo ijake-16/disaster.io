@@ -9,8 +9,8 @@ const S6: Component = () => {
   const [timer, setTimer] = createSignal(150);
   const [currentWeight, setCurrentWeight] = createSignal(0);
   const [currentVolume, setCurrentVolume] = createSignal(0);
-  const [q, setQ] = createSignal<Item[]>([]); // Queue for bag items
-  const [selectedItem, setSelectedItem] = createSignal<Item | null>(null);
+  const [q, setQ] = createSignal<ItemOption[]>([]); // Queue for bag items
+  const [selectedItem, setSelectedItem] = createSignal<ItemOption | null>(null);
   const [quantity, setQuantity] = createSignal(1); // Number of items to add
   const [showModal, setShowModal] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal("");
@@ -69,8 +69,10 @@ const S6: Component = () => {
 
     const totalWeight = currentWeight() + item.weight * quantity();
     const totalVolume = currentVolume() + item.volume * quantity();
+    // 아이템 종류의 개수만 고려해서 인벤토리 제한
+    const totalItem = q().length;
 
-    if (totalWeight > maxWeight || totalVolume > maxVolume) {
+    if (totalWeight > maxWeight || totalVolume > maxVolume || totalItem >= selectedBag.itemLimit) {
       alert("가방에 더 이상 물건을 넣을 수 없습니다!");
       return;
     }
@@ -218,11 +220,11 @@ const S6: Component = () => {
         {/* Bag Section */}
         <section class="bg-gray-700 rounded-lg p-4">
           <div class="text-lg flex gap-4">
-            <div>Weight: {currentWeight()} / {maxWeight}</div>
+            <div>Weight: {currentWeight().toFixed(1)} / {maxWeight}</div>
             <div class="mt-1 w-[30%] ml-1 h-3 mr-2 bg-gray-600 rounded-full overflow-hidden">
               <div class="h-full bg-green-500" style={`width: ${currentWeight()/maxWeight*100}%`}></div>
             </div>
-            <div>Volume: {currentVolume()} / {maxVolume}</div>
+            <div>Volume: {currentVolume().toFixed(1)} / {maxVolume}</div>
             <div class="mt-1 w-[30%] ml-1 h-3 bg-gray-600 rounded-full overflow-hidden">
               <div class="h-full bg-green-500" style={`width: ${currentVolume()/maxVolume*100}%`}></div>
             </div>
@@ -238,6 +240,11 @@ const S6: Component = () => {
                 </button>
                 <img src={`resource/${item.name}.png`} alt={item.korName} class="w-16 h-16 mb-2" />
                 <span>{item.korName}</span>
+              </div>
+            ))}
+            {Array.from({ length: selectedBag.itemLimit - q().length }).map(() => (
+              <div class="item bg-gray-600 p-2 rounded flex flex-col items-center opacity-40">
+                {/* 빈 칸은 이미지 없이, slot만 표시 */}
               </div>
             ))}
           </div>
