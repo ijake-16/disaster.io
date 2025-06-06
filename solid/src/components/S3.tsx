@@ -16,6 +16,12 @@ const S3: Component = () => {
       setErrorMessage("웹소켓 연결이 유효하지 않습니다.");
       return;
     }
+    ws.send(
+      JSON.stringify({
+        action: "toggle_ready",
+        data: { team: teamNames},
+      })
+    );
 
     ws.onmessage = (event) => {
       try {
