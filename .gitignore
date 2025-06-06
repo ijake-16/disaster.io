@@ -3,6 +3,7 @@ fast/venv/
 *.pyc
 **/__pycache__/
 fast/firebase-service-account.json
+firebase-service-account.json
 
 pnpm-lock.yaml
 
@@ -17,4 +18,4 @@ x
 .venv/
 .env
 solid/.env
-*firebase*service*account*.json
+*firebase*service*account*.json$
