@@ -23,7 +23,7 @@ services:
       - traefik.http.services.fast.loadbalancer.server.port=8000
       - traefik.http.middlewares.fast-strip.stripprefix.prefixes=/api
       - traefik.http.routers.fast.middlewares=fast-strip
-      - traefik.http.routers.fast-ws.rule=Host(`disaster.buttercrab.net`) && PathPrefix(`/ws`)
+      - traefik.http.routers.fast-ws.rule=Host(`disaster.buttercrab.net`) && (PathPrefix(`/host/ws`) || PathPrefix(`/player/ws`))
       - traefik.http.routers.fast-ws.tls=true
       - traefik.http.routers.fast-ws.tls.certresolver=le
       - traefik.http.routers.fast-ws.entrypoints=websecured
