@@ -7,7 +7,7 @@ export interface ItemOption {
     description: string;
   }
   
-  export const items: ItemOption[] = [
+  export const itemOptions: ItemOption[] = [
     {
       "id": 101,
       "korName": "참치캔",
