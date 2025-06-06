@@ -1,20 +1,26 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from fast.managers import RoomManager
+from fast.managers import room_manager
 from fast.auth import router as auth_router
+from fast.host import router as host_router
+from fast.player import router as player_router
 import json
 import uuid
 from dotenv import load_dotenv
+import logging
 
 # Load environment variables
 load_dotenv()
 
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI()
-room_manager = RoomManager()
 
 # Include auth router
 app.include_router(auth_router)
+app.include_router(host_router)
+app.include_router(player_router)
 
 class CreateRoomPayload(BaseModel):
     host_nickname: str

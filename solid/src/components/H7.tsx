@@ -3,6 +3,8 @@ import { itemOptions } from '../data/items';
 import type { ItemOption } from '../data/items';
 import { eventOptions } from '../data/events';
 import type { EventOption } from '../data/events';
+import { roomCode } from '../store';
+import ky from 'ky';
 
 type Item = ItemOption & { img_path: string };
 type InventoryItem = Item & { status: 'active' | 'used' };
@@ -100,20 +102,64 @@ const InventoryItemDisplay: Component<{item: InventoryItem}> = ({ item }) => {
 }
 
 const SimulationResult: Component = () => {
-  const [teams, setTeams] = createSignal<Team[]>(Array.from({ length: 4 }, (_, i) => ({
-    id: i + 1,
-    name: `Team ${i + 1}`,
-    inventory: generateRandomInventory(),
-    health: 100,
-    lastEventResult: null,
-    status: 'active'
-  })));
+  const [teams, setTeams] = createSignal<Team[]>([]);
 
   const [eventDeck, setEventDeck] = createSignal<EventOption[]>([]);
   const [drawnEvent, setDrawnEvent] = createSignal<EventOption | null>(null);
   const [gameEnded, setGameEnded] = createSignal(false);
 
-  onMount(() => {
+  onMount(async () => {
+    await fetchTeamData();
+    initializeEventDeck();
+  });
+
+  const fetchTeamData = async () => {
+    try {
+        const teamBags = await ky
+            .get(`/api/host/room/${roomCode()}/bag_contents`)
+            .json<Record<string, Record<string, number>>>();
+
+        const allItemsMap = new Map(allItems.map(item => [item.name, item]));
+
+        const teamArray = Object.entries(teamBags).map(([teamName, bagContents]) => {
+            const inventory: InventoryItem[] = [];
+            for (const [itemName, count] of Object.entries(bagContents)) {
+                if (typeof count === 'number') {
+                    const itemInfo = allItemsMap.get(itemName);
+                    if (itemInfo) {
+                        for(let i = 0; i < count; i++) {
+                            inventory.push({ ...itemInfo, status: 'active' });
+                        }
+                    }
+                }
+            }
+            return {
+                id: Math.random(), // Or a more stable ID if available
+                name: teamName,
+                inventory,
+                health: 100,
+                lastEventResult: null,
+                status: 'active' as const
+            };
+        });
+
+        setTeams(teamArray);
+    } catch (error) {
+        console.error("Failed to fetch team data, using mock data as fallback:", error);
+        // Fallback to mock data if API fails
+        const mockTeams = Array.from({ length: 4 }, (_, i) => ({
+            id: i + 1,
+            name: `Team ${i + 1}`,
+            inventory: generateRandomInventory(),
+            health: 100,
+            lastEventResult: null,
+            status: 'active' as const
+        }));
+        setTeams(mockTeams);
+    }
+  };
+
+  const initializeEventDeck = () => {
     const normalEvents = [...eventOptions].sort(() => Math.random() - 0.5);
     
     if (normalEvents.length >= 8) {
@@ -125,7 +171,7 @@ const SimulationResult: Component = () => {
         const shuffledAll = [...normalEvents, RESCUE_EVENT].sort(() => Math.random() - 0.5);
         setEventDeck(shuffledAll);
     }
-  });
+  }
 
   const drawEvent = () => {
     if (gameEnded() || eventDeck().length === 0) return;
