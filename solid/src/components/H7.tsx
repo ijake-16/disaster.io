@@ -106,6 +106,7 @@ const SimulationResult: Component = () => {
   const [eventDeck, setEventDeck] = createSignal<EventOption[]>([]);
   const [drawnEvent, setDrawnEvent] = createSignal<EventOption | null>(null);
   const [gameEnded, setGameEnded] = createSignal(false);
+  const [deckReady, setDeckReady] = createSignal(false);
 
   const fetchTeamData = async () => {
     try {
@@ -157,6 +158,7 @@ const SimulationResult: Component = () => {
         normalEvents.length;
     normalEvents.splice(rescueIndex, 0, RESCUE_EVENT);
     setEventDeck(normalEvents);
+    setTimeout(() => setDeckReady(true), 100);
   }
 
   const drawEvent = () => {
@@ -255,8 +257,14 @@ const SimulationResult: Component = () => {
             <div class="relative w-48 h-64">
                 <For each={eventDeck()}>
                     {(_, index) => (
-                        <div class="absolute w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 border-4 border-gray-900 rounded-lg shadow-2xl flex justify-center items-center"
-                             style={{transform: `translateX(${index() * 2}px) translateY(${index() * -1}px)`, "z-index": index()}}>
+                        <div class="absolute w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 border-4 border-gray-900 rounded-lg shadow-2xl flex justify-center items-center transition-transform duration-700 ease-out"
+                             style={{
+                                transform: deckReady()
+                                    ? `translateX(${index() * 2}px) translateY(${index() * -1}px)`
+                                    : 'translateX(60vw) rotate(30deg)',
+                                'transition-delay': `${index() * 30}ms`,
+                                "z-index": index()
+                             }}>
                             <img src="../../resource/logo.png" alt="Card Back" class="w-2/3 opacity-40" />
                         </div>
                     )}
