@@ -6,6 +6,7 @@ import {
 } from "../store";
 import logoImage from "../../resource/logo_horizon.png";
 import { bagOptions } from "../data/bags";
+import { itemOptions } from "../data/items";
 
 interface TeamItem {
   image: string;
@@ -34,6 +35,7 @@ const SceneInfo: Component = () => {
   const [teams, setTeams] = createSignal<TeamStatus[]>([]);
   const bagSnapshots = new Map<string, BagSnapshot>();
   const [readyTeams, setReadyTeams] = createSignal<string[]>([]);
+  const itemMap = new Map(itemOptions.map(item => [item.id, item]));
 
   const rebuildTeams = () => {
     const next = Array.from(bagSnapshots.entries()).map(
@@ -41,11 +43,17 @@ const SceneInfo: Component = () => {
         const { totalWeight, totalVolume, bagID, items } = snap;
         const bag = bagOptions.find((b) => b.id === bagID) || bagOptions[0];
         const mappedItems: TeamItem[] = Object.entries(items).map(
-          ([itemName, cnt]) => ({
-            image: `../../resource/${itemName}.png`,
-            count: cnt,
-          }),
-        );
+          ([itemId, cnt]) => {
+            const itemInfo = itemMap.get(parseInt(itemId, 10));
+            if (itemInfo) {
+                return {
+                    image: `../../resource/${itemInfo.name}.png`,
+                    count: cnt,
+                };
+            }
+            return null;
+          }
+        ).filter((i): i is TeamItem => i !== null);
         return {
           name: teamName,
           items: mappedItems,

@@ -206,7 +206,7 @@ const SimulationResult: Component = () => {
             if (success && passingItemGroup) {
                 const consumedItemIds = new Set(passingItemGroup);
                 newInventory = team.inventory.map(item => 
-                    consumedItemIds.has(item.id) ? { ...item, status: 'used' } : item
+                    consumedItemIds.has(item.id) ? { ...item, status: 'used' as const } : item
                 );
             }
 
@@ -214,8 +214,8 @@ const SimulationResult: Component = () => {
                 ...team,
                 health: newHealth,
                 inventory: newInventory,
-                lastEventResult: success ? 'success' : 'failure',
-                status: newHealth === 0 ? 'retired' : team.status
+                lastEventResult: success ? 'success' as const : 'failure' as const,
+                status: newHealth === 0 ? 'retired' as const : team.status
             };
         });
 
