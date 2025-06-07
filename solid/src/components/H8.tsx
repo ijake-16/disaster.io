@@ -16,6 +16,9 @@ interface TeamHealthSnapshot {
 type EventResult = {
   eventId: number;
   eventName: string;
+  eventDescription: string;
+  eventScore: number;
+  requirements: number[][];
   teamResults: TeamHealthSnapshot[];
 };
 type SimulationHistory = EventResult[];
@@ -24,13 +27,18 @@ const FinalResult: Component= () => {
   console.log("FinalResult");
   const location = useLocation();
   console.log(location.state);
-  const history = location.state?.history ?? [];
+  const history = (location.state as { history: SimulationHistory })?.history ?? [];
   console.log(history);
   const [hoveredIdx, setHoveredIdx] = createSignal<number | null>(null);
   console.log(hoveredIdx());
 
   return (
     <div class="min-h-screen bg-neutral-950 flex flex-col items-center p-8 font-sans">
+      <div class="flex justify-center flex-col items-center mb-8">
+        <img src="../../resource/logo_horizon.png" alt="Disaster.io Logo" class="h-16 w-auto" />
+        <div class="mt-4 text-center text-white text-3xl font-bold">최종 결과</div>
+        <div class="mt-2 text-center text-white text-xl">Final Result</div>
+      </div>
       {/* 이벤트 카드 가로 스크롤 영역 */}
       <div class="w-full max-w-5xl min-w-0 overflow-x-auto mb-12">
         <div class="flex flex-row whitespace-nowrap">
